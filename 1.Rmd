@@ -1,6 +1,6 @@
 ---
 title: "Primera prueba r markdown"
-author: "Joan Aguirre"
+author: "Alejandro Barros Rayo"
 date: "2025-10-03"
 output: html_document
 ---
