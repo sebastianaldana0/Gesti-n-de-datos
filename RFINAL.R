@@ -19,6 +19,10 @@ caracteristicas_hogar=read.csv("Características_composición.CSV",sep= ";") %>%
   select(DIRECTORIO,P6020,P6040,P6051,P5502) %>% rename(Sexo=2,Edad=3,Parentesco=4,Casado=5) %>% 
   filter(Parentesco==1)#jefes del hogar
 
+tenencia=read.csv("tenencia y financiación de la vivienda.CSV",sep=";") %>% 
+  select(DIRECTORIO,P5130,P5140) %>% rename(estimación=2,Arriendo=3) %>% 
+  mutate(Arriendo_estimacion=estimación+Arriendo)
+
 #Base de datos final
 
 Base_datos=datos_hogar %>% inner_join(educacion,by="DIRECTORIO") %>% 
