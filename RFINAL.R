@@ -41,7 +41,12 @@ vivienda=read.csv("Datos de la vivienda.csv",sep=";") %>%
   distinct(DIRECTORIO, .keep_all = TRUE)
 
 salud=read.csv("Salud.CSV", sep=";")  %>%
-  select(DIRECTORIO,P6090, P8551) %>% rename(Afiliado=2,Salud=3)
+  select(DIRECTORIO,P6090) %>% 
+  group_by(DIRECTORIO) %>%
+  filter(P6090 == max(P6090)) %>%
+  rename(Afiliado=2)%>%
+  ungroup() %>% 
+  distinct(DIRECTORIO, .keep_all = TRUE)
 
 Muestra=read.csv("muestral.CSV",sep=";") %>% 
   select(DIRECTORIO,MPIO) %>% rename(Municipio=2) %>% 
@@ -51,7 +56,8 @@ Muestra=read.csv("muestral.CSV",sep=";") %>%
 
 Base_datos=inner_join(Muestra,caracteristicas_hogar,by="DIRECTORIO") %>% 
   inner_join(tenencia,by="DIRECTORIO") %>% inner_join(datos_hogar,by="DIRECTORIO") %>% 
-  inner_join(vivienda,by="DIRECTORIO") %>% inner_join(educacion,by="DIRECTORIO")
+  inner_join(vivienda,by="DIRECTORIO") %>% inner_join(educacion,by="DIRECTORIO") %>% 
+  inner_join(salud,by="DIRECTORIO")
   
 
 #Modelos
