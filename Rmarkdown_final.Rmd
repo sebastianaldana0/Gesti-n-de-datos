@@ -224,7 +224,11 @@ knitr::opts_chunk$set(
 
 # Introducción
 
-holaaaaa
+La desigualdad de ingresos en Colombia constituye uno de los principales desafíos estructurales del país. En 2024, Colombia registró un coeficiente de Gini de 0.551, ubicándose entre los países con mayor concentración de ingresos a nivel mundial. A pesar de los avances logrados con la reducción de la pobreza monetaria al 31.8% —la cifra más baja desde 2012— y el hecho de que 1,267,063 colombianos salieron de la pobreza, persisten brechas significativas que requieren un análisis profundo de los determinantes estructurales de los ingresos familiares.
+
+El análisis de los determinantes de los ingresos familiares reviste importancia crítica por múltiples razones. Primero, permite identificar los factores estructurales que perpetúan la desigualdad y orientar políticas públicas más efectivas. Segundo, contribuye al entendimiento de cómo características socioeconómicas específicas —como educación, composición del hogar y ubicación geográfica— influyen en la capacidad económica de las familias.
+
+La literatura académica ha demostrado que la educación superior, la composición del hogar, las características del jefe de hogar y la ubicación geográfica son determinantes fundamentales del ingreso. Sin embargo, la mayoría de estudios previos no han utilizado los datos más recientes disponibles, lo que limita su relevancia para el diseño de políticas contemporáneas
 
 # Metodología
 
