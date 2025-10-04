@@ -27,6 +27,8 @@ trabajo=read.csv("Fuerza de trabajo.CSV",sep=";") %>%
   select(DIRECTORIO,P8624,P415) %>% rename(Ingresos_mes=2,Horas_trabajadas_semana=3)
   
 
+salud=read.csv("Salud.CSV", sep=";")  %>%
+  select(DIRECTORIO,P6090, P8551)
 
 #Base de datos final
 
