@@ -15,7 +15,12 @@ datos_hogar=read.csv("datos_hogar.csv", sep = ";") %>%
 
 
 educacion=read.csv("educacion.csv", sep= ";") %>% 
-  select(DIRECTORIO,P8587) %>% rename("Ultimo grado alcanzado"=2)
+  select(DIRECTORIO,P8587) %>% 
+  group_by(DIRECTORIO) %>%
+  filter(P8587 == max(P8587)) %>%
+  rename("Ultimo grado alcanzado"=2)  %>%
+  ungroup() %>% 
+  distinct(DIRECTORIO, .keep_all = TRUE)
 
 caracteristicas_hogar=read.csv("Características_composición.CSV",sep= ";") %>% 
   select(DIRECTORIO,P6020,P6040,P6051,P5502) %>% rename(Sexo=2,Edad=3,Parentesco=4,Casado=5) %>% 
@@ -46,7 +51,7 @@ Muestra=read.csv("muestral.CSV",sep=";") %>%
 
 Base_datos=inner_join(Muestra,caracteristicas_hogar,by="DIRECTORIO") %>% 
   inner_join(tenencia,by="DIRECTORIO") %>% inner_join(datos_hogar,by="DIRECTORIO") %>% 
-  inner_join(vivienda,by="DIRECTORIO") 
+  inner_join(vivienda,by="DIRECTORIO") %>% inner_join(educacion,by="DIRECTORIO")
   
 
 #Modelos
