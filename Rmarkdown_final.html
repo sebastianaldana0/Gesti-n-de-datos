@@ -11,9 +11,8 @@
 
 <meta name="author" content="Barros Rayo Alejandro (2415837), Muñoz Portela Diego Fernando (2415620), Portilla Aguirre Johan Camilo (2422468), Aguirre Aldana Joan Sebastian (2419550)" />
 
-<meta name="date" content="2025-10-03" />
 
-<title>Primera prueba r markdown</title>
+<title>Aplicación de un Modelo de Regresión Lineal Múltiple para Identificar los Determinantes de los Ingresos Familiares en Colombia: Evidencia de la ECV 2024</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -1596,191 +1595,309 @@ font-size: 0.95em;
 
 
 
-<h1 class="title toc-ignore">Primera prueba r markdown</h1>
+<h1 class="title toc-ignore">Aplicación de un Modelo de Regresión Lineal
+Múltiple para Identificar los Determinantes de los Ingresos Familiares
+en Colombia: Evidencia de la ECV 2024</h1>
 <h4 class="author">Barros Rayo Alejandro (2415837), Muñoz Portela Diego
 Fernando (2415620), Portilla Aguirre Johan Camilo (2422468), Aguirre
 Aldana Joan Sebastian (2419550)</h4>
-<h4 class="date">2025-10-03</h4>
+<h4 class="date">04 de octubre de 2025</h4>
 
 </div>
 
 
 <style type="text/css">
 
+:root {
+--primary-color: #2c3e50;
+--secondary-color: #8B7355;
+--accent-color: #654321;
+--text-color: #333333;
+--light-bg: #f9f7f4;
+--border-color: #d4c9b8;
+--gold-accent: #C0A080;
+}
+
 .main-container {
 max-width: 1200px !important;
-margin-left: auto;
-margin-right: auto;
-font-family: "Georgia", "Times New Roman", serif;
-line-height: 1.8;
+margin: 0 auto !important;
+font-family: "Georgia", "Times New Roman", serif !important;
+line-height: 1.7 !important;
+color: var(--text-color) !important;
+background: #ffffff !important;
+text-align: justify !important;
+}
+
+p, div, .section, .main-container {
+text-align: justify !important;
+text-justify: inter-word !important;
+hyphens: auto !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+font-family: "Times New Roman", "Times", serif !important;
+font-weight: 600 !important;
+text-align: left !important;
+}
+h1 {
+color: var(--primary-color) !important;
+border-bottom: 3px double var(--secondary-color) !important;
+padding-bottom: 15px !important;
+font-size: 2.2em !important;
+margin-bottom: 30px !important;
+text-align: center !important;
+letter-spacing: 0.5px !important;
+}
+h2 {
+color: var(--primary-color) !important;
+border-bottom: 1px solid var(--border-color) !important;
+padding-bottom: 10px !important;
+font-size: 1.8em !important;
+margin-top: 35px !important;
+margin-bottom: 20px !important;
+}
+h3 {
+color: var(--accent-color) !important;
+font-size: 1.4em !important;
+margin-top: 25px !important;
+margin-bottom: 15px !important;
 }
 
 .tocify {
-border: none !important;
-border-radius: 12px !important;
-box-shadow: 0 4px 20px rgba(0,0,0,0.1) !important;
-background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%) !important;
-font-family: "Helvetica Neue", Arial, sans-serif !important;
-transition: all 0.3s ease !important;
-}
-.tocify:hover {
-box-shadow: 0 6px 25px rgba(0,0,0,0.15) !important;
-transform: translateY(-2px) !important;
+border: 1px solid var(--border-color) !important;
+border-radius: 8px !important;
+background: #ffffff !important;
+font-family: "Times New Roman", serif !important;
+box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+width: 300px !important;
 }
 .tocify-header {
-background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%) !important;
+background: var(--primary-color) !important;
 color: white !important;
 padding: 15px 20px !important;
-border-radius: 12px 12px 0 0 !important;
-font-weight: 300 !important;
-letter-spacing: 1px !important;
+border-radius: 8px 8px 0 0 !important;
+font-family: "Times New Roman", serif !important;
+font-size: 1.1em !important;
+font-weight: bold !important;
+text-align: center !important;
 }
 .tocify-subheader {
-background-color: transparent !important;
+background: transparent !important;
 }
 .tocify-focus {
-background: linear-gradient(135deg, #3498db 0%, #2980b9 100%) !important;
-color: white !important;
-border-radius: 6px !important;
-padding-left: 10px !important;
-margin: 2px 5px !important;
-transition: all 0.3s ease !important;
+background: #f0f0f0 !important;
+color: var(--accent-color) !important;
+border-left: 4px solid var(--secondary-color) !important;
+font-weight: bold !important;
 }
 .list-group-item {
 border: none !important;
 padding: 8px 15px !important;
 margin: 2px 0 !important;
-border-radius: 6px !important;
-transition: all 0.2s ease !important;
+font-family: "Georgia", serif !important;
+font-size: 0.95em !important;
+color: var(--text-color) !important;
+background: transparent !important;
 }
 .list-group-item:hover {
-background-color: #e3f2fd !important;
-transform: translateX(5px) !important;
-}
-.tocify-extend-page {
-background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+background: #f8f8f8 !important;
+color: var(--accent-color) !important;
 }
 
-.toc-controls {
-background-color: #f8f9fa;
-padding: 10px 15px;
-border-radius: 8px;
-margin-bottom: 15px;
-border-left: 4px solid #3498db;
+.toc-content {
+margin-left: 330px !important;
+padding: 30px 40px !important;
+background: white !important;
 }
-.toc-controls button {
-background: #3498db;
-color: white;
-border: none;
-padding: 5px 12px;
-margin-right: 8px;
-border-radius: 15px;
-font-size: 12px;
-cursor: pointer;
-transition: all 0.3s ease;
-}
-.toc-controls button:hover {
-background: #2980b9;
-transform: translateY(-1px);
+.section.level1 {
+margin-bottom: 50px !important;
+padding: 30px !important;
+background: white !important;
+border: 1px solid var(--border-color) !important;
+border-radius: 5px !important;
 }
 
-.section-navigation {
-position: fixed;
-bottom: 20px;
-right: 20px;
-background: white;
-border-radius: 50px;
-box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-padding: 10px;
-z-index: 1000;
-}
-.nav-btn {
-background: #3498db;
-color: white;
-border: none;
-width: 40px;
-height: 40px;
-border-radius: 50%;
-margin: 0 5px;
-cursor: pointer;
-transition: all 0.3s ease;
-}
-.nav-btn:hover {
-background: #2980b9;
-transform: scale(1.1);
+.abstract {
+background: var(--light-bg) !important;
+padding: 25px 30px !important;
+border-left: 4px solid var(--secondary-color) !important;
+margin-bottom: 30px !important;
+font-style: normal !important;
+color: var(--text-color) !important;
+text-align: justify !important;
+font-size: 1.05em !important;
+line-height: 1.8 !important;
 }
 
-.reading-progress {
-position: fixed;
-top: 0;
-left: 0;
-width: 100%;
-height: 3px;
-background: linear-gradient(90deg, #3498db, #2c3e50);
-transform-origin: left;
-transform: scaleX(0);
-transition: transform 0.3s ease;
-z-index: 9999;
+blockquote {
+border-left: 4px solid var(--secondary-color) !important;
+padding: 20px 25px !important;
+color: #555555 !important;
+font-style: italic !important;
+background: var(--light-bg) !important;
+margin: 20px 0 !important;
+text-align: justify !important;
+font-size: 1.05em !important;
+}
+
+table {
+width: 100% !important;
+border-collapse: collapse !important;
+margin: 20px 0 !important;
+font-family: "Georgia", serif !important;
+font-size: 0.95em !important;
+}
+th {
+background: var(--primary-color) !important;
+color: white !important;
+padding: 12px 15px !important;
+text-align: left !important;
+font-weight: 600 !important;
+border: 1px solid var(--border-color) !important;
+}
+td {
+padding: 10px 15px !important;
+border: 1px solid var(--border-color) !important;
+text-align: justify !important;
+}
+
+.figure {
+text-align: center !important;
+margin: 25px 0 !important;
+}
+.caption {
+font-style: italic !important;
+color: #666666 !important;
+margin-top: 10px !important;
+text-align: center !important;
+font-size: 0.95em !important;
+}
+
+pre {
+background: #f5f5f5 !important;
+border-left: 4px solid var(--secondary-color) !important;
+padding: 15px !important;
+border-radius: 0 !important;
+font-family: "Courier New", monospace !important;
+}
+code {
+background: #f5f5f5 !important;
+color: #d63031 !important;
+padding: 2px 4px !important;
+font-family: "Courier New", monospace !important;
 }
 
 .navbar {
-background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
-border: none;
+background: var(--primary-color) !important;
+border: none !important;
 }
 .navbar-brand {
-color: #ecf0f1 !important;
-font-weight: 300;
-letter-spacing: 1px;
+color: white !important;
+font-family: "Times New Roman", serif !important;
+font-weight: bold !important;
 }
-h1 {
-color: #2c3e50;
-border-bottom: 2px solid #3498db;
-padding-bottom: 15px;
-font-weight: 400;
-letter-spacing: 0.5px;
+
+ul, ol {
+text-align: justify !important;
+margin: 15px 0 !important;
 }
-h2, h3, h4, h5, h6 {
-color: #34495e;
-border-bottom: 1px solid #bdc3c7;
-padding-bottom: 8px;
-font-weight: 400;
+li {
+margin-bottom: 8px !important;
+text-align: justify !important;
 }
-.abstract {
-background-color: #f8f9fa;
-padding: 25px;
-border-left: 4px solid #3498db;
-margin-bottom: 30px;
-font-style: italic;
-color: #7f8c8d;
-border-radius: 0 8px 8px 0;
-}
+
+@media (max-width: 1200px) {
 .toc-content {
-margin-left: 320px;
+margin-left: 320px !important;
+padding: 20px 30px !important;
 }
-.section.level1 {
-margin-bottom: 50px;
-padding: 30px;
-background: white;
-border-radius: 8px;
-box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
-blockquote {
-border-left: 4px solid #3498db;
-padding-left: 25px;
-color: #7f8c8d;
-font-style: italic;
-background: #f8f9fa;
-padding: 20px;
-border-radius: 0 8px 8px 0;
-margin: 20px 0;
+@media (max-width: 992px) {
+.toc-content {
+margin-left: 0 !important;
+padding: 15px 20px !important;
+}
+.tocify {
+width: 280px !important;
+}
+}
+
+p {
+margin-bottom: 15px !important;
+line-height: 1.7 !important;
+text-align: justify !important;
+}
+strong {
+color: var(--accent-color) !important;
+font-weight: 600 !important;
+}
+em {
+color: #555555 !important;
+}
+
+.footnote {
+font-size: 0.9em !important;
+color: #666666 !important;
+border-top: 1px solid var(--border-color) !important;
+padding-top: 10px !important;
+margin-top: 20px !important;
 }
 </style>
-<div id="titulo" class="section level1" number="1">
-<h1><span class="header-section-number">1</span> titulo</h1>
-<p>holaaaaa</p>
-<div id="subtitulo" class="section level2" number="1.1">
-<h2><span class="header-section-number">1.1</span> subtitulo</h2>
+<div id="introducción" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Introducción</h1>
+<p>La desigualdad de ingresos en Colombia constituye uno de los
+principales desafíos estructurales del país. En 2024, Colombia registró
+un coeficiente de Gini de 0.551, ubicándose entre los países con mayor
+concentración de ingresos a nivel mundial. A pesar de los avances
+logrados con la reducción de la pobreza monetaria al 31.8% —la cifra más
+baja desde 2012— y el hecho de que 1,267,063 colombianos salieron de la
+pobreza, persisten brechas significativas que requieren un análisis
+profundo de los determinantes estructurales de los ingresos
+familiares.</p>
+<p>El análisis de los determinantes de los ingresos familiares reviste
+importancia crítica por múltiples razones. Primero, permite identificar
+los factores estructurales que perpetúan la desigualdad y orientar
+políticas públicas más efectivas. Segundo, contribuye al entendimiento
+de cómo características socioeconómicas específicas —como educación,
+composición del hogar y ubicación geográfica— influyen en la capacidad
+económica de las familias.</p>
+<p>La literatura académica ha demostrado que la educación superior, la
+composición del hogar, las características del jefe de hogar y la
+ubicación geográfica son determinantes fundamentales del ingreso. Sin
+embargo, la mayoría de estudios previos no han utilizado los datos más
+recientes disponibles, lo que limita su relevancia para el diseño de
+políticas contemporáneas</p>
 </div>
+<div id="metodología" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Metodología</h1>
+<div id="descripción-de-la-fuente-de-datos-ecv-2024" class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> Descripción de la
+Fuente de Datos (ECV 2024)</h2>
+<p>La Encuesta Nacional de Calidad de Vida (ECV) 2024 del DANE
+constituye la fuente de información primaria para esta investigación.
+Esta operación estadística recopiló información de 85,387 hogares con
+encuestas completas y 228,688 personas con información completa entre
+agosto y noviembre de 2024.</p>
+<p>La ECV utiliza un diseño muestral probabilístico, estratificado, de
+conglomerados y polietápico que garantiza representatividad nacional con
+desagregaciones por regiones, departamentos y áreas urbano-rurales. Los
+datos incluyen factores de expansión que permiten obtener estimaciones
+representativas de la población colombiana.</p>
+</div>
+</div>
+<div id="resultados-descriptivos" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Resultados
+descriptivos</h1>
+</div>
+<div id="resultados-del-modelo" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Resultados del
+modelo</h1>
+</div>
+<div id="concluciones" class="section level1" number="5">
+<h1><span class="header-section-number">5</span> Concluciones</h1>
+</div>
+<div id="bibliografia" class="section level1" number="6">
+<h1><span class="header-section-number">6</span> Bibliografia</h1>
 </div>
 
 
