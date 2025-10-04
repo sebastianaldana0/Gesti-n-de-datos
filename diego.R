@@ -42,3 +42,8 @@ View(ECV)
 
 ECV=ECV %>% select(P8587)
 
+##P6090 esta afiliado a eps
+##¿Cuánto paga o cuánto le descuentan mensualmente a_____ para estar cubierto/a por una entidad de seguridad social en salud? (P8551)
+
+salud=read.csv("Salud.CSV", sep=";")  %>%
+  select(DIRECTORIO,P6090)
