@@ -32,7 +32,10 @@ vivienda=read.csv("Datos de la vivienda.csv",sep=";") %>%
   filter(Estrato!=0,Estrato!=8,Estrato!=9)
 
 salud=read.csv("Salud.CSV", sep=";")  %>%
-  select(DIRECTORIO,P6090, P8551) %>% rename(Afiliado=2,Salud=2)
+  select(DIRECTORIO,P6090, P8551) %>% rename(Afiliado=2,Salud=3)
+
+Muestra=read.csv("muestral.CSV",sep=";") %>% 
+  select(DIRECTORIO,MPIO) %>% rename(Municipio=2)
 
 #Base de datos final
 
