@@ -24,6 +24,7 @@ tenencia=read.csv("tenencia y financiación de la vivienda.CSV",sep=";") %>%
   select(DIRECTORIO,Arriendo_estimacion) %>% rename(estimacion=2,Arriendo=3)
   
 
+
 #Base de datos final
 
 Base_datos=datos_hogar %>% inner_join(educacion,by="DIRECTORIO") %>% 
