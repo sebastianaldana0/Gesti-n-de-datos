@@ -35,11 +35,12 @@ salud=read.csv("Salud.CSV", sep=";")  %>%
   select(DIRECTORIO,P6090, P8551) %>% rename(Afiliado=2,Salud=3)
 
 Muestra=read.csv("muestral.CSV",sep=";") %>% 
-  select(DIRECTORIO,MPIO) %>% rename(Municipio=2)
+  select(DIRECTORIO,MPIO) %>% rename(Municipio=2) %>% 
+  distinct(DIRECTORIO, .keep_all = TRUE)
 
 #Base de datos final
 
-Base_datos=Muestra
+Base_datos=inner_join(Muestra,caracteristicas_hogar,by="DIRECTORIO")
 
 
 #Modelos
