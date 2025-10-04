@@ -222,8 +222,16 @@ knitr::opts_chunk$set(
 )
 ```
 
-# titulo
+# Introducción
 
 holaaaaa
 
-## subtitulo
+# Metodología
+
+# Resultados descriptivos
+
+# Resultados del modelo
+
+# Concluciones 
+
+# Bibliografia
