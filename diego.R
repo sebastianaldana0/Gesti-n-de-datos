@@ -33,3 +33,12 @@ View(Fuerza_de_trabajo)
 ##Antes de descuentos , ¿cuánto ganó el mes pasado en este empleo? (incluya propinas y comisiones 
 #y excluya viáticos y pagos en especie) (P8624)
 ##¿cuántas horas a la semana trabaja normalmente ____ en ese trabajo ? (P415)
+
+
+####TERMINADO###UNIFICACION DE VARIABLES####
+ECV <- read_delim("Educacion.CSV", 
+                  delim = ";", escape_double = FALSE, trim_ws = TRUE)
+View(ECV)
+
+ECV=ECV %>% select(P8587)
+
