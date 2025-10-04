@@ -27,7 +27,9 @@ trabajo=read.csv("Fuerza de trabajo.CSV",sep=";") %>%
   select(DIRECTORIO,P8624,P415,P8634) %>% rename(Ingresos_mes=2,Horas_trabajadas_semana=3,
                                                  "Lugar de trabajo"=4)
 
-  
+vivienda=read.csv("Datos de la vivienda.csv",sep=";") %>% 
+  select(DIRECTORIO,P8520S1A1) %>% rename(Estrato=2) %>% 
+  filter(Estrato!=0,Estrato!=8,Estrato!=9)
 
 salud=read.csv("Salud.CSV", sep=";")  %>%
   select(DIRECTORIO,P6090, P8551) %>% rename(Afiliado=2,Salud=2)
