@@ -24,7 +24,9 @@ tenencia=read.csv("tenencia y financiación de la vivienda.CSV",sep=";") %>%
   select(DIRECTORIO,Arriendo_estimacion) %>% rename(estimacion=2,Arriendo=3)
 
 trabajo=read.csv("Fuerza de trabajo.CSV",sep=";") %>% 
-  select(DIRECTORIO,P8624,P415,P6440,P6460) %>% rename(Ingresos_mes=2,Horas_trabajadas_semana=3)
+  select(DIRECTORIO,P8624,P415,P8634) %>% rename(Ingresos_mes=2,Horas_trabajadas_semana=3,
+                                                 "Lugar de trabajo"=4)
+
   
 
 salud=read.csv("Salud.CSV", sep=";")  %>%
