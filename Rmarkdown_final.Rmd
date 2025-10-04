@@ -17,37 +17,69 @@ output:
 ---
 
 <style type="text/css">
-/* Estilos refinados para publicación académica */
-.main-container {
-    max-width: 1200px !important;
-    margin-left: auto;
-    margin-right: auto;
-    font-family: "Georgia", "Times New Roman", serif;
-    line-height: 1.8;
+/* ESTILOS ACADÉMICOS ELEGANTES - VERSIÓN PREMIUM */
+:root {
+  --primary-color: #2c3e50;
+  --secondary-color: #3498db;
+  --accent-color: #2980b9;
+  --text-color: #2c3e50;
+  --light-bg: #f8f9fa;
+  --border-color: #e9ecef;
+  --shadow-soft: 0 4px 20px rgba(0,0,0,0.08);
+  --shadow-medium: 0 8px 30px rgba(0,0,0,0.12);
 }
 
-/* ÍNDICE INTERACTIVO MEJORADO */
+/* Estructura principal refinada */
+.main-container {
+    max-width: 1400px !important;
+    margin: 0 auto !important;
+    font-family: "Georgia", "Times New Roman", "Palatino", serif !important;
+    line-height: 1.7 !important;
+    color: var(--text-color) !important;
+    background: linear-gradient(135deg, #ffffff 0%, #fafbfc 100%) !important;
+}
+
+/* CABECERA ELEGANTE */
+.navbar {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%) !important;
+    border: none !important;
+    box-shadow: var(--shadow-soft) !important;
+    padding: 15px 0 !important;
+}
+
+.navbar-brand {
+    color: #ffffff !important;
+    font-weight: 300 !important;
+    letter-spacing: 1.5px !important;
+    font-size: 1.3em !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1) !important;
+}
+
+/* ÍNDICE INTERACTIVO PREMIUM */
 .tocify {
     border: none !important;
-    border-radius: 12px !important;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1) !important;
-    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%) !important;
-    font-family: "Helvetica Neue", Arial, sans-serif !important;
-    transition: all 0.3s ease !important;
+    border-radius: 16px !important;
+    box-shadow: var(--shadow-medium) !important;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%) !important;
+    font-family: "Helvetica Neue", "Arial", sans-serif !important;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+    border: 1px solid var(--border-color) !important;
 }
 
 .tocify:hover {
-    box-shadow: 0 6px 25px rgba(0,0,0,0.15) !important;
-    transform: translateY(-2px) !important;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.15) !important;
+    transform: translateY(-3px) !important;
 }
 
 .tocify-header {
-    background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%) !important;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%) !important;
     color: white !important;
-    padding: 15px 20px !important;
-    border-radius: 12px 12px 0 0 !important;
+    padding: 20px 25px !important;
+    border-radius: 16px 16px 0 0 !important;
     font-weight: 300 !important;
-    letter-spacing: 1px !important;
+    letter-spacing: 1.2px !important;
+    font-size: 1.1em !important;
+    text-align: center !important;
 }
 
 .tocify-subheader {
@@ -55,158 +87,301 @@ output:
 }
 
 .tocify-focus {
-    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%) !important;
+    background: linear-gradient(135deg, var(--secondary-color) 0%, var(--accent-color) 100%) !important;
     color: white !important;
-    border-radius: 6px !important;
-    padding-left: 10px !important;
-    margin: 2px 5px !important;
+    border-radius: 8px !important;
+    padding: 10px 15px !important;
+    margin: 4px 8px !important;
     transition: all 0.3s ease !important;
+    box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3) !important;
 }
 
 .list-group-item {
     border: none !important;
-    padding: 8px 15px !important;
-    margin: 2px 0 !important;
-    border-radius: 6px !important;
-    transition: all 0.2s ease !important;
+    padding: 10px 18px !important;
+    margin: 3px 0 !important;
+    border-radius: 8px !important;
+    transition: all 0.3s ease !important;
+    color: var(--text-color) !important;
+    font-size: 0.95em !important;
 }
 
 .list-group-item:hover {
-    background-color: #e3f2fd !important;
-    transform: translateX(5px) !important;
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%) !important;
+    transform: translateX(8px) !important;
+    color: var(--accent-color) !important;
 }
 
-.tocify-extend-page {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-}
-
-/* Botones de control del índice */
-.toc-controls {
-    background-color: #f8f9fa;
-    padding: 10px 15px;
-    border-radius: 8px;
-    margin-bottom: 15px;
-    border-left: 4px solid #3498db;
-}
-
-.toc-controls button {
-    background: #3498db;
-    color: white;
-    border: none;
-    padding: 5px 12px;
-    margin-right: 8px;
-    border-radius: 15px;
-    font-size: 12px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.toc-controls button:hover {
-    background: #2980b9;
-    transform: translateY(-1px);
-}
-
-/* Navegación entre secciones */
-.section-navigation {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background: white;
-    border-radius: 50px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    padding: 10px;
-    z-index: 1000;
-}
-
-.nav-btn {
-    background: #3498db;
-    color: white;
-    border: none;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    margin: 0 5px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.nav-btn:hover {
-    background: #2980b9;
-    transform: scale(1.1);
-}
-
-/* Progress bar */
-.reading-progress {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 3px;
-    background: linear-gradient(90deg, #3498db, #2c3e50);
-    transform-origin: left;
-    transform: scaleX(0);
-    transition: transform 0.3s ease;
-    z-index: 9999;
-}
-
-/* Estilos del contenido principal */
-.navbar {
-    background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
-    border: none;
-}
-
-.navbar-brand {
-    color: #ecf0f1 !important;
-    font-weight: 300;
-    letter-spacing: 1px;
-}
-
-h1 {
-    color: #2c3e50;
-    border-bottom: 2px solid #3498db;
-    padding-bottom: 15px;
-    font-weight: 400;
-    letter-spacing: 0.5px;
-}
-
-h2, h3, h4, h5, h6 {
-    color: #34495e;
-    border-bottom: 1px solid #bdc3c7;
-    padding-bottom: 8px;
-    font-weight: 400;
-}
-
-.abstract {
-    background-color: #f8f9fa;
-    padding: 25px;
-    border-left: 4px solid #3498db;
-    margin-bottom: 30px;
-    font-style: italic;
-    color: #7f8c8d;
-    border-radius: 0 8px 8px 0;
-}
-
+/* CONTENIDO PRINCIPAL ELEGANTE */
 .toc-content {
-    margin-left: 320px;
+    margin-left: 350px !important;
+    padding: 40px !important;
+    background: white !important;
+    border-radius: 12px !important;
+    box-shadow: var(--shadow-soft) !important;
+    min-height: 100vh !important;
 }
 
 .section.level1 {
-    margin-bottom: 50px;
-    padding: 30px;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    margin-bottom: 60px !important;
+    padding: 40px !important;
+    background: white !important;
+    border-radius: 12px !important;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.04) !important;
+    border: 1px solid var(--border-color) !important;
+    transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+.section.level1:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 25px rgba(0,0,0,0.08) !important;
+}
+
+/* TIPOGRAFÍA ACADÉMICA REFINADA */
+h1 {
+    color: var(--primary-color) !important;
+    border-bottom: 3px solid var(--secondary-color) !important;
+    padding-bottom: 20px !important;
+    font-weight: 400 !important;
+    letter-spacing: 0.8px !important;
+    font-size: 2.4em !important;
+    margin-bottom: 30px !important;
+    text-align: center !important;
+}
+
+h2 {
+    color: var(--primary-color) !important;
+    border-bottom: 2px solid #bdc3c7 !important;
+    padding-bottom: 12px !important;
+    font-weight: 400 !important;
+    font-size: 1.8em !important;
+    margin-top: 40px !important;
+    margin-bottom: 25px !important;
+}
+
+h3 {
+    color: #34495e !important;
+    border-bottom: 1px solid #ecf0f1 !important;
+    padding-bottom: 8px !important;
+    font-weight: 400 !important;
+    font-size: 1.4em !important;
+    margin-top: 30px !important;
+}
+
+/* COMPONENTES ESPECIALES */
+.abstract {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
+    padding: 35px !important;
+    border-left: 6px solid var(--secondary-color) !important;
+    margin-bottom: 40px !important;
+    font-style: italic !important;
+    color: #5a6c7d !important;
+    border-radius: 0 12px 12px 0 !important;
+    box-shadow: var(--shadow-soft) !important;
+    font-size: 1.1em !important;
+    line-height: 1.8 !important;
 }
 
 blockquote {
-    border-left: 4px solid #3498db;
-    padding-left: 25px;
-    color: #7f8c8d;
-    font-style: italic;
-    background: #f8f9fa;
-    padding: 20px;
-    border-radius: 0 8px 8px 0;
-    margin: 20px 0;
+    border-left: 6px solid var(--secondary-color) !important;
+    padding: 30px !important;
+    color: #5a6c7d !important;
+    font-style: italic !important;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
+    border-radius: 0 12px 12px 0 !important;
+    margin: 30px 0 !important;
+    box-shadow: var(--shadow-soft) !important;
+    font-size: 1.1em !important;
+}
+
+/* TABLAS ELEGANTES */
+table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    margin: 25px 0 !important;
+    box-shadow: var(--shadow-soft) !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+}
+
+th {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%) !important;
+    color: white !important;
+    padding: 18px 15px !important;
+    text-align: left !important;
+    font-weight: 400 !important;
+    letter-spacing: 0.5px !important;
+}
+
+td {
+    padding: 15px !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    background: white !important;
+}
+
+tr:hover td {
+    background: #f8f9fa !important;
+    transition: background 0.3s ease !important;
+}
+
+/* GRÁFICOS Y FIGURAS */
+.figure {
+    text-align: center !important;
+    margin: 40px 0 !important;
+    padding: 25px !important;
+    background: white !important;
+    border-radius: 12px !important;
+    box-shadow: var(--shadow-soft) !important;
+    border: 1px solid var(--border-color) !important;
+}
+
+.caption {
+    font-style: italic !important;
+    color: #6c757d !important;
+    margin-top: 15px !important;
+    font-size: 0.95em !important;
+}
+
+/* BARRA DE PROGRESO PREMIUM */
+.reading-progress {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 4px !important;
+    background: linear-gradient(90deg, var(--secondary-color), var(--primary-color)) !important;
+    transform-origin: left !important;
+    z-index: 9999 !important;
+    box-shadow: 0 2px 10px rgba(52, 152, 219, 0.3) !important;
+}
+
+/* BOTONES DE NAVEGACIÓN FLOTANTES */
+.section-navigation {
+    position: fixed !important;
+    bottom: 30px !important;
+    right: 30px !important;
+    background: white !important;
+    border-radius: 50px !important;
+    box-shadow: var(--shadow-medium) !important;
+    padding: 12px !important;
+    z-index: 1000 !important;
+    border: 1px solid var(--border-color) !important;
+}
+
+.nav-btn {
+    background: linear-gradient(135deg, var(--secondary-color) 0%, var(--accent-color) 100%) !important;
+    color: white !important;
+    border: none !important;
+    width: 45px !important;
+    height: 45px !important;
+    border-radius: 50% !important;
+    margin: 0 6px !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3) !important;
+}
+
+.nav-btn:hover {
+    transform: scale(1.15) !important;
+    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4) !important;
+}
+
+/* CONTROLES DEL ÍNDICE MEJORADOS */
+.toc-controls {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%) !important;
+    padding: 15px 20px !important;
+    border-radius: 12px !important;
+    margin-bottom: 20px !important;
+    border-left: 6px solid var(--secondary-color) !important;
+    box-shadow: var(--shadow-soft) !important;
+}
+
+.toc-controls button {
+    background: linear-gradient(135deg, var(--secondary-color) 0%, var(--accent-color) 100%) !important;
+    color: white !important;
+    border: none !important;
+    padding: 8px 16px !important;
+    margin-right: 10px !important;
+    border-radius: 20px !important;
+    font-size: 0.9em !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3) !important;
+}
+
+.toc-controls button:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4) !important;
+}
+
+/* CÓDIGO ELEGANTE */
+pre {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%) !important;
+    color: #ecf0f1 !important;
+    padding: 25px !important;
+    border-radius: 12px !important;
+    border-left: 6px solid var(--secondary-color) !important;
+    box-shadow: var(--shadow-soft) !important;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
+}
+
+code {
+    background: #f8f9fa !important;
+    color: #e74c3c !important;
+    padding: 3px 6px !important;
+    border-radius: 4px !important;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
+    font-size: 0.9em !important;
+}
+
+/* RESPONSIVE DESIGN */
+@media (max-width: 1200px) {
+    .toc-content {
+        margin-left: 320px !important;
+        padding: 30px !important;
+    }
+}
+
+@media (max-width: 992px) {
+    .toc-content {
+        margin-left: 0 !important;
+        padding: 20px !important;
+    }
+    
+    .main-container {
+        max-width: 100% !important;
+    }
+}
+
+/* ANIMACIONES SUTILES */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.section.level1 {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+/* MEJORAS DE ACCESIBILIDAD */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ESTADOS DE FOCO MEJORADOS */
+a:focus, button:focus {
+    outline: 2px solid var(--secondary-color) !important;
+    outline-offset: 2px !important;
 }
 </style>
 
@@ -231,6 +406,12 @@ El análisis de los determinantes de los ingresos familiares reviste importancia
 La literatura académica ha demostrado que la educación superior, la composición del hogar, las características del jefe de hogar y la ubicación geográfica son determinantes fundamentales del ingreso. Sin embargo, la mayoría de estudios previos no han utilizado los datos más recientes disponibles, lo que limita su relevancia para el diseño de políticas contemporáneas
 
 # Metodología
+
+## Descripción de la Fuente de Datos (ECV 2024)
+
+La Encuesta Nacional de Calidad de Vida (ECV) 2024 del DANE constituye la fuente de información primaria para esta investigación. Esta operación estadística recopiló información de 85,387 hogares con encuestas completas y 228,688 personas con información completa entre agosto y noviembre de 2024.
+
+La ECV utiliza un diseño muestral probabilístico, estratificado, de conglomerados y polietápico que garantiza representatividad nacional con desagregaciones por regiones, departamentos y áreas urbano-rurales. Los datos incluyen factores de expansión que permiten obtener estimaciones representativas de la población colombiana.
 
 # Resultados descriptivos
 
