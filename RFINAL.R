@@ -62,11 +62,33 @@ Muestra=read.csv("muestral.CSV",sep=";") %>%
 Base_datos=inner_join(Muestra,caracteristicas_hogar,by="DIRECTORIO") %>% 
   inner_join(tenencia,by="DIRECTORIO") %>% inner_join(datos_hogar,by="DIRECTORIO") %>% 
   inner_join(vivienda,by="DIRECTORIO") %>% inner_join(educacion,by="DIRECTORIO") %>% 
-  inner_join(salud,by="DIRECTORIO")
+  inner_join(salud,by="DIRECTORIO") %>% select(DIRECTORIO,Municipio,Estrato,`Ingreso del hogar`,
+                                               Arriendo_estimacion,Sexo,Edad,`Ultimo grado alcanzado`,
+                                               Afiliado,Casado)
   
 
 #Modelos
 
+Modelo_sexo=lm(`Ingreso del hogar`~Sexo,Base_datos)
+summary(Modelo_sexo)
+
+Modelo_estrato=lm(`Ingreso del hogar`~Estrato,Base_datos)
+summary(Modelo_estrato)
+
+Modelo_edad=lm(`Ingreso del hogar`~Edad,Base_datos)
+summary(Modelo_edad)
+
+Modelo_arriendo=lm(`Ingreso del hogar`~Arriendo_estimacion,Base_datos)
+summary(Modelo_arriendo)
+
+Modelo_grado=lm(`Ingreso del hogar`~`Ultimo grado alcanzado`,Base_datos)
+summary(Modelo_grado)
+
+Modelo_afiliado=lm(`Ingreso del hogar`~Afiliado,Base_datos)
+summary(Modelo_afiliado)
+
+Modelo_casado=lm(`Ingreso del hogar`~Casado,Base_datos)
+summary(Modelo_casado)
 
 #Pruebas modelo
 
