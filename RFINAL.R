@@ -21,7 +21,7 @@ caracteristicas_hogar=read.csv("Características_composición.CSV",sep= ";") %>%
 
 tenencia=read.csv("tenencia y financiación de la vivienda.CSV",sep=";") %>%
   mutate(Arriendo_estimacion=rowSums(select(., P5130, P5140), na.rm = TRUE)) %>% 
-  select(DIRECTORIO,Arriendo_estimacion) %>% rename(estimacion=2,Arriendo=3)
+  select(DIRECTORIO,Arriendo_estimacion)
 
 trabajo=read.csv("Fuerza de trabajo.CSV",sep=";") %>% 
   select(DIRECTORIO,P8624,P415,P8634) %>% rename(Ingresos_mes=2,Horas_trabajadas_semana=3,
@@ -39,9 +39,7 @@ Muestra=read.csv("muestral.CSV",sep=";") %>%
 
 #Base de datos final
 
-Base_datos=datos_hogar %>% inner_join(educacion,by="DIRECTORIO") %>% 
-  inner_join(caracteristicas_hogar,by="DIRECTORIO")
-
+Base_datos=Muestra
 
 
 #Modelos
