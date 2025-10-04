@@ -16,7 +16,7 @@ educacion=read.csv("educacion.csv", sep= ";") %>%
   select(DIRECTORIO,P8587) %>% rename("Ultimo grado alcanzado"=2)
 
 caracteristicas_hogar=read.csv("Características_composición.CSV",sep= ";") %>% 
-  select(DIRECTORIO,P6020,P6040,P6051) %>% rename(Sexo=2,Edad=3,Parentesco=4) %>% 
+  select(DIRECTORIO,P6020,P6040,P6051,P5502) %>% rename(Sexo=2,Edad=3,Parentesco=4,Casado=5) %>% 
   filter(Parentesco==1)#jefes del hogar
 
 #Base de datos final
