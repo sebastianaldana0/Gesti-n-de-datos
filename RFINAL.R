@@ -99,7 +99,10 @@ summary(Modelo_casado)
 Modelo_final=lm(`Ingreso del hogar`~Estrato+Arriendo_estimacion+`Ultimo grado alcanzado`+Sexo+
                   `Cantidad de personas en el hogar`,Base_datos)
 summary(Modelo_final)
-
+plot(Modelo_final,which=1)
+plot(Modelo_final,which=2)
+plot(Modelo_final,which=3)
+plot(Modelo_final,which=4)
 #Pruebas modelo
 
 
