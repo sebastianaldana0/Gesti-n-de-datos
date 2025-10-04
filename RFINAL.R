@@ -10,7 +10,8 @@ library(lmtest)
 #Base de datos
 
 datos_hogar=read.csv("datos_hogar.csv", sep = ";") %>% 
-  select(DIRECTORIO,I_HOGAR) %>% rename("Ingreso del hogar"=2) %>% 
+  select(DIRECTORIO,I_HOGAR,PERCAPITA,CANT_PERSONAS_HOGAR) %>% 
+  rename("Ingreso del hogar"=2,"Cantidad de personas en el hogar"=4) %>% 
   distinct(DIRECTORIO, .keep_all = TRUE)
 
 
@@ -41,7 +42,7 @@ trabajo=read.csv("Fuerza de trabajo.CSV",sep=";") %>%
   ungroup()
 
 vivienda=read.csv("Datos de la vivienda.csv",sep=";") %>% 
-  select(DIRECTORIO,P8520S1A1) %>% rename(Estrato=2) %>% 
+  select(DIRECTORIO,P8520S1A1,CLASE) %>% rename(Estrato=2,Ubicacion=3) %>% 
   filter(Estrato!=0,Estrato!=8,Estrato!=9) %>% 
   distinct(DIRECTORIO, .keep_all = TRUE)
 
@@ -63,8 +64,10 @@ Base_datos=inner_join(Muestra,caracteristicas_hogar,by="DIRECTORIO") %>%
   inner_join(tenencia,by="DIRECTORIO") %>% inner_join(datos_hogar,by="DIRECTORIO") %>% 
   inner_join(vivienda,by="DIRECTORIO") %>% inner_join(educacion,by="DIRECTORIO") %>% 
   inner_join(salud,by="DIRECTORIO") %>% select(DIRECTORIO,Municipio,Estrato,`Ingreso del hogar`,
-                                               Arriendo_estimacion,Sexo,Edad,`Ultimo grado alcanzado`,
-                                               Afiliado,Casado)
+                                               Arriendo_estimacion,`Cantidad de personas en el hogar`,
+                                               Sexo,Edad,`Ultimo grado alcanzado`,
+                                               Afiliado,Casado,PERCAPITA) %>%
+  filter(Municipio==76001)
   
 
 #Modelos
@@ -89,6 +92,13 @@ summary(Modelo_afiliado)
 
 Modelo_casado=lm(`Ingreso del hogar`~Casado,Base_datos)
 summary(Modelo_casado)
+
+
+#Modelo final
+
+Modelo_final=lm(`Ingreso del hogar`~Estrato+Arriendo_estimacion+`Ultimo grado alcanzado`+Sexo+
+                  `Cantidad de personas en el hogar`,Base_datos)
+summary(Modelo_final)
 
 #Pruebas modelo
 
