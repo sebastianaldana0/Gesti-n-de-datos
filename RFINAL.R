@@ -65,7 +65,7 @@ Base_datos=inner_join(Muestra,caracteristicas_hogar,by="DIRECTORIO") %>%
   inner_join(vivienda,by="DIRECTORIO") %>% inner_join(educacion,by="DIRECTORIO") %>% 
   inner_join(salud,by="DIRECTORIO")  %>%
   filter(Municipio==76001) %>% inner_join(trabajo,by="DIRECTORIO") %>% 
-  select(-Afiliado,-Arriendo_estimacion,-Casado,-Sexo,-PERCAPITA,-Ubicacion,
+  select(-Afiliado,-Arriendo_estimacion,-Casado,-PERCAPITA,-Ubicacion,
          -Ingresos_mes,-contrato,-DIRECTORIO) %>% 
   mutate(`Ingreso del hogar`=log(`Ingreso del hogar`),Edad=Edad*Edad)
   
