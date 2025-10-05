@@ -369,9 +369,40 @@ El presente estudio aplica un modelo de regresión lineal múltiple utilizando l
 
 ## Descripción de la Fuente de Datos (ECV 2024)
 
-La Encuesta Nacional de Calidad de Vida (ECV) 2024 del DANE constituye la fuente de información primaria para esta investigación. Esta operación estadística recopiló información de 85,387 hogares con encuestas completas y 228,688 personas con información completa entre agosto y noviembre de 2024.
+La Encuesta Nacional de Calidad de Vida (ECV) 2024 tuvo como objetivo general obtener información que permitiera analizar y realizar comparaciones de las condiciones socioeconómicas de los hogares que habitan en el país, las cuales posibilitaran hacer seguimiento a las variables necesarias para el diseño e implementación de políticas públicas.
 
-La ECV utiliza un diseño muestral probabilístico, estratificado, de conglomerados y polietápico que garantiza representatividad nacional con desagregaciones por regiones, departamentos y áreas urbano-rurales. Los datos incluyen factores de expansión que permiten obtener estimaciones representativas de la población colombiana.
+### Características Metodológicas
+Tipo de investigación: Encuesta por muestreo
+
+Diseño muestral: Muestreo probabilístico, estratificado, de conglomerados y polietápico
+
+Período de recolección: Agosto – noviembre de 2024
+
+Tamaño de la muestra: 85.387 hogares con encuestas completas donde habitan 228.688 personas
+
+Cobertura geográfica: Nacional con desagregaciones para:
+
+Total nacional y áreas (cabecera y centros poblados-rural disperso)
+
+Bogotá y los treinta y dos departamentos del país con sus respectivas áreas, a excepción de San Andrés, donde solo se cuenta con información de la cabecera municipal
+
+Las nueve regiones tradicionales de la ECV (Antioquia, Bogotá D.C., Caribe, Central, Oriental, Orinoquía-Amazonía, Pacífica, San Andrés y Valle) con sus áreas correspondientes, salvo en el caso de San Andrés
+
+### Unidades estadísticas:
+
+Unidades de observación y análisis: viviendas, hogares y personas
+
+Unidades de muestreo: segmento o conglomerado, conformado en promedio por 10 hogares
+
+
+
+## Variables
+Las variables utilizadas en el estudio se dividen en dos grupos: dependientes e independientes. En primer lugar, la variable dependiente seleccionada es el Ingreso del hogar, la cual busca medir el nivel monetario total percibido por los miembros del hogar. Este indicador refleja el grado de bienestar económico, la capacidad de consumo y las oportunidades de inversión en educación, salud y vivienda.
+En cuanto a las variables independientes, se consideran varios factores cuyo nivel de significancia resulta fundamental para explicar el ingreso. En primer lugar, la educación: las personas con mayor nivel educativo tienden a acceder a empleos mejor remunerados y con mayores oportunidades de ascenso, además de aumentar su productividad y capital humano. Por lo tanto, se espera que a mayor grado educativo alcanzado, el ingreso también sea más alto. Como señalan Psacharopoulos y Patrinos (2018), “por esta razón la educación, y en particular la educación superior, constituyen un elemento importante dentro de los múltiples determinantes del crecimiento económico.”
+
+## Base de datos del estudio
+
+Para el presente trabajo, se utiliza la base de datos de la ECV 2024 filtrada específicamente para la región Pacífica, que incluye los departamentos de Chocó, Cauca, Nariño y Valle del Cauca. La base de datos ha sido depurada y contiene únicamente las variables de interés para el modelo de regresión lineal:
 
 ```{r}
 #Librerias
@@ -384,12 +415,60 @@ library(nortest)
 library(lmtest)
 library(ggthemes)
 library(ggpmisc)
+
+datos_hogar=read.csv("datos_hogar.csv", sep = ";") %>% 
+  select(DIRECTORIO,I_HOGAR,CANT_PERSONAS_HOGAR) %>% 
+  rename("Ingreso del hogar"=2,"Cantidad de personas en el hogar"=3) %>% 
+  distinct(DIRECTORIO, .keep_all = TRUE) %>% filter(`Ingreso del hogar`!=0)
+
+educacion=read.csv("educacion.csv", sep= ";") %>% 
+  select(DIRECTORIO,P8587) %>% 
+  group_by(DIRECTORIO) %>%
+  filter(P8587 == max(P8587))  %>%
+  ungroup() %>% 
+  distinct(DIRECTORIO, .keep_all = TRUE) %>% 
+  mutate(
+    Estudios = case_when(
+      P8587 == 1 ~ "Ninguno",
+      P8587 == 2 ~ "Preescolar",
+      P8587 == 3 ~ "Primaria (1º-5º)",
+      P8587 == 4 ~ "Secundaria (6º-9º)",
+      P8587 == 5 ~ "Media (10º-13º)",
+      P8587 == 6 ~ "Técnico sin título",
+      P8587 == 7 ~ "Técnico con título",
+      P8587 == 8 ~ "Tecnológico sin título",
+      P8587 == 9 ~ "Tecnológico con título",
+      P8587 == 10 ~ "Universitario sin título",
+      P8587 == 11 ~ "Universitario con título",
+      P8587 == 12 ~ "Postgrado sin título",
+      P8587 == 13 ~ "Postgrado con título",
+      TRUE ~ "No especificado"
+    ),
+    CATEGORIA_EDUCATIVA = case_when(
+      P8587 %in% 1:2 ~ "Primaria",
+      P8587 %in% 3:5 ~ "Secundaria",
+      P8587 %in% 6:9 ~ "Técnica/Tecnológica",
+      P8587 %in% 10:11 ~ "Universitaria",
+      P8587 %in% 12:13 ~ "Postgrado",
+      TRUE ~ "Otro"
+    ),    CATEGORIA_EDUCATIVA = factor(CATEGORIA_EDUCATIVA,
+                                       levels = c("Primaria", "Secundaria", "Técnica/Tecnológica", 
+                                                  "Universitaria", "Postgrado")))
+
+caracteristicas_hogar=read.csv("Características_composición.CSV",sep= ";") %>% 
+  select(DIRECTORIO,P6020,P6040,P1895) %>% rename(Sexo=2,Edad=3,
+                                                              sastifacion=4)
+
+vivienda=read.csv("Datos de la vivienda.csv",sep=";") %>% 
+  select(DIRECTORIO,P1_DEPARTAMENTO) %>% rename(Departamento=2) %>% 
+  distinct(DIRECTORIO, .keep_all = TRUE)
+
+trabajo=read.csv("Fuerza de trabajo.CSV",sep=";") %>% 
+  select(DIRECTORIO,P8624,P415,P8634,P6426,P416,P6440,P6460,P6426,P8636) %>% 
+  rename(Ingresos_mes=2,Horas_trabajadas_semana=3,"Lugar de trabajo"=4,Tiempo_trabajado=5,
+         Semana_horas=6,contrato=7,Tipo_contrato=8,
+         meses=8)
 ```
-
-
-## Variables
-Las variables utilizadas en el estudio se dividen en dos grupos: dependientes e independientes. En primer lugar, la variable dependiente seleccionada es el Ingreso del hogar, la cual busca medir el nivel monetario total percibido por los miembros del hogar. Este indicador refleja el grado de bienestar económico, la capacidad de consumo y las oportunidades de inversión en educación, salud y vivienda.
-En cuanto a las variables independientes, se consideran varios factores cuyo nivel de significancia resulta fundamental para explicar el ingreso. En primer lugar, la educación: las personas con mayor nivel educativo tienden a acceder a empleos mejor remunerados y con mayores oportunidades de ascenso, además de aumentar su productividad y capital humano. Por lo tanto, se espera que a mayor grado educativo alcanzado, el ingreso también sea más alto. Como señalan Psacharopoulos y Patrinos (2018), “por esta razón la educación, y en particular la educación superior, constituyen un elemento importante dentro de los múltiples determinantes del crecimiento económico.”
 
 
 # Resultados descriptivos
