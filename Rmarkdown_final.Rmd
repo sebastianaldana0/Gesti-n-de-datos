@@ -388,6 +388,8 @@ library(ggpmisc)
 
 
 ## Variables
+Las variables utilizadas en el estudio se dividen en dos grupos: dependientes e independientes. En primer lugar, la variable dependiente seleccionada es el Ingreso del hogar, la cual busca medir el nivel monetario total percibido por los miembros del hogar. Este indicador refleja el grado de bienestar económico, la capacidad de consumo y las oportunidades de inversión en educación, salud y vivienda.
+En cuanto a las variables independientes, se consideran varios factores cuyo nivel de significancia resulta fundamental para explicar el ingreso. En primer lugar, la educación: las personas con mayor nivel educativo tienden a acceder a empleos mejor remunerados y con mayores oportunidades de ascenso, además de aumentar su productividad y capital humano. Por lo tanto, se espera que a mayor grado educativo alcanzado, el ingreso también sea más alto. Como señalan Psacharopoulos y Patrinos (2018), “por esta razón la educación, y en particular la educación superior, constituyen un elemento importante dentro de los múltiples determinantes del crecimiento económico.”
 
 
 # Resultados descriptivos
