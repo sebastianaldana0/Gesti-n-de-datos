@@ -35,10 +35,10 @@ tenencia=read.csv("tenencia y financiación de la vivienda.CSV",sep=";") %>%
  
 
 trabajo=read.csv("Fuerza de trabajo.CSV",sep=";") %>% 
-  select(DIRECTORIO,P8624,P415,P8634,P6426,P416,P6440,P6460,P6460S1) %>% 
+  select(DIRECTORIO,P8624,P415,P8634,P6426,P416,P6440,P6460,P6426,P8636) %>% 
   rename(Ingresos_mes=2,Horas_trabajadas_semana=3,"Lugar de trabajo"=4,Tiempo_trabajado=5,
          Semana_horas=6,contrato=7,Tipo_contrato=8,
-         meses=9) %>% 
+         meses=8) %>% 
   filter(!is.na(Ingresos_mes))
          
 
@@ -65,8 +65,9 @@ Base_datos=inner_join(Muestra,caracteristicas_hogar,by="DIRECTORIO") %>%
   inner_join(vivienda,by="DIRECTORIO") %>% inner_join(educacion,by="DIRECTORIO") %>% 
   inner_join(salud,by="DIRECTORIO")  %>%
   filter(Municipio==76001) %>% inner_join(trabajo,by="DIRECTORIO") %>% 
-  select(-Edad,-Afiliado,-Arriendo_estimacion,-Casado) %>% 
-  mutate(`Ingreso del hogar`=log(`Ingreso del hogar`))
+  select(-Afiliado,-Arriendo_estimacion,-Casado,-Sexo,-PERCAPITA,-Ubicacion,
+         -Ingresos_mes,-contrato,-DIRECTORIO) %>% 
+  mutate(`Ingreso del hogar`=log(`Ingreso del hogar`),Edad=Edad*Edad)
   
 
 #Modelos
@@ -95,8 +96,9 @@ summary(Modelo_sastifacion)
 
 #Modelo final
 
-Modelo_final=lm(`Ingreso del hogar`~sastifacion+Tiempo_trabajado+`Ultimo grado alcanzado`+Sexo+
-                  `Cantidad de personas en el hogar`,Base_datos)
+Modelo_final=lm(`Ingreso del hogar`~sastifacion+Tiempo_trabajado+`Ultimo grado alcanzado`+
+                  `Cantidad de personas en el hogar`+Edad,Base_datos)
+
 summary(Modelo_final)
 plot(Modelo_final,which=1)
 plot(Modelo_final,which=2)
