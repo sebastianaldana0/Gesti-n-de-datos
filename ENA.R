@@ -25,7 +25,8 @@ lote=read.csv("Lotes.csv",sep="|") %>%
 cultivo=read.csv("cultivos.csv",sep="|") %>%
   select(KEYPPAL_CU,KEYPPAL_L,CUL_TIPO,SIEMBRA_MES,
          SIEMBRA_ANIO,COSECHA_MES,
-         AR_SEMOPLAN,REND_OP_2019)
+         AR_SEMOPLAN,REND_OP_2019) %>% 
+  filter(CUL_TIPO==1)
 
 cosecha=read.csv("cosecha.csv",sep="|") %>% 
   select(KEYPPAL_CU,AR_COS,COSECHA_CANT,REND_DEF,PORC_VENTA,
@@ -60,4 +61,29 @@ plot(Modelo_final,which=2)
 plot(Modelo_final,which=3)
 plot(Modelo_final,which=5)
 #Pruebas modelo
-                                     
+shapiro.test(Modelo_final$residuals)                                  
+#graficas
+ena_plot <- Base_datos_cosecha_ENA %>%
+  group_by(Estudios) %>%
+  summarise(
+    ventas_promedio = mean(Ventas, na.rm = TRUE),
+    ventas_mediana = median(Ventas, na.rm = TRUE),
+    n = n()
+  ) %>%
+  filter(!is.na(Estudios))
+
+ggplot(Base_datos_cosecha_ENA, aes(x = Estudios, y = Ventas, fill = Estudios)) +
+  geom_boxplot(alpha = 0.8, outlier.alpha = 0.5) +
+  stat_summary(fun = mean, geom = "point", shape = 23, size = 3, fill = "white") +
+  scale_fill_brewer(palette = "Set3", name = "Nivel de Estudio") +
+  labs(title = "Distribución de Ventas por Nivel de Estudio",
+       subtitle = "Caja y bigotes mostrando mediana, quartiles y valores atípicos\nPunto blanco: Media",
+       x = "Nivel de Estudio",
+       y = "Ventas",
+       caption = "Encuesta ENA")  +
+  theme(
+    plot.title = element_text(face = "bold", size = 14),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "none"
+  ) +
+  scale_y_continuous(labels = scales::comma)
