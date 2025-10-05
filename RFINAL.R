@@ -105,6 +105,6 @@ plot(Modelo_final,which=2)
 plot(Modelo_final,which=3)
 plot(Modelo_final,which=5)
 #Pruebas modelo
-
+shapiro.test(Modelo_final$residuals)
 
 #Graficas
