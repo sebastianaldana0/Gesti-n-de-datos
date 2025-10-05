@@ -7,6 +7,7 @@ library(visreg)
 library(nortest)
 library(lmtest)
 library(ggthemes)
+library(ggpmisc)
 
 #Base de datos
 
@@ -78,7 +79,7 @@ Base_datos=inner_join(Muestra,caracteristicas_hogar,by="DIRECTORIO") %>%
 #Modelo final
 
 Modelo_final=lm(`Ingreso del hogar`~Sexo+Tiempo_trabajado+`Ultimo grado alcanzado`+
-                  `Cantidad de personas en el hogar`+Edad,Base_datos)
+                  `Cantidad de personas en el hogar`+Edad+Edad2,Base_datos)
 
 summary(Modelo_final)
 plot(Modelo_final,which=1)
@@ -194,3 +195,48 @@ ggplot(estadisticas_edad, aes(x = grupo_edad, y = ingreso_promedio, group = 1)) 
     caption = "El porcentaje verde indica crecimiento respecto al grupo etario anterior | n = tamaño de muestra"
   )
 
+#Cantidad de personas
+
+ggplot(Base_datos, aes(x = `Cantidad de personas en el hogar`, y = `Ingreso del hogar`)) +
+  geom_point(alpha = 0.6, 
+             color = "#3498DB", 
+             size = 2.5,
+             position = position_jitter(width = 0.1, height = 0)) +
+  geom_smooth(method = "lm", 
+              color = "#E74C3C", 
+              linewidth = 1.5,
+              fill = "#F1948A",
+              alpha = 0.2) +
+  stat_poly_line(color = "#E74C3C", linewidth = 1.5) +
+  stat_poly_eq(aes(label = paste(after_stat(eq.label), 
+                                 after_stat(rr.label), 
+                                 sep = "~~~")),
+               label.x = 0.05, label.y = 0.95,
+               size = 4.5,
+               color = "#2C3E50") +
+  stat_summary(fun = mean, geom = "point", 
+               shape = 18, size = 4, color = "#27AE60") +
+  stat_summary(fun = mean, geom = "line", 
+               linewidth = 1, color = "#27AE60", linetype = "dashed",
+               alpha = 0.7) +
+  scale_x_continuous(breaks = function(x) seq(ceiling(x[1]), floor(x[2]), by = 1)) +
+  scale_y_continuous(labels = dollar_format(prefix = "$", big.mark = ",")) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(face = "bold", size = 16, hjust = 0.5,
+                              margin = margin(b = 10)),
+    plot.subtitle = element_text(size = 12, hjust = 0.5, color = "gray40",
+                                 margin = margin(b = 15)),
+    axis.title = element_text(face = "bold", size = 12),
+    axis.text = element_text(size = 10),
+    panel.grid.major = element_line(color = "gray92", linewidth = 0.3),
+    panel.grid.minor = element_blank(),
+    plot.background = element_rect(fill = "white", color = NA)
+  ) +
+  labs(
+    title = "RELACIÓN ENTRE TAMAÑO DEL HOGAR E INGRESOS",
+    subtitle = "Análisis para modelo de regresión lineal",
+    x = "Cantidad de Personas en el Hogar",
+    y = "Ingreso Anual del Hogar (USD)",
+    caption = "● Puntos individuales | ■ Media por grupo | ── Tendencia lineal"
+  )
