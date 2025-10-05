@@ -119,70 +119,78 @@ ggplot(Base_datos, aes(x = Edad, y = `Ingreso del hogar`)) +
            label = "Pico de ingresos\ntípico ~50 años", 
            color = "gray40", size = 3, hjust = 0)
 
-datos_agrupados <- Base_datos %>%
-  group_by(grupo_edad = cut(Edad, breaks = seq(20, 65, by = 5))) %>%
+datos_procesados <- Base_datos %>%
+  mutate(
+    grupo_edad = cut(Edad,
+                     breaks = c(18, 26, 36, 46, 56, 66, Inf),
+                     labels = c("18-25", "26-35", "36-45", "46-55", "56-65", "66+"),
+                     right = FALSE,
+                     include.lowest = TRUE)
+  ) %>%
+  filter(!is.na(grupo_edad) & !is.na(`Ingreso del hogar`))
+
+# Calcular estadísticas por grupo de edad
+estadisticas_edad <- datos_procesados %>%
+  group_by(grupo_edad) %>%
   summarise(
-    edad_media = mean(Edad),
-    ingreso_mediano = median(`Ultimo grado alcanzado`),
-    ingreso_promedio = mean(`Ultimo grado alcanzado`),
-    q10 = quantile(`Ultimo grado alcanzado`, 0.10),
-    q25 = quantile(`Ultimo grado alcanzado`, 0.25),
-    q75 = quantile(`Ultimo grado alcanzado`, 0.75),
-    q90 = quantile(`Ultimo grado alcanzado`, 0.90),
+    n = n(),
+    ingreso_promedio = mean(`Ingreso del hogar`, na.rm = TRUE),
+    ingreso_mediano = median(`Ingreso del hogar`, na.rm = TRUE),
+    desviacion_estandar = sd(`Ingreso del hogar`, na.rm = TRUE),
+    error_estandar = desviacion_estandar / sqrt(n),
     .groups = 'drop'
+  ) %>%
+  mutate(
+    limite_inferior = ingreso_promedio - 1.96 * error_estandar,
+    limite_superior = ingreso_promedio + 1.96 * error_estandar,
+    crecimiento_promedio = (ingreso_promedio / lag(ingreso_promedio) - 1) * 100,
+    crecimiento_mediano = (ingreso_mediano / lag(ingreso_mediano) - 1) * 100
   )
 
-colores <- c(
-  mediana = "#2C3E50",     
-  iqr = "#3498DB",          
-  deciles = "#BDC3C7"     
-)
 
-ggplot(datos_agrupados, aes(x = edad_media)) +
-  geom_ribbon(aes(ymin = q10, ymax = q90), 
-              fill = colores["deciles"], alpha = 0.15) +
-  geom_ribbon(aes(ymin = q25, ymax = q75), 
-              fill = colores["iqr"], alpha = 0.3) +
-  geom_line(aes(y = ingreso_mediano), 
-            color = colores["mediana"], 
-            linewidth = 2.5,
-            alpha = 0.9) +
-  geom_point(aes(y = ingreso_mediano), 
-             color = colores["mediana"], 
-             size = 4.5,
-             fill = "white",
-             stroke = 1.2,
-             shape = 21) +
-  theme_economist() +
+# GRÁFICA PRINCIPAL - Evolución del ingreso por grupos de edad
+ggplot(estadisticas_edad, aes(x = grupo_edad, y = ingreso_promedio, group = 1)) +
+  geom_line(color = "#2C3E50", linewidth = 1.5, alpha = 0.8) +
+  geom_point(aes(color = ingreso_promedio), size = 6, alpha = 0.9) +
+  geom_errorbar(aes(ymin = limite_inferior, ymax = limite_superior),
+                width = 0.2, color = "#34495E", alpha = 0.7, linewidth = 0.8) +
+  geom_text(aes(label = dollar(ingreso_promedio, prefix = "$", big.mark = ",",
+                               accuracy = 1)),
+            vjust = -1.5, size = 3.2, fontface = "bold", color = "#2C3E50") +
+  geom_text(aes(label = ifelse(!is.na(crecimiento_promedio),
+                               paste0("+", round(crecimiento_promedio, 1), "%"),
+                               "Inicio")),
+            vjust = -3.2, size = 2.8, color = "#27AE60", fontface = "bold") +
+  geom_text(aes(y = limite_inferior * 0.95,
+                label = paste0("n=", n)),
+            vjust = 1.5, size = 2.5, color = "#7F8C8D") +
+  scale_color_gradient(low = "#3498DB", high = "#E74C3C", name = "Ingreso") +
+  scale_y_continuous(labels = dollar_format(prefix = "$", big.mark = ","),
+                     expand = expansion(mult = c(0.1, 0.15))) +
+  theme_minimal() +
   theme(
-    plot.title = element_text(face = "bold", size = 18, hjust = 0.5, 
-                              margin = margin(b = 15)),
-    plot.subtitle = element_text(size = 12, hjust = 0.5, color = "gray50",
+    plot.title = element_text(face = "bold", size = 16, hjust = 0.5,
+                              margin = margin(b = 10)),
+    plot.subtitle = element_text(size = 12, hjust = 0.5, color = "gray40",
                                  margin = margin(b = 20)),
-    plot.caption = element_text(size = 9, color = "gray60", hjust = 1,
-                                margin = margin(t = 15)),
+    plot.caption = element_text(size = 9, color = "gray50", hjust = 1,
+                                margin = margin(t = 10)),
     axis.title = element_text(face = "bold", size = 12),
-    axis.title.y = element_text(margin = margin(r = 15)),
-    axis.title.x = element_text(margin = margin(t = 15)),
-    axis.text = element_text(size = 10, color = "gray40"),
+    axis.title.x = element_text(margin = margin(t = 10)),
+    axis.title.y = element_text(margin = margin(r = 10)),
+    axis.text = element_text(size = 10, color = "gray30"),
+    axis.text.x = element_text(face = "bold"),
     panel.grid.major = element_line(color = "gray92", linewidth = 0.3),
     panel.grid.minor = element_blank(),
-    plot.background = element_rect(fill = "white", color = NA),
-    panel.background = element_rect(fill = "white", color = NA),
     legend.position = "none",
-    plot.margin = margin(25, 25, 25, 25)
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.background = element_rect(fill = "white", color = NA)
   ) +
   labs(
-    title = "Evolución de los Ingresos del Hogar por Edad",
-    subtitle = "Mediana y distribución percentilar del ingreso anual por grupo de edad",
-    x = "Edad",
-    y = "Ingreso Anual del Hogar (USD)",
-    caption = "Fuente: Análisis basado en patrones económicos del ciclo de vida\nEl área sombreada representa los percentiles 25-75 (intercuartílico)"
-  )+
-  scale_x_continuous(
-    breaks = seq(25, 60, by = 5),
-    limits = c(22, 62),
-    expand = expansion(mult = c(0, 0))
+    title = "EVOLUCIÓN DEL INGRESO DEL HOGAR POR GRUPOS DE EDAD",
+    subtitle = "Línea muestra la tendencia de crecimiento | Barras representan intervalo de confianza del 95%",
+    x = "Grupos de Edad",
+    y = "Ingreso Anual Promedio del Hogar (USD)",
+    caption = "El porcentaje verde indica crecimiento respecto al grupo etario anterior | n = tamaño de muestra"
   )
-
 
