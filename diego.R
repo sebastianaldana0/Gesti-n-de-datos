@@ -970,4 +970,21 @@ ggplot(Base_datos_grafico, aes(x = Tiempo_trabajado_Anual, y = `Ingreso del hoga
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) # Rotar etiquetas para mejor lectura
 
+ggplot(Base_datos, aes(x = as.factor(`Ultimo grado alcanzado`), 
+                       y = `Ingreso del hogar`)) +
+  geom_boxplot(fill = "#0072B2", color = "darkblue", outlier.alpha = 0.1) +
+  stat_summary(fun = mean, geom = "point", shape = 20, size = 3, color = "red") +
+  labs(
+    title = "Logaritmo del Ingreso del Hogar por Nivel Educativo",
+    subtitle = "La línea horizontal representa la mediana. El punto rojo indica la media.",
+    x = "Último grado educativo alcanzado",
+    y = "Logaritmo del Ingreso del Hogar (ln(Ingreso))"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.title = element_text(face = "bold"),
+    plot.subtitle = element_text(size = 10)
+  ) +stat_summary(fun = mean, geom = "line", aes(group = 1), color = "red", linetype = "dashed")+
+  scale_y_continuous(labels = comma)
 
