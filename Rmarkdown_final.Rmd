@@ -1,6 +1,6 @@
 ---
 title: "Determinantes de los Ingresos Familiares mediante Regresión Lineal Múltiple: Un Estudio Empírico con Microdatos de la ECV DANE 2024"
-author: "Barros Rayo Alejandro (2415837), Muñoz Portela Diego Fernando (2415620), Portilla Aguirre Johan Camilo (2422468), Aguirre Aldana Joan Sebastian (2419550) "
+author: "Barros Rayo Alejandro (2415837), Muñoz Portela Diego Fernando (2415620), Portilla Aguirre Johan Camilo (2422468), Aguirre Aldana Joan Sebastian (2419550)"
 date: "`r format(Sys.Date(), '%d de %B de %Y')`"
 output: 
   html_document:
@@ -13,40 +13,200 @@ output:
     toc_depth: 3
     number_sections: true
     code_folding: show
-    css: styles.css
 ---
 
 <style type="text/css">
-/* ESTILOS ACADÉMICOS ELEGANTES - VERSIÓN REFINADA */
-:root {
-  --primary-color: #2c3e50;
-  --secondary-color: #8B7355;
-  --accent-color: #654321;
-  --text-color: #333333;
-  --light-bg: #f9f7f4;
-  --border-color: #d4c9b8;
-  --gold-accent: #C0A080;
+/* RESET COMPLETO */
+* {
+    box-sizing: border-box !important;
 }
 
-/* ESTRUCTURA PRINCIPAL */
+/* PALETA DE COLORES ELEGANTE */
+:root {
+  --primary-color: #1a365d;
+  --secondary-color: #2d3748;
+  --accent-color: #2b6cb0;
+  --accent-light: #4299e1;
+  --text-color: #2d3748;
+  --light-bg: #f7fafc;
+  --border-color: #e2e8f0;
+  --shadow-light: rgba(0,0,0,0.06);
+  --sidebar-width: 300px;
+}
+
+/* ESTRUCTURA PRINCIPAL CON SIDEBAR */
 .main-container {
-    max-width: 1200px !important;
+    max-width: 1400px !important;
     margin: 0 auto !important;
-    font-family: "Georgia", "Times New Roman", serif !important;
-    line-height: 1.7 !important;
+    font-family: "Georgia", "Palatino Linotype", "Book Antiqua", serif !important;
+    line-height: 1.75 !important;
     color: var(--text-color) !important;
     background: #ffffff !important;
-    text-align: justify !important;
+    padding: 20px !important;
+    display: flex !important;
+    gap: 30px !important;
+    align-items: flex-start !important;
+    position: relative !important;
 }
 
-/* JUSTIFICACIÓN DE TEXTO COMO WORD */
-p, div, .section, .main-container {
-    text-align: justify !important;
-    text-justify: inter-word !important;
-    hyphens: auto !important;
+/* CONTENEDOR DEL ÍNDICE LATERAL - STICKY CORREGIDO */
+#TOC {
+    background: white !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 8px !important;
+    padding: 25px !important;
+    box-shadow: 0 2px 15px var(--shadow-light) !important;
+    font-family: "Times New Roman", serif !important;
+    width: var(--sidebar-width) !important;
+    min-width: var(--sidebar-width) !important;
+    max-width: var(--sidebar-width) !important;
+    position: sticky !important;
+    top: 20px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    flex-shrink: 0 !important;
+    margin: 0 !important;
+    max-height: calc(100vh - 40px) !important; /* Altura máxima viewport */
+    align-self: flex-start !important;
+    transition: all 0.3s ease !important;
 }
 
-/* TIPOGRAFÍA TIMES NEW ROMAN PARA TÍTULOS */
+/* Scrollbar personalizado para el TOC */
+#TOC::-webkit-scrollbar {
+    width: 6px !important;
+}
+
+#TOC::-webkit-scrollbar-track {
+    background: #f1f1f1 !important;
+    border-radius: 3px !important;
+}
+
+#TOC::-webkit-scrollbar-thumb {
+    background: var(--accent-light) !important;
+    border-radius: 3px !important;
+}
+
+#TOC::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-color) !important;
+}
+
+/* Reset completo para elementos del TOC */
+#TOC * {
+    box-sizing: border-box !important;
+    max-width: 100% !important;
+    overflow: visible !important;
+}
+
+#TOC::before {
+    content: "📋 Índice de Contenidos" !important;
+    display: block !important;
+    font-family: "Times New Roman", serif !important;
+    font-size: 1.3em !important;
+    font-weight: bold !important;
+    color: var(--primary-color) !important;
+    border-bottom: 2px solid var(--accent-color) !important;
+    padding-bottom: 12px !important;
+    margin-bottom: 20px !important;
+    text-align: left !important;
+    position: sticky !important;
+    top: 0 !important;
+    background: white !important;
+    z-index: 2 !important;
+    margin-top: 0 !important;
+}
+
+/* LISTAS DEL ÍNDICE CON SCROLL INTERNO */
+#TOC ul {
+    list-style: none !important;
+    padding-left: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    overflow: visible !important;
+}
+
+#TOC li {
+    margin: 6px 0 !important;
+    padding: 0 !important;
+    line-height: 1.5 !important;
+    width: 100% !important;
+    overflow: visible !important;
+}
+
+#TOC a {
+    color: var(--text-color) !important;
+    text-decoration: none !important;
+    font-size: 0.92em !important;
+    display: block !important;
+    padding: 8px 12px !important;
+    border-left: 3px solid transparent !important;
+    transition: all 0.3s ease !important;
+    border-radius: 4px !important;
+    width: 100% !important;
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+}
+
+#TOC a:hover {
+    color: var(--accent-color) !important;
+    background-color: var(--light-bg) !important;
+    border-left: 3px solid var(--accent-color) !important;
+    padding-left: 15px !important;
+    transform: translateX(2px) !important;
+}
+
+#TOC .toc-section-number {
+    color: var(--accent-color) !important;
+    font-weight: 600 !important;
+    margin-right: 6px !important;
+    display: inline-block !important;
+    min-width: 18px !important;
+    font-size: 0.9em !important;
+}
+
+/* SUBNIVELES DEL ÍNDICE */
+#TOC ul ul {
+    padding-left: 18px !important;
+    margin-top: 4px !important;
+    width: 100% !important;
+}
+
+#TOC ul ul a {
+    font-size: 0.85em !important;
+    color: #666666 !important;
+    border-left: 2px solid var(--border-color) !important;
+    padding: 6px 10px !important;
+    width: calc(100% - 0px) !important;
+}
+
+#TOC ul ul a:hover {
+    color: var(--accent-color) !important;
+    border-left: 2px solid var(--accent-light) !important;
+    background-color: #f8f9fa !important;
+}
+
+/* CONTENIDO PRINCIPAL (LADO DERECHO) */
+.toc-content {
+    flex: 1 !important;
+    margin-left: 0 !important;
+    padding: 40px !important;
+    background: white !important;
+    box-shadow: 0 0 20px var(--shadow-light) !important;
+    border-radius: 8px !important;
+    min-width: 0 !important;
+}
+
+.section.level1 {
+    margin-bottom: 50px !important;
+    padding: 35px !important;
+    background: white !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 8px !important;
+    box-shadow: 0 2px 8px var(--shadow-light) !important;
+    width: 100% !important;
+}
+
+/* TIPOGRAFÍA */
 h1, h2, h3, h4, h5, h6 {
     font-family: "Times New Roman", "Times", serif !important;
     font-weight: 600 !important;
@@ -55,203 +215,117 @@ h1, h2, h3, h4, h5, h6 {
 
 h1 {
     color: var(--primary-color) !important;
-    border-bottom: 3px double var(--secondary-color) !important;
-    padding-bottom: 15px !important;
-    font-size: 2.2em !important;
-    margin-bottom: 30px !important;
+    border-bottom: 3px double var(--accent-color) !important;
+    padding-bottom: 20px !important;
+    font-size: 2.4em !important;
+    margin-bottom: 35px !important;
     text-align: center !important;
     letter-spacing: 0.5px !important;
+    font-weight: 700 !important;
 }
 
 h2 {
     color: var(--primary-color) !important;
-    border-bottom: 1px solid var(--border-color) !important;
-    padding-bottom: 10px !important;
-    font-size: 1.8em !important;
-    margin-top: 35px !important;
-    margin-bottom: 20px !important;
+    border-bottom: 2px solid var(--accent-light) !important;
+    padding-bottom: 12px !important;
+    font-size: 1.9em !important;
+    margin-top: 40px !important;
+    margin-bottom: 25px !important;
+    padding-left: 15px !important;
+    border-left: 4px solid var(--accent-color) !important;
 }
 
 h3 {
-    color: var(--accent-color) !important;
-    font-size: 1.4em !important;
-    margin-top: 25px !important;
-    margin-bottom: 15px !important;
-}
-
-/* ÍNDICE ELEGANTE AL ESTILO ARTÍCULO INTERNET */
-#TOC {
-    background: #ffffff !important;
-    border: 1px solid #e0e0e0 !important;
-    border-radius: 0 !important;
-    padding: 20px !important;
-    margin: 20px 0 !important;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
-    font-family: "Times New Roman", serif !important;
-}
-
-#TOC::before {
-    content: "Índice del Contenido" !important;
-    display: block !important;
-    font-family: "Times New Roman", serif !important;
-    font-size: 1.3em !important;
-    font-weight: bold !important;
-    color: var(--primary-color) !important;
-    border-bottom: 2px solid var(--secondary-color) !important;
-    padding-bottom: 10px !important;
-    margin-bottom: 15px !important;
-    text-align: left !important;
-}
-
-#TOC ul {
-    list-style: none !important;
-    padding-left: 0 !important;
-    margin: 0 !important;
-}
-
-#TOC li {
-    margin: 8px 0 !important;
-    padding: 0 !important;
-    line-height: 1.5 !important;
-}
-
-#TOC a {
-    color: #333333 !important;
-    text-decoration: none !important;
-    font-size: 0.95em !important;
-    display: block !important;
-    padding: 4px 8px !important;
-    border-left: 3px solid transparent !important;
-    transition: all 0.2s ease !important;
-}
-
-#TOC a:hover {
-    color: var(--accent-color) !important;
-    background-color: #f8f8f8 !important;
-    border-left: 3px solid var(--secondary-color) !important;
-    padding-left: 12px !important;
-}
-
-#TOC .toc-section-number {
     color: var(--secondary-color) !important;
-    font-weight: normal !important;
-    margin-right: 8px !important;
+    font-size: 1.5em !important;
+    margin-top: 30px !important;
+    margin-bottom: 18px !important;
+    padding-left: 10px !important;
+    border-left: 3px solid var(--border-color) !important;
 }
 
-/* Subniveles del índice */
-#TOC ul ul {
-    padding-left: 20px !important;
-    margin-top: 5px !important;
+/* JUSTIFICACIÓN DE TEXTO */
+p, div, .section, .main-container, li, td {
+    text-align: justify !important;
+    text-justify: inter-word !important;
+    hyphens: auto !important;
 }
 
-#TOC ul ul a {
-    font-size: 0.9em !important;
-    color: #666666 !important;
-    border-left: 2px solid #e0e0e0 !important;
-}
-
-#TOC ul ul a:hover {
-    color: var(--accent-color) !important;
-    border-left: 2px solid var(--secondary-color) !important;
-}
-
-/* CONTENIDO PRINCIPAL */
-.toc-content {
-    margin-left: 0 !important;
-    padding: 30px 40px !important;
-    background: white !important;
-}
-
-.section.level1 {
-    margin-bottom: 50px !important;
-    padding: 30px !important;
-    background: white !important;
-    border: 1px solid var(--border-color) !important;
-    border-radius: 5px !important;
-}
-
-/* ABSTRACT ELEGANTE */
+/* ABSTRACT */
 .abstract {
-    background: var(--light-bg) !important;
-    padding: 25px 30px !important;
-    border-left: 4px solid var(--secondary-color) !important;
-    margin-bottom: 30px !important;
+    background: linear-gradient(135deg, var(--light-bg) 0%, #edf2f7 100%) !important;
+    padding: 30px 35px !important;
+    border-left: 5px solid var(--accent-color) !important;
+    margin-bottom: 35px !important;
     font-style: normal !important;
     color: var(--text-color) !important;
     text-align: justify !important;
-    font-size: 1.05em !important;
+    font-size: 1.1em !important;
     line-height: 1.8 !important;
+    border-radius: 0 8px 8px 0 !important;
 }
 
-/* CITAS Y BLOCKQUOTES */
-blockquote {
-    border-left: 4px solid var(--secondary-color) !important;
-    padding: 20px 25px !important;
-    color: #555555 !important;
-    font-style: italic !important;
-    background: var(--light-bg) !important;
-    margin: 20px 0 !important;
-    text-align: justify !important;
-    font-size: 1.05em !important;
-}
-
-/* TABLAS ELEGANTES */
+/* TABLAS */
 table {
     width: 100% !important;
     border-collapse: collapse !important;
-    margin: 20px 0 !important;
+    margin: 25px 0 !important;
     font-family: "Georgia", serif !important;
     font-size: 0.95em !important;
+    box-shadow: 0 1px 6px var(--shadow-light) !important;
+    border-radius: 6px !important;
+    overflow: hidden !important;
 }
 
 th {
-    background: var(--primary-color) !important;
+    background: linear-gradient(135deg, var(--primary-color) 0%, #2d3748 100%) !important;
     color: white !important;
-    padding: 12px 15px !important;
+    padding: 14px 16px !important;
     text-align: left !important;
     font-weight: 600 !important;
-    border: 1px solid var(--border-color) !important;
+    border: none !important;
 }
 
 td {
-    padding: 10px 15px !important;
-    border: 1px solid var(--border-color) !important;
-    text-align: justify !important;
+    padding: 12px 16px !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    background: white !important;
 }
 
 /* GRÁFICOS */
 .figure {
     text-align: center !important;
-    margin: 25px 0 !important;
-}
-
-.caption {
-    font-style: italic !important;
-    color: #666666 !important;
-    margin-top: 10px !important;
-    text-align: center !important;
-    font-size: 0.95em !important;
+    margin: 30px 0 !important;
+    padding: 20px !important;
+    background: white !important;
+    border-radius: 8px !important;
+    box-shadow: 0 1px 6px var(--shadow-light) !important;
+    border: 1px solid var(--border-color) !important;
 }
 
 /* CÓDIGO */
 pre {
-    background: #f5f5f5 !important;
-    border-left: 4px solid var(--secondary-color) !important;
-    padding: 15px !important;
-    border-radius: 0 !important;
+    background: #1a202c !important;
+    border-left: 4px solid var(--accent-color) !important;
+    padding: 18px !important;
+    border-radius: 0 6px 6px 0 !important;
     font-family: "Courier New", monospace !important;
+    color: #e2e8f0 !important;
+    margin: 20px 0 !important;
 }
 
 code {
-    background: #f5f5f5 !important;
-    color: #d63031 !important;
-    padding: 2px 4px !important;
+    background: #edf2f7 !important;
+    color: #2b6cb0 !important;
+    padding: 3px 6px !important;
     font-family: "Courier New", monospace !important;
+    border-radius: 4px !important;
+    border: 1px solid #e2e8f0 !important;
 }
 
 /* BARRA DE NAVEGACIÓN */
 .navbar {
-    background: var(--primary-color) !important;
+    background: linear-gradient(135deg, var(--primary-color) 0%, #2d3748 100%) !important;
     border: none !important;
 }
 
@@ -261,32 +335,81 @@ code {
     font-weight: bold !important;
 }
 
-/* LISTAS */
-ul, ol {
-    text-align: justify !important;
-    margin: 15px 0 !important;
-}
-
-li {
-    margin-bottom: 8px !important;
-    text-align: justify !important;
-}
-
-/* RESPONSIVE */
-@media (max-width: 768px) {
+/* RESPONSIVE - DISEÑO ADAPTATIVO */
+@media (max-width: 1024px) {
+    .main-container {
+        flex-direction: column !important;
+        gap: 20px !important;
+    }
+    
+    #TOC {
+        width: 100% !important;
+        min-width: 100% !important;
+        max-width: 100% !important;
+        position: relative !important;
+        top: 0 !important;
+        margin-bottom: 20px !important;
+        max-height: none !important;
+        overflow: visible !important;
+    }
+    
     .toc-content {
-        padding: 15px 20px !important;
+        margin-left: 0 !important;
+        padding: 25px !important;
+    }
+    
+    .section.level1 {
+        padding: 25px !important;
+    }
+    
+    #TOC::before {
+        position: relative !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-container {
+        padding: 10px !important;
+    }
+    
+    .toc-content {
+        padding: 20px !important;
     }
     
     .section.level1 {
         padding: 20px !important;
     }
+    
+    .abstract {
+        padding: 20px !important;
+    }
+    
+    #TOC {
+        padding: 20px !important;
+    }
+    
+    #TOC a {
+        padding: 8px 10px !important;
+        font-size: 0.9em !important;
+    }
+    
+    #TOC ul ul {
+        padding-left: 15px !important;
+    }
+    
+    h1 {
+        font-size: 2em !important;
+    }
+    
+    h2 {
+        font-size: 1.6em !important;
+    }
 }
 
 /* MEJORAS DE LEGIBILIDAD */
 p {
-    margin-bottom: 15px !important;
-    line-height: 1.7 !important;
+    margin-bottom: 18px !important;
+    line-height: 1.8 !important;
     text-align: justify !important;
 }
 
@@ -296,7 +419,7 @@ strong {
 }
 
 em {
-    color: #555555 !important;
+    color: #4a5568 !important;
 }
 
 /* FOOTNOTES */
@@ -304,19 +427,71 @@ em {
     font-size: 0.9em !important;
     color: #666666 !important;
     border-top: 1px solid var(--border-color) !important;
-    padding-top: 10px !important;
-    margin-top: 20px !important;
+    padding-top: 15px !important;
+    margin-top: 25px !important;
 }
 
-/* ESTILOS PARA BOTONES Y ENLACES */
+/* ENLACES */
 a {
-    color: var(--secondary-color) !important;
+    color: var(--accent-color) !important;
     text-decoration: none !important;
 }
 
 a:hover {
-    color: var(--accent-color) !important;
+    color: var(--primary-color) !important;
     text-decoration: underline !important;
+}
+
+/* GARANTIZAR QUE NO HAY CORTES */
+html, body {
+    overflow-x: hidden !important;
+    height: 100% !important;
+}
+
+.main-container {
+    overflow: visible !important;
+    min-height: 100vh !important;
+}
+
+/* EFECTO DE SCROLL SUAVE */
+html {
+    scroll-behavior: smooth !important;
+}
+
+/* DESTACADO DE SECCIÓN ACTIVA EN EL ÍNDICE */
+#TOC a.active {
+    color: var(--accent-color) !important;
+    background-color: var(--light-bg) !important;
+    border-left: 3px solid var(--accent-color) !important;
+    font-weight: 600 !important;
+}
+
+/* ANIMACIONES SUAVES */
+#TOC, .toc-content, .section {
+    transition: all 0.3s ease !important;
+}
+
+/* MEJORA VISUAL AL HACER HOVER EN ÍTEMS LARGOS */
+#TOC a {
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+#TOC a::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background: linear-gradient(90deg, transparent 70%, white 100%) !important;
+    z-index: -1 !important;
+    opacity: 0 !important;
+    transition: opacity 0.3s ease !important;
+}
+
+#TOC a:hover::before {
+    opacity: 1 !important;
 }
 </style>
 
@@ -335,7 +510,7 @@ knitr::opts_chunk$set(
 # Cargar librerías necesarias
 required_packages <- c(
   "ggplot2", "dplyr", "tidyr", "knitr", 
-  "kableExtra", "scales"
+  "kableExtra", "scales", "plotly"
 )
 
 for(pkg in required_packages) {
@@ -346,9 +521,20 @@ for(pkg in required_packages) {
 }
 
 # Configurar tema para gráficos
-theme_set(theme_minimal(base_size = 12, base_family = "serif"))
-
-
+tema_powerbi <- theme_minimal() +
+  theme(
+    text = element_text(family = "Segoe UI", color = "#2d3748"),
+    plot.title = element_text(face = "bold", size = 18, hjust = 0.5, color = "#323130"),
+    plot.subtitle = element_text(size = 12, hjust = 0.5, color = "#605e5c", margin = margin(b = 15)),
+    plot.caption = element_text(size = 10, color = "#605e5c", hjust = 0),
+    panel.grid.major = element_line(color = "#f3f2f1"),
+    panel.grid.minor = element_blank(),
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.background = element_rect(fill = "white", color = NA),
+    axis.title = element_text(face = "bold", color = "#323130"),
+    axis.text = element_text(color = "#605e5c"),
+    legend.position = "none"
+  )
 ```
 
 # Introducción
@@ -365,22 +551,21 @@ En el contexto específico de la región Pacífica, el análisis de estos determ
 
 El presente estudio aplica un modelo de regresión lineal múltiple utilizando los datos de la ECV para la región Pacífica, con el objetivo de analizar la relación entre el ingreso familiar y un conjunto de variables explicativas que incluyen el nivel de estudios, el tiempo trabajado la semana pasada, el sexo del jefe de hogar, la cantidad de personas en el hogar y la edad. Esta selección de variables se fundamenta tanto en la revisión de la literatura especializada como en las características socioeconómicas específicas de la región Pacífica.
 
-# Metodología
-
-## Descripción de la Fuente de Datos (ECV 2024)
+# Metodologia
 
 La Encuesta Nacional de Calidad de Vida (ECV) 2024 tuvo como objetivo general obtener información que permitiera analizar y realizar comparaciones de las condiciones socioeconómicas de los hogares que habitan en el país, las cuales posibilitaran hacer seguimiento a las variables necesarias para el diseño e implementación de políticas públicas.
 
 ### Características Metodológicas
-Tipo de investigación: Encuesta por muestreo
 
-Diseño muestral: Muestreo probabilístico, estratificado, de conglomerados y polietápico
+**Tipo de investigación**: Encuesta por muestreo
 
-Período de recolección: Agosto – noviembre de 2024
+**Diseño muestral**: Muestreo probabilístico, estratificado, de conglomerados y polietápico
 
-Tamaño de la muestra: 85.387 hogares con encuestas completas donde habitan 228.688 personas
+**Período de recolección**: Agosto – noviembre de 2024
 
-Cobertura geográfica: Nacional con desagregaciones para:
+**Tamaño de la muestra**: 85.387 hogares con encuestas completas donde habitan 228.688 personas
+
+**Cobertura geográfica**: Nacional con desagregaciones para:
 
 Total nacional y áreas (cabecera y centros poblados-rural disperso)
 
@@ -423,6 +608,7 @@ library(lmtest)
 library(ggthemes)
 library(ggpmisc)
 library(DT)
+library(plotly)
 
 datos_hogar=read.csv("datos_hogar.csv", sep = ";") %>% 
   select(DIRECTORIO,I_HOGAR,CANT_PERSONAS_HOGAR) %>% 
@@ -464,6 +650,7 @@ educacion=read.csv("educacion.csv", sep= ";") %>%
                                                   "Universitaria", "Postgrado")))
 
 caracteristicas_hogar=read.csv("Características_composición.CSV",sep= ";") %>% 
+  filter(P6051==1) %>% 
   select(DIRECTORIO,P6020,P6040,P1895) %>% rename(Sexo=2,Edad=3,
                                                               sastifacion=4)
 
@@ -524,7 +711,114 @@ reactable(
   )
 )
 ```
+
+# Resultados descriptivos
+
+```{r grafica 1}
+Base_datos1 <- Base_datos %>%
+  mutate(
+    tooltip_text = paste(
+      "Edad:", Edad, "años<br>",
+      "Ingreso: $", format(round(`Ingreso del hogar`), big.mark = ","), "<br>",
+      "Grupo Etario: ", cut(Edad, breaks = c(0, 25, 35, 45, 55, 65, 100),
+                           labels = c("18-25", "26-35", "36-45", "46-55", "56-65", "65+")), "<br>",
+      "Nivel Ingreso: ", ifelse(`Ingreso del hogar` < quantile(`Ingreso del hogar`, 0.33), "Bajo",
+                               ifelse(`Ingreso del hogar` < quantile(`Ingreso del hogar`, 0.66), "Medio", "Alto")),
+      sep = ""
+    )
+  )
+
+G1_powerbi <- ggplot(Base_datos1, aes(x = Edad, y = `Ingreso del hogar`, text = tooltip_text)) +
+  geom_point(alpha = 0.4, color = "#0078D4", size = 2, position = position_jitter(width = 0.3)) +
+  geom_smooth(method = "loess", span = 0.7, color = "#E81123", 
+              linewidth = 2, fill = "#FFB900", alpha = 0.3, se = TRUE) +
+  labs(
+    title = "📈 RELACIÓN ENTRE EDAD E INGRESOS DEL HOGAR",
+    subtitle = "Análisis del ciclo de vida económico y patrones de ingresos",
+    x = "EDAD",
+    y = "INGRESO ANUAL DEL HOGAR (USD)",
+    caption = "Fuente: Encuesta ECV DANE 2024 | Análisis: Equipo de Investigación"
+  ) +
+  scale_y_continuous(
+    labels = dollar_format(prefix = "$", big.mark = ","),
+    limits = c(0, max(Base_datos$`Ingreso del hogar`) * 1.1)
+  ) +
+  scale_x_continuous(breaks = seq(20, 80, by = 10)) +
+  geom_hline(yintercept = mean(Base_datos$`Ingreso del hogar`), 
+             linetype = "dashed", color = "#605e5c", alpha = 0.6, linewidth = 0.5) +
+  geom_vline(xintercept = 50, linetype = "dashed", color = "#605e5c", alpha = 0.7, linewidth = 0.8) +
+  annotate("text", x = 52, y = max(Base_datos$`Ingreso del hogar`) * 0.85, 
+           label = "PICO DE INGRESOS\n~50 AÑOS", 
+           color = "#323130", size = 3.2, hjust = 0, fontface = "bold", lineheight = 0.9) +
+  annotate("text", x = 25, y = mean(Base_datos$`Ingreso del hogar`) * 1.05, 
+           label = paste("MEDIA: $", format(round(mean(Base_datos$`Ingreso del hogar`)), big.mark = ",")), 
+           color = "#605e5c", size = 3, hjust = 0) +
+  tema_powerbi
+
+G1_interactivo <- ggplotly(G1_powerbi, tooltip = "text", height = 600) %>%
+  layout(
+    font = list(family = "Segoe UI, Arial, sans-serif"),
+    plot_bgcolor = '#ffffff',
+    paper_bgcolor = '#ffffff',
+    title = list(
+      text = "📈 RELACIÓN ENTRE EDAD E INGRESOS DEL HOGAR<br>
+             <sub style='color:#605e5c; font-size:12px'>Análisis del ciclo de vida económico y patrones de ingresos</sub>",
+      x = 0.05,
+      y = 0.95,
+      font = list(size = 20, color = "#323130")
+    ),
+    hoverlabel = list(
+      bgcolor = "white",
+      bordercolor = "#0078D4",
+      font = list(family = "Segoe UI", size = 11, color = "#323130"),
+      align = "left"
+    ),
+    xaxis = list(
+      title = list(text = "<b>EDAD</b>", font = list(size = 14, color = "#323130")),
+      gridcolor = "#f3f2f1",
+      zerolinecolor = "#f3f2f1"
+    ),
+    yaxis = list(
+      title = list(text = "<b>INGRESO ANUAL DEL HOGAR (USD)</b>", font = list(size = 14, color = "#323130")),
+      gridcolor = "#f3f2f1",
+      zerolinecolor = "#f3f2f1"
+    ),
+    margin = list(l = 80, r = 50, t = 120, b = 80),
+    annotations = list(
+      list(
+        x = 0.02, y = -0.15,
+        text = "Fuente: Encuesta ECV DANE 2024 | Análisis: Equipo de Investigación",
+        showarrow = FALSE,
+        xref = "paper", yref = "paper",
+        xanchor = "left", yanchor = "bottom",
+        font = list(size = 10, color = "#605e5c")
+      )
+    )
+  ) %>%
+  config(
+    displayModeBar = TRUE,
+    modeBarButtonsToRemove = c("pan2d", "select2d", "lasso2d", "autoScale2d"),
+    modeBarButtonsToAdd = list("drawline", "drawopenpath", "drawclosedpath", "drawcircle", "drawrect", "eraseshape"),
+    displaylogo = FALSE,
+    toImageButtonOptions = list(
+      format = "png",
+      filename = "analisis_ingresos_edad",
+      height = 600,
+      width = 1000,
+      scale = 2
+    )
+  )
+
+G1_interactivo
+
+```
+
+
+
 # Resultados del modelo
+
+
+
 
 # Concluciones 
 
