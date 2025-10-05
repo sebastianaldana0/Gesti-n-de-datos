@@ -367,6 +367,9 @@ La Encuesta Nacional de Calidad de Vida (ECV) 2024 del DANE constituye la fuente
 
 La ECV utiliza un diseño muestral probabilístico, estratificado, de conglomerados y polietápico que garantiza representatividad nacional con desagregaciones por regiones, departamentos y áreas urbano-rurales. Los datos incluyen factores de expansión que permiten obtener estimaciones representativas de la población colombiana.
 
+## Variables
+
+
 # Resultados descriptivos
 
 # Resultados del modelo
