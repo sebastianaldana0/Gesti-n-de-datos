@@ -397,14 +397,16 @@ Unidades de muestreo: segmento o conglomerado, conformado en promedio por 10 hog
 
 
 ## Variables
+
 Las variables utilizadas en el estudio se dividen en dos grupos: dependientes e independientes. En primer lugar, la variable dependiente seleccionada es el Ingreso del hogar, la cual busca medir el nivel monetario total percibido por los miembros del hogar. Este indicador refleja el grado de bienestar económico, la capacidad de consumo y las oportunidades de inversión en educación, salud y vivienda.
 En cuanto a las variables independientes, se consideran varios factores cuyo nivel de significancia resulta fundamental para explicar el ingreso. En primer lugar, la educación: las personas con mayor nivel educativo tienden a acceder a empleos mejor remunerados y con mayores oportunidades de ascenso, además de aumentar su productividad y capital humano. Por lo tanto, se espera que a mayor grado educativo alcanzado, el ingreso también sea más alto. Como señalan Psacharopoulos y Patrinos (2018), “por esta razón la educación, y en particular la educación superior, constituyen un elemento importante dentro de los múltiples determinantes del crecimiento económico.”
+También se considera que el tiempo trabajado (en meses) es una variable influyente en los ingresos, ya que se esperaría que, a mayor permanencia en una misma empresa o negocio, los ingresos tiendan a incrementarse. Esto se relaciona con diversos procesos laborales, como las cesantías o, en el caso del sector público, con los escalafones salariales, que reconocen la experiencia y antigüedad del trabajador. Además, resulta razonable suponer que, después de varios años de trabajo, el ingreso no sea el mismo que aquel con el que se inició la relación laboral.
 
 ## Base de datos del estudio
 
 Para el presente trabajo, se utiliza la base de datos de la ECV 2024 filtrada específicamente para la región Pacífica, que incluye los departamentos de Chocó, Cauca, Nariño y Valle del Cauca. La base de datos ha sido depurada y contiene únicamente las variables de interés para el modelo de regresión lineal:
 
-```{r}
+```{r base de datos}
 #Librerias
 library(tidyverse)
 library(scales)
@@ -415,6 +417,7 @@ library(nortest)
 library(lmtest)
 library(ggthemes)
 library(ggpmisc)
+library(DT)
 
 datos_hogar=read.csv("datos_hogar.csv", sep = ";") %>% 
   select(DIRECTORIO,I_HOGAR,CANT_PERSONAS_HOGAR) %>% 
@@ -468,22 +471,54 @@ trabajo=read.csv("Fuerza de trabajo.CSV",sep=";") %>%
   rename(Ingresos_mes=2,Horas_trabajadas_semana=3,"Lugar de trabajo"=4,Tiempo_trabajado=5,
          Semana_horas=6,contrato=7,Tipo_contrato=8,
          meses=8)
+
+Base_datos=caracteristicas_hogar  %>% inner_join(datos_hogar,by="DIRECTORIO") %>% 
+  inner_join(vivienda,by="DIRECTORIO") %>% inner_join(educacion,by="DIRECTORIO") %>% inner_join(trabajo,by="DIRECTORIO")%>% 
+  mutate(`Ingreso del hogar`=log(`Ingreso del hogar`),Edad2=Edad*Edad) %>% 
+  filter(Departamento%in%c(76,19,52,27),Edad!=0,Edad>=18) %>% 
+  select(Departamento,`Ingreso del hogar`,`Cantidad de personas en el hogar`,Sexo,
+         Edad,CATEGORIA_EDUCATIVA,Tiempo_trabajado,Horas_trabajadas_semana,
+         sastifacion) %>% mutate(
+           Departamento= case_when(
+             Departamento == 76 ~ "Valle del Cauca",
+             Departamento == 19 ~ "Cauca",
+             Departamento == 52 ~ "Nariño",
+             Departamento == 27 ~ "Choco"))
+
+
+library(reactable)
+
+reactable(
+  Base_datos,
+  defaultPageSize = 15,
+  showPageSizeOptions = TRUE,
+  pageSizeOptions = c(10, 15, 25, 50),
+  striped = TRUE,
+  highlight = TRUE,
+  bordered = TRUE,
+  filterable = TRUE,
+  showSortable = TRUE,
+  wrap = FALSE,
+  resizable = TRUE,
+  defaultColDef = colDef(
+    header = function(value) gsub("_", " ", toupper(value)),
+    cell = function(value) format(value, nsmall = 1),
+    align = "center",
+    minWidth = 120,
+    headerStyle = list(background = "#2E86AB", color = "white", fontWeight = "bold")
+  ),
+  style = list(fontFamily = "Arial, sans-serif", fontSize = "14px"),
+  theme = reactableTheme(
+    stripedColor = "#f6f8fa",
+    highlightColor = "#e8f4fd",
+    cellPadding = "8px 12px",
+    style = list(fontFamily = "-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif"),
+    searchInputStyle = list(width = "100%", padding = "8px 12px")
+  ),
+  columns = list(
+  )
+)
 ```
-
-
-<<<<<<< HEAD
-## Variables
-Las variables utilizadas en el estudio se dividen en dos grupos: dependientes e independientes. En primer lugar, la variable dependiente seleccionada es el Ingreso del hogar, la cual busca medir el nivel monetario total percibido por los miembros del hogar. Este indicador refleja el grado de bienestar económico, la capacidad de consumo y las oportunidades de inversión en educación, salud y vivienda.
-En cuanto a las variables independientes, se consideran varios factores cuyo nivel de significancia resulta fundamental para explicar el ingreso. En primer lugar, la educación: las personas con mayor nivel educativo tienden a acceder a empleos mejor remunerados y con mayores oportunidades de ascenso, además de aumentar su productividad y capital humano. Por lo tanto, se espera que a mayor grado educativo alcanzado, el ingreso también sea más alto. Como señalan Psacharopoulos y Patrinos (2018), “por esta razón la educación, y en particular la educación superior, constituyen un elemento importante dentro de los múltiples determinantes del crecimiento económico.”
-También se considera que el tiempo trabajado (en meses) es una variable influyente en los ingresos, ya que se esperaría que, a mayor permanencia en una misma empresa o negocio, los ingresos tiendan a incrementarse. Esto se relaciona con diversos procesos laborales, como las cesantías o, en el caso del sector público, con los escalafones salariales, que reconocen la experiencia y antigüedad del trabajador. Además, resulta razonable suponer que, después de varios años de trabajo, el ingreso no sea el mismo que aquel con el que se inició la relación laboral.
-
-
-
-
-=======
->>>>>>> f5db9481ae6e4b82b9145f5e06ba1f9aa71bf382
-# Resultados descriptivos
-
 # Resultados del modelo
 
 # Concluciones 
