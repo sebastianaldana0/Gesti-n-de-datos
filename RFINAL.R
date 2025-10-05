@@ -43,7 +43,7 @@ trabajo=read.csv("Fuerza de trabajo.CSV",sep=";") %>%
          
 
 vivienda=read.csv("Datos de la vivienda.csv",sep=";") %>% 
-  select(DIRECTORIO,CLASE) %>% rename(Ubicacion=2) %>% 
+  select(DIRECTORIO,CLASE,P1_DEPARTAMENTO) %>% rename(Ubicacion=2,Departamento=3) %>% 
   distinct(DIRECTORIO, .keep_all = TRUE)
 
 salud=read.csv("Salud.CSV", sep=";")  %>%
@@ -66,7 +66,8 @@ Base_datos=inner_join(Muestra,caracteristicas_hogar,by="DIRECTORIO") %>%
   inner_join(salud,by="DIRECTORIO")  %>% inner_join(trabajo,by="DIRECTORIO") %>% 
   select(-Afiliado,-Arriendo_estimacion,-Casado,-PERCAPITA,-Ubicacion,
          -Ingresos_mes,-contrato,-DIRECTORIO) %>% 
-  mutate(`Ingreso del hogar`=log(`Ingreso del hogar`),Edad=Edad*Edad)
+  mutate(`Ingreso del hogar`=log(`Ingreso del hogar`),Edad=Edad*Edad) %>% 
+  filter(Departamento%in%c(76,19,52,27))
   
 
 #Modelos
