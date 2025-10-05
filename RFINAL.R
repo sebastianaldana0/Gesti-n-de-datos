@@ -6,6 +6,7 @@ library(ggcorrplot)
 library(visreg)
 library(nortest)
 library(lmtest)
+library(ggthemes)
 
 #Base de datos
 
@@ -66,32 +67,12 @@ Base_datos=inner_join(Muestra,caracteristicas_hogar,by="DIRECTORIO") %>%
   inner_join(salud,by="DIRECTORIO")  %>% inner_join(trabajo,by="DIRECTORIO") %>% 
   select(-Afiliado,-Arriendo_estimacion,-Casado,-PERCAPITA,-Ubicacion,
          -Ingresos_mes,-contrato,-DIRECTORIO) %>% 
-  mutate(`Ingreso del hogar`=log(`Ingreso del hogar`),Edad=Edad*Edad) %>% 
-  filter(Departamento%in%c(76,19,52,27))
+  mutate(`Ingreso del hogar`=log(`Ingreso del hogar`),Edad2=Edad*Edad) %>% 
+  filter(Departamento%in%c(76,19,52,27),Edad!=0,Edad>=18)
   
 
 #Modelos
 
-Modelo_sexo=lm(`Ingreso del hogar`~Sexo,Base_datos)
-summary(Modelo_sexo)
-
-Modelo_estrato=lm(`Ingreso del hogar`~Estrato,Base_datos)
-summary(Modelo_estrato)
-
-Modelo_tiempo_trabajado=lm(`Ingreso del hogar`~Tiempo_trabajado,Base_datos)
-summary(Modelo_tiempo_trabajado)
-
-Modelo_arriendo=lm(`Ingreso del hogar`~Arriendo_estimacion,Base_datos)
-summary(Modelo_arriendo)
-
-Modelo_grado=lm(`Ingreso del hogar`~`Ultimo grado alcanzado`,Base_datos)
-summary(Modelo_grado)
-
-Modelo_afiliado=lm(`Ingreso del hogar`~Afiliado,Base_datos)
-summary(Modelo_afiliado)
-
-Modelo_sastifacion=lm(`Ingreso del hogar`~ sastifacion,Base_datos)
-summary(Modelo_sastifacion)
 
 
 #Modelo final
@@ -108,3 +89,100 @@ plot(Modelo_final,which=5)
 shapiro.test(Modelo_final$residuals)
 
 #Graficas
+
+ggplot(Base_datos, aes(x = Edad, y = `Ingreso del hogar`)) +
+  geom_point(alpha = 0.3, color = "#2E86AB", size = 1.5) +
+  geom_smooth(method = "loess", span = 0.7, color = "#A23B72", 
+              linewidth = 1.5, fill = "#F18F01", alpha = 0.2) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(face = "bold", size = 16, hjust = 0.5),
+    plot.subtitle = element_text(size = 12, hjust = 0.5, color = "gray40"),
+    axis.title = element_text(face = "bold", size = 12),
+    axis.text = element_text(size = 10),
+    panel.grid.major = element_line(color = "gray90", linewidth = 0.2),
+    panel.grid.minor = element_blank(),
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.background = element_rect(fill = "white", color = NA)
+  ) +
+  labs(
+    title = "Relación entre Edad e Ingresos del Hogar",
+    subtitle = "Patrón típico del ciclo de vida económico",
+    x = "Edad",
+    y = "Ingreso Anual del Hogar (USD)",
+    caption = "Fuente: Datos simulados basados en patrones económicos típicos"
+  ) +
+  scale_y_continuous(labels = dollar_format(prefix = "$", big.mark = ",")) +
+  scale_color_manual(values = c("#2E86AB", "#A23B72")) +
+  geom_vline(xintercept = 50, linetype = "dashed", color = "gray50", alpha = 0.7) +
+  annotate("text", x = 52, y = max(Base_datos$`Ingreso del hogar`) * 0.9, 
+           label = "Pico de ingresos\ntípico ~50 años", 
+           color = "gray40", size = 3, hjust = 0)
+
+datos_agrupados <- Base_datos %>%
+  group_by(grupo_edad = cut(Edad, breaks = seq(20, 65, by = 5))) %>%
+  summarise(
+    edad_media = mean(Edad),
+    ingreso_mediano = median(`Ultimo grado alcanzado`),
+    ingreso_promedio = mean(`Ultimo grado alcanzado`),
+    q10 = quantile(`Ultimo grado alcanzado`, 0.10),
+    q25 = quantile(`Ultimo grado alcanzado`, 0.25),
+    q75 = quantile(`Ultimo grado alcanzado`, 0.75),
+    q90 = quantile(`Ultimo grado alcanzado`, 0.90),
+    .groups = 'drop'
+  )
+
+colores <- c(
+  mediana = "#2C3E50",     
+  iqr = "#3498DB",          
+  deciles = "#BDC3C7"     
+)
+
+ggplot(datos_agrupados, aes(x = edad_media)) +
+  geom_ribbon(aes(ymin = q10, ymax = q90), 
+              fill = colores["deciles"], alpha = 0.15) +
+  geom_ribbon(aes(ymin = q25, ymax = q75), 
+              fill = colores["iqr"], alpha = 0.3) +
+  geom_line(aes(y = ingreso_mediano), 
+            color = colores["mediana"], 
+            linewidth = 2.5,
+            alpha = 0.9) +
+  geom_point(aes(y = ingreso_mediano), 
+             color = colores["mediana"], 
+             size = 4.5,
+             fill = "white",
+             stroke = 1.2,
+             shape = 21) +
+  theme_economist() +
+  theme(
+    plot.title = element_text(face = "bold", size = 18, hjust = 0.5, 
+                              margin = margin(b = 15)),
+    plot.subtitle = element_text(size = 12, hjust = 0.5, color = "gray50",
+                                 margin = margin(b = 20)),
+    plot.caption = element_text(size = 9, color = "gray60", hjust = 1,
+                                margin = margin(t = 15)),
+    axis.title = element_text(face = "bold", size = 12),
+    axis.title.y = element_text(margin = margin(r = 15)),
+    axis.title.x = element_text(margin = margin(t = 15)),
+    axis.text = element_text(size = 10, color = "gray40"),
+    panel.grid.major = element_line(color = "gray92", linewidth = 0.3),
+    panel.grid.minor = element_blank(),
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.background = element_rect(fill = "white", color = NA),
+    legend.position = "none",
+    plot.margin = margin(25, 25, 25, 25)
+  ) +
+  labs(
+    title = "Evolución de los Ingresos del Hogar por Edad",
+    subtitle = "Mediana y distribución percentilar del ingreso anual por grupo de edad",
+    x = "Edad",
+    y = "Ingreso Anual del Hogar (USD)",
+    caption = "Fuente: Análisis basado en patrones económicos del ciclo de vida\nEl área sombreada representa los percentiles 25-75 (intercuartílico)"
+  )+
+  scale_x_continuous(
+    breaks = seq(25, 60, by = 5),
+    limits = c(22, 62),
+    expand = expansion(mult = c(0, 0))
+  )
+
+
