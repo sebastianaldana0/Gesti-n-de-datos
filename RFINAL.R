@@ -35,15 +35,15 @@ tenencia=read.csv("tenencia y financiación de la vivienda.CSV",sep=";") %>%
  
 
 trabajo=read.csv("Fuerza de trabajo.CSV",sep=";") %>% 
-  select(DIRECTORIO,P8624,P415,P8634,P6426,P416) %>% rename(Ingresos_mes=2,Horas_trabajadas_semana=3,
-                                                 "Lugar de trabajo"=4,Tiempo_trabajado=5,
-                                                 Semana_horas=6) %>% 
+  select(DIRECTORIO,P8624,P415,P8634,P6426,P416,P6440,P6460,P6460S1) %>% 
+  rename(Ingresos_mes=2,Horas_trabajadas_semana=3,"Lugar de trabajo"=4,Tiempo_trabajado=5,
+         Semana_horas=6,contrato=7,Tipo_contrato=8,
+         meses=9) %>% 
   filter(!is.na(Ingresos_mes))
          
 
 vivienda=read.csv("Datos de la vivienda.csv",sep=";") %>% 
-  select(DIRECTORIO,P8520S1A1,CLASE) %>% rename(Estrato=2,Ubicacion=3) %>% 
-  filter(Estrato!=0,Estrato!=8,Estrato!=9) %>% 
+  select(DIRECTORIO,CLASE) %>% rename(Ubicacion=2) %>% 
   distinct(DIRECTORIO, .keep_all = TRUE)
 
 salud=read.csv("Salud.CSV", sep=";")  %>%
@@ -65,7 +65,7 @@ Base_datos=inner_join(Muestra,caracteristicas_hogar,by="DIRECTORIO") %>%
   inner_join(vivienda,by="DIRECTORIO") %>% inner_join(educacion,by="DIRECTORIO") %>% 
   inner_join(salud,by="DIRECTORIO")  %>%
   filter(Municipio==76001) %>% inner_join(trabajo,by="DIRECTORIO") %>% 
-  select(-Edad,-Afiliado,-Arriendo_estimacion) %>% 
+  select(-Edad,-Afiliado,-Arriendo_estimacion,-Casado) %>% 
   mutate(`Ingreso del hogar`=log(`Ingreso del hogar`))
   
 
@@ -95,7 +95,7 @@ summary(Modelo_sastifacion)
 
 #Modelo final
 
-Modelo_final=lm(`Ingreso del hogar`~Estrato+Tiempo_trabajado+`Ultimo grado alcanzado`+Sexo+
+Modelo_final=lm(`Ingreso del hogar`~sastifacion+Tiempo_trabajado+`Ultimo grado alcanzado`+Sexo+
                   `Cantidad de personas en el hogar`,Base_datos)
 summary(Modelo_final)
 plot(Modelo_final,which=1)
