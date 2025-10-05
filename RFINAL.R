@@ -12,7 +12,7 @@ library(lmtest)
 datos_hogar=read.csv("datos_hogar.csv", sep = ";") %>% 
   select(DIRECTORIO,I_HOGAR,PERCAPITA,CANT_PERSONAS_HOGAR) %>% 
   rename("Ingreso del hogar"=2,"Cantidad de personas en el hogar"=4) %>% 
-  distinct(DIRECTORIO, .keep_all = TRUE)
+  distinct(DIRECTORIO, .keep_all = TRUE) %>% filter(`Ingreso del hogar`!=0)
 
 
 educacion=read.csv("educacion.csv", sep= ";") %>% 
@@ -63,9 +63,8 @@ Muestra=read.csv("muestral.CSV",sep=";") %>%
 Base_datos=inner_join(Muestra,caracteristicas_hogar,by="DIRECTORIO") %>% 
   inner_join(tenencia,by="DIRECTORIO") %>% inner_join(datos_hogar,by="DIRECTORIO") %>% 
   inner_join(vivienda,by="DIRECTORIO") %>% inner_join(educacion,by="DIRECTORIO") %>% 
-  inner_join(salud,by="DIRECTORIO")  %>%
-  filter(Municipio==76001) %>% inner_join(trabajo,by="DIRECTORIO") %>% 
-  select(-Afiliado,-Arriendo_estimacion,-Casado,-Sexo,-PERCAPITA,-Ubicacion,
+  inner_join(salud,by="DIRECTORIO")  %>% inner_join(trabajo,by="DIRECTORIO") %>% 
+  select(-Afiliado,-Arriendo_estimacion,-Casado,-PERCAPITA,-Ubicacion,
          -Ingresos_mes,-contrato,-DIRECTORIO) %>% 
   mutate(`Ingreso del hogar`=log(`Ingreso del hogar`),Edad=Edad*Edad)
   
@@ -96,7 +95,7 @@ summary(Modelo_sastifacion)
 
 #Modelo final
 
-Modelo_final=lm(`Ingreso del hogar`~sastifacion+Tiempo_trabajado+`Ultimo grado alcanzado`+
+Modelo_final=lm(`Ingreso del hogar`~Sexo+Tiempo_trabajado+`Ultimo grado alcanzado`+
                   `Cantidad de personas en el hogar`+Edad,Base_datos)
 
 summary(Modelo_final)
