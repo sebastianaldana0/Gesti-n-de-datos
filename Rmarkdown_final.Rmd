@@ -553,6 +553,8 @@ El presente estudio aplica un modelo de regresión lineal múltiple utilizando l
 
 # Metodologia
 
+## Descripcion de la encuesta
+
 La Encuesta Nacional de Calidad de Vida (ECV) 2024 tuvo como objetivo general obtener información que permitiera analizar y realizar comparaciones de las condiciones socioeconómicas de los hogares que habitan en el país, las cuales posibilitaran hacer seguimiento a las variables necesarias para el diseño e implementación de políticas públicas.
 
 ### Características Metodológicas
