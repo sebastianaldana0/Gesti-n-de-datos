@@ -24,7 +24,8 @@ educacion=read.csv("educacion.csv", sep= ";") %>%
   distinct(DIRECTORIO, .keep_all = TRUE)
 
 caracteristicas_hogar=read.csv("Características_composición.CSV",sep= ";") %>% 
-  select(DIRECTORIO,P6020,P6040,P6051,P5502) %>% rename(Sexo=2,Edad=3,Parentesco=4,Casado=5) %>% 
+  select(DIRECTORIO,P6020,P6040,P6051,P5502,P1895) %>% rename(Sexo=2,Edad=3,Parentesco=4,Casado=5,
+                                                              sastifacion=6) %>% 
   filter(Parentesco==1)#jefes del hogar
 
 tenencia=read.csv("tenencia y financiación de la vivienda.CSV",sep=";") %>%
@@ -35,8 +36,13 @@ tenencia=read.csv("tenencia y financiación de la vivienda.CSV",sep=";") %>%
  
 
 trabajo=read.csv("Fuerza de trabajo.CSV",sep=";") %>% 
-  select(DIRECTORIO,P8624,P415,P8634) %>% rename(Ingresos_mes=2,Horas_trabajadas_semana=3,
-                                                 "Lugar de trabajo"=4) %>% 
+  select(DIRECTORIO,P8624,P415,P8634,P6426,P416) %>% rename(Ingresos_mes=2,Horas_trabajadas_semana=3,
+                                                 "Lugar de trabajo"=4,Tiempo_trabajado=5,
+                                                 Semana_horas=6) %>% 
+  filter(!is.na(Ingresos_mes))
+         
+         
+         %>% 
   group_by(DIRECTORIO) %>%
   filter(Ingresos_mes == max(Ingresos_mes)) %>%
   ungroup()
@@ -66,8 +72,8 @@ Base_datos=inner_join(Muestra,caracteristicas_hogar,by="DIRECTORIO") %>%
   inner_join(salud,by="DIRECTORIO") %>% select(DIRECTORIO,Municipio,Estrato,`Ingreso del hogar`,
                                                Arriendo_estimacion,`Cantidad de personas en el hogar`,
                                                Sexo,Edad,`Ultimo grado alcanzado`,
-                                               Afiliado,Casado,PERCAPITA) %>%
-  filter(Municipio==76001)
+                                               ,sastifacion,PERCAPITA) %>%
+  filter(Municipio==76001) %>% inner_join(trabajo,by="DIRECTORIO")
   
 
 #Modelos
@@ -90,19 +96,19 @@ summary(Modelo_grado)
 Modelo_afiliado=lm(`Ingreso del hogar`~Afiliado,Base_datos)
 summary(Modelo_afiliado)
 
-Modelo_casado=lm(`Ingreso del hogar`~Casado,Base_datos)
-summary(Modelo_casado)
+Modelo_sastifacion=lm(`Ingreso del hogar`~ sastifacion,Base_datos)
+summary(Modelo_sastifacion)
 
 
 #Modelo final
 
-Modelo_final=lm(`Ingreso del hogar`~Estrato+Arriendo_estimacion+`Ultimo grado alcanzado`+Sexo+
+Modelo_final=lm(`Ingreso del hogar`~Estrato+sastifacion+`Ultimo grado alcanzado`+Sexo+
                   `Cantidad de personas en el hogar`,Base_datos)
 summary(Modelo_final)
 plot(Modelo_final,which=1)
 plot(Modelo_final,which=2)
 plot(Modelo_final,which=3)
-plot(Modelo_final,which=4)
+plot(Modelo_final,which=5)
 #Pruebas modelo
 
 
