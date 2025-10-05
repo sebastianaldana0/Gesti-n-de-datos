@@ -20,10 +20,36 @@ datos_hogar=read.csv("datos_hogar.csv", sep = ";") %>%
 educacion=read.csv("educacion.csv", sep= ";") %>% 
   select(DIRECTORIO,P8587) %>% 
   group_by(DIRECTORIO) %>%
-  filter(P8587 == max(P8587)) %>%
-  rename("Ultimo grado alcanzado"=2)  %>%
+  filter(P8587 == max(P8587))  %>%
   ungroup() %>% 
-  distinct(DIRECTORIO, .keep_all = TRUE)
+  distinct(DIRECTORIO, .keep_all = TRUE) %>% 
+  mutate(
+    Estudios = case_when(
+      P8587 == 1 ~ "Ninguno",
+      P8587 == 2 ~ "Preescolar",
+      P8587 == 3 ~ "Primaria (1º-5º)",
+      P8587 == 4 ~ "Secundaria (6º-9º)",
+      P8587 == 5 ~ "Media (10º-13º)",
+      P8587 == 6 ~ "Técnico sin título",
+      P8587 == 7 ~ "Técnico con título",
+      P8587 == 8 ~ "Tecnológico sin título",
+      P8587 == 9 ~ "Tecnológico con título",
+      P8587 == 10 ~ "Universitario sin título",
+      P8587 == 11 ~ "Universitario con título",
+      P8587 == 12 ~ "Postgrado sin título",
+      P8587 == 13 ~ "Postgrado con título",
+      TRUE ~ "No especificado"
+    ),
+    CATEGORIA_EDUCATIVA = case_when(
+      P8587 %in% 1:2 ~ "Primaria",
+      P8587 %in% 3:5 ~ "Secundaria",
+      P8587 %in% 6:9 ~ "Técnica/Tecnológica",
+      P8587 %in% 10:11 ~ "Universitaria",
+      P8587 %in% 12:13 ~ "Postgrado",
+      TRUE ~ "Otro"
+    ),    CATEGORIA_EDUCATIVA = factor(CATEGORIA_EDUCATIVA,
+                                       levels = c("Primaria", "Secundaria", "Técnica/Tecnológica", 
+                                                  "Universitaria", "Postgrado")))
 
 caracteristicas_hogar=read.csv("Características_composición.CSV",sep= ";") %>% 
   select(DIRECTORIO,P6020,P6040,P6051,P5502,P1895) %>% rename(Sexo=2,Edad=3,Parentesco=4,Casado=5,
@@ -69,7 +95,15 @@ Base_datos=inner_join(Muestra,caracteristicas_hogar,by="DIRECTORIO") %>%
   select(-Afiliado,-Arriendo_estimacion,-Casado,-PERCAPITA,-Ubicacion,
          -Ingresos_mes,-contrato,-DIRECTORIO) %>% 
   mutate(`Ingreso del hogar`=log(`Ingreso del hogar`),Edad2=Edad*Edad) %>% 
-  filter(Departamento%in%c(76,19,52,27),Edad!=0,Edad>=18)
+  filter(Departamento%in%c(76,19,52,27),Edad!=0,Edad>=18) %>% 
+  select(Departamento,`Ingreso del hogar`,`Cantidad de personas en el hogar`,Sexo,
+         Edad,CATEGORIA_EDUCATIVA,Tiempo_trabajado,Horas_trabajadas_semana,
+         sastifacion) %>% mutate(
+           Departamento= case_when(
+             Departamento == 76 ~ "Valle del Cauca",
+             Departamento == 19 ~ "Cauca",
+             Departamento == 52 ~ "Nariño",
+             Departamento == 27 ~ "Choco"))
   
 
 #Modelos
@@ -78,8 +112,10 @@ Base_datos=inner_join(Muestra,caracteristicas_hogar,by="DIRECTORIO") %>%
 
 #Modelo final
 
-Modelo_final=lm(`Ingreso del hogar`~Sexo+Tiempo_trabajado+`Ultimo grado alcanzado`+
-                  `Cantidad de personas en el hogar`+Edad+Edad2,Base_datos)
+Modelo_final=lm(`Ingreso del hogar`~Sexo+Tiempo_trabajado+CATEGORIA_EDUCATIVA+
+                  `Cantidad de personas en el hogar`+Edad+sastifacion+Horas_trabajadas_semana+
+                  Departamento
+                ,Base_datos)
 
 summary(Modelo_final)
 plot(Modelo_final,which=1)
