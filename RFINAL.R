@@ -52,8 +52,9 @@ educacion=read.csv("educacion.csv", sep= ";") %>%
                                                   "Universitaria", "Postgrado")))
 
 caracteristicas_hogar=read.csv("Características_composición.CSV",sep= ";") %>% 
+  filter(P6051==1) %>% 
   select(DIRECTORIO,P6020,P6040,P6051,P5502,P1895) %>% rename(Sexo=2,Edad=3,Parentesco=4,Casado=5,
-                                                              sastifacion=6)
+                                                              sastifacion=6) 
 
 tenencia=read.csv("tenencia y financiación de la vivienda.CSV",sep=";") %>%
   filter(P5130!=99) %>% 
@@ -87,10 +88,8 @@ Muestra=read.csv("muestral.CSV",sep=";") %>%
 
 #Base de datos final
 
-Base_datos=inner_join(Muestra,caracteristicas_hogar,by="DIRECTORIO") %>% 
-  inner_join(tenencia,by="DIRECTORIO") %>% inner_join(datos_hogar,by="DIRECTORIO") %>% 
-  inner_join(vivienda,by="DIRECTORIO") %>% inner_join(educacion,by="DIRECTORIO") %>% 
-  inner_join(salud,by="DIRECTORIO")  %>% inner_join(trabajo,by="DIRECTORIO")%>% 
+Base_datos=caracteristicas_hogar  %>% inner_join(datos_hogar,by="DIRECTORIO") %>% 
+  inner_join(vivienda,by="DIRECTORIO") %>% inner_join(educacion,by="DIRECTORIO") %>% inner_join(trabajo,by="DIRECTORIO")%>% 
   mutate(`Ingreso del hogar`=log(`Ingreso del hogar`),Edad2=Edad*Edad) %>% 
   filter(Departamento%in%c(76,19,52,27),Edad!=0,Edad>=18) %>% 
   select(Departamento,`Ingreso del hogar`,`Cantidad de personas en el hogar`,Sexo,
