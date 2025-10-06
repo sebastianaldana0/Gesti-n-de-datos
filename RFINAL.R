@@ -114,10 +114,12 @@ Modelo_final=lm(`Ingreso del hogar`~Sexo+Tiempo_trabajado+CATEGORIA_EDUCATIVA+
                 ,Base_datos)
 
 summary(Modelo_final)
+
 plot(Modelo_final,which=1)
 plot(Modelo_final,which=2)
 plot(Modelo_final,which=3)
 plot(Modelo_final,which=5)
+
 #Pruebas modelo
 shapiro.test(Modelo_final$residuals)
 
