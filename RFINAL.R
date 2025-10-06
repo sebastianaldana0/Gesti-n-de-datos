@@ -272,3 +272,22 @@ ggplot(Base_datos, aes(x = `Cantidad de personas en el hogar`, y = `Ingreso del 
     y = "Ingreso Anual del Hogar (USD)",
     caption = "● Puntos individuales | ■ Media por grupo | ── Tendencia lineal"
   )
+
+library(ggplot2)
+library(sf)
+library(rnaturalearth)
+library(rnaturalearthdata)
+library(dplyr)
+library(devtools)
+
+colombia <- ne_states(country = "colombia", returnclass = "sf")
+
+1# Filtrar región Pacífica
+pacifica <- colombia %>% filter(name %in% c("Chocó", "Valle del Cauca", "Cauca", "Nariño"))
+
+# Crear el mapa
+ggplot() + 
+  geom_sf(data = colombia, fill = "lightblue", color = "white") + 
+  geom_sf(data = pacifica, fill = "#2b6cb0", color = "white") + 
+  theme_void() + 
+  labs(title = "Región Pacífica de Colombia")
