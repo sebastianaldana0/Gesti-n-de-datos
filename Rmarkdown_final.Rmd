@@ -595,7 +595,7 @@ La región (departamento) corresponde a la Región Pacífica, la cual se escoge 
 La edad es un factor que se considera relacionado con una mayor experiencia y, por lo tanto, con mayores ingresos. Sin embargo, las jubilaciones pueden afectar el comportamiento lineal que se esperaría, haciendo que este se estabilice o disminuya. Por ello, la edad se reconoce como una variable importante para relacionar con los ingresos, ya que estos tienden a variar a lo largo del ciclo de vida laboral. En Colombia, menos de una cuarta parte de los adultos mayores reciben pensión, y los ingresos laborales siguen siendo la principal fuente de sustento incluso en la vejez (Villar et al., 2016).
 
 **Ecuación del modelo:**
-$$ING = \beta_0 + \beta_1(Edad) + \beta_2(Departamento) + \beta_3(Sexo) + \beta_4(C.de personas) + \beta_5(Estudios) + \beta_6(Sastifacion) + \epsilon$$
+$$ING = \beta_0 + \beta_1(Edad) + \beta_2(Dpto) + \beta_3(Sexo) + \beta_4(C.de personas) + \beta_5(Estudios) + \beta_6(Sastifacion) + \epsilon$$
 
 ## Base de datos del estudio
 
