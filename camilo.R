@@ -9,7 +9,7 @@ library(nortest)
 library(lmtest)
 library(ggthemes)
 library(ggpmisc)
-
+library(kableExtra)
 #Base de datos
 
 datos_hogar=read.csv("datos_hogar.csv", sep = ";") %>% 
@@ -102,6 +102,7 @@ Base_datos=caracteristicas_hogar  %>% inner_join(datos_hogar,by="DIRECTORIO") %>
              Departamento == 52 ~ "Nariño",
              Departamento == 27 ~ "Choco"))
            
+View
 
 #Modelo final
 
@@ -116,3 +117,135 @@ plot(Modelo_final,which=1)
 plot(Modelo_final,which=2)
 plot(Modelo_final,which=3)
 plot(Modelo_final,which=5)
+
+library(Hmisc)
+
+
+#  Seleccionar solo variables numéricas
+num_vars <- Base_datos %>% 
+  select_if(is.numeric)
+
+#  Calcular correlaciones de Pearson
+corr_result <- Hmisc::rcorr(as.matrix(num_vars))
+
+#  Extraer correlaciones y p-valores con la variable dependiente
+cor_y <- corr_result$r[, "Ingreso del hogar"]
+pval_y <- corr_result$P[, "Ingreso del hogar"]
+summary(pval_y)
+view(pval_y)
+
+Modelop=lm(`Ingreso del hogar`~Tiempo_trabajado,Base_datos)
+summary
+
+
+tabla_corr <- tibble(
+  Variable = names(cor_y),
+  `Coef. de Pearson (r)` = round(cor_y, 3),
+  `Valor p` = pval_y) %>%
+  filter(Variable != "Ingreso del hogar", Variable != "Sexo") %>%
+  mutate(
+    `Valor p` = case_when(
+      is.na(`Valor p`) ~ NA_character_,
+      `Valor p` < 2e-16 ~ "2e-16",
+      TRUE ~ formatC(`Valor p`, format = "e", digits = 3)),
+    Significativo = ifelse(as.numeric(pval_y[match(Variable, names(pval_y))]) < 0.05, "Sí", "No"))
+
+tabla_corr %>%
+  kbl(caption = "Coeficiente de Correlación de Pearson con la Variable Dependiente",
+    align = c("l", "r", "r", "c"),
+    col.names = c("Variable", "Coef. de Pearson (r)", "Valor p", "Significativo")) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = FALSE,
+    font_size = 14,
+    position = "center") %>%
+  row_spec(0, background = "#2b6cb0", color = "white", bold = TRUE) %>%
+  column_spec(1, bold = TRUE, width = "3cm") %>%
+  column_spec(2:4, width = "2.5cm") %>%
+  footnote(general = "Elaboración propia con base en ECV DANE 2024",
+    general_title = "Nota:",
+    footnote_as_chunk = TRUE)
+
+cor(Base_datos$`Ingreso del hogar`, Base_datos$Edad)
+
+Modelo_final=lm(log(`Ingreso del hogar`)~Sexo+Tiempo_trabajado+CATEGORIA_EDUCATIVA+
+                  `Cantidad de personas en el hogar`+Edad+sastifacion+Horas_trabajadas_semana+
+                  Departamento
+                ,Base_datos)
+
+summary(Modelo_final)
+
+library(broom)
+
+# Crear resumen del modelo
+resumen_mod <- broom::tidy(Modelo_final) %>%
+  mutate(across(where(is.numeric), ~ round(., 5))) %>%
+  rename(`Variable` = term,
+    `Coeficiente` = estimate,
+    `Error Estándar` = std.error,
+    `Estadístico t` = statistic,
+    `Valor p` = p.value) %>%
+  mutate(Significancia = case_when(
+      `Valor p` < 0.001 ~ "***",
+      `Valor p` < 0.01  ~ "**",
+      `Valor p` < 0.05  ~ "*",
+      TRUE ~ "")) %>% 
+  mutate(`Valor p` = case_when(
+      is.na(`Valor p`) ~ "1",
+      `Valor p` < 2e-16 ~ "2e-16",
+      TRUE ~ formatC(`Valor p`, format = "e", digits = 3)),
+    Sig. = case_when(
+      as.numeric(`Valor p`) < 0.001 ~ "***",
+      as.numeric(`Valor p`) < 0.01  ~ "**",
+      as.numeric(`Valor p`) < 0.05  ~ "*",
+      as.numeric(`Valor p`) < 0.1  ~ ".",
+      TRUE ~ ""))
+
+# Extraer medidas globales del modelo
+
+resumen_global <- glance(Modelo_final)
+summary(resumen_global)
+
+# Crear tabla principal
+
+resumen_global <- glance(Modelo_final)
+R2 <- round(resumen_global$adj.r.squared, 4)
+Fstat <- round(resumen_global$statistic, 2)
+pvalor_modelo <- formatC(resumen_global$p.value, format = "e", digits = 2)
+N <- resumen_global$df.residual + length(Modelo_final$coefficients)
+
+# ---- 3️⃣ Crear filas resumen y añadirlas debajo ----
+
+filas_resumen <- tibble(
+  Variable = c("R² ajustado", "F", "Valor p (modelo)", "N"),
+  Coeficiente = as.character(c(R2, Fstat, pvalor_modelo, N)),
+  `Error Estándar` = as.character(c("", "", "", "")),
+  `Estadístico t` = as.character(c("", "", "", "")),
+  `Valor p` = as.character(c("", "", "", "")),
+  Sig. = as.character(c("", "", "", "")))
+
+resumen_mod_chr= resumen_mod %>%
+  mutate_all(as.character)
+
+tabla_final <- bind_rows(resumen_mod_chr, filas_resumen)
+
+tabla_final <- tabla_final %>% 
+  select(Variable, Coeficiente, `Error Estándar`, `Estadístico t`, `Valor p`, Sig.)
+
+kbl(tabla_final,
+    caption = "Resultados del modelo de regresión lineal múltiple",
+    align = c("l", "r", "r", "r", "r", "c"),
+    col.names = names(tabla_final)) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = FALSE,
+    font_size = 14,
+    position = "center") %>%
+  row_spec(0, background = "#2b6cb0", color = "white", bold = TRUE) %>%
+  column_spec(1, bold = TRUE, width = "4cm") %>%
+  column_spec(2:6, width = "2.5cm") %>%
+  row_spec((nrow(resumen_mod_chr) + 1):(nrow(resumen_mod_chr) + nrow(filas_resumen)),
+           bold = TRUE, italic = FALSE, background = "#e6f0ff") %>%
+  footnote(
+    general = "Elaboración propia con base en ECV DANE 2024.",
+    general_title = "Nota:",
+    footnote_as_chunk = TRUE)

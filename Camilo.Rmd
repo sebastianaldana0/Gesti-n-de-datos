@@ -5,26 +5,154 @@ date: "2025-10-06"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r base de datos}
+#Librerias
+library(tidyverse)
+library(scales)
+library(readxl)
+library(ggcorrplot)
+library(visreg)
+library(nortest)
+library(lmtest)
+library(ggthemes)
+library(ggpmisc)
+library(DT)
+library(plotly)
+
+datos_hogar=read.csv("datos_hogar.csv", sep = ";") %>% 
+  select(DIRECTORIO,I_HOGAR,CANT_PERSONAS_HOGAR) %>% 
+  rename("Ingreso del hogar"=2,"Cantidad de personas en el hogar"=3) %>% 
+  distinct(DIRECTORIO, .keep_all = TRUE) %>% filter(`Ingreso del hogar`!=0)
+
+educacion=read.csv("educacion.csv", sep= ";") %>% 
+  select(DIRECTORIO,P8587) %>% 
+  group_by(DIRECTORIO) %>%
+  filter(P8587 == max(P8587))  %>%
+  ungroup() %>% 
+  distinct(DIRECTORIO, .keep_all = TRUE) %>% 
+  mutate(
+    Estudios = case_when(
+      P8587 == 1 ~ "Ninguno",
+      P8587 == 2 ~ "Preescolar",
+      P8587 == 3 ~ "Primaria (1º-5º)",
+      P8587 == 4 ~ "Secundaria (6º-9º)",
+      P8587 == 5 ~ "Media (10º-13º)",
+      P8587 == 6 ~ "Técnico sin título",
+      P8587 == 7 ~ "Técnico con título",
+      P8587 == 8 ~ "Tecnológico sin título",
+      P8587 == 9 ~ "Tecnológico con título",
+      P8587 == 10 ~ "Universitario sin título",
+      P8587 == 11 ~ "Universitario con título",
+      P8587 == 12 ~ "Postgrado sin título",
+      P8587 == 13 ~ "Postgrado con título",
+      TRUE ~ "No especificado"
+    ),
+    CATEGORIA_EDUCATIVA = case_when(
+      P8587 %in% 1:2 ~ "Primaria",
+      P8587 %in% 3:5 ~ "Secundaria",
+      P8587 %in% 6:9 ~ "Técnica/Tecnológica",
+      P8587 %in% 10:11 ~ "Universitaria",
+      P8587 %in% 12:13 ~ "Postgrado",
+      TRUE ~ "Otro"
+    ),    CATEGORIA_EDUCATIVA = factor(CATEGORIA_EDUCATIVA,
+                                       levels = c("Primaria", "Secundaria", "Técnica/Tecnológica", 
+                                                  "Universitaria", "Postgrado")))
+
+caracteristicas_hogar=read.csv("Características_composición.CSV",sep= ";") %>% 
+  filter(P6051==1) %>% 
+  select(DIRECTORIO,P6020,P6040,P1895) %>% rename(Sexo=2,Edad=3,
+                                                              sastifacion=4)
+
+vivienda=read.csv("Datos de la vivienda.csv",sep=";") %>% 
+  select(DIRECTORIO,P1_DEPARTAMENTO) %>% rename(Departamento=2) %>% 
+  distinct(DIRECTORIO, .keep_all = TRUE)
+
+trabajo=read.csv("Fuerza de trabajo.CSV",sep=";") %>% 
+  select(DIRECTORIO,P8624,P415,P8634,P6426,P416,P6440,P6460,P6426,P8636) %>% 
+  rename(Ingresos_mes=2,Horas_trabajadas_semana=3,"Lugar de trabajo"=4,Tiempo_trabajado=5,
+         Semana_horas=6,contrato=7,Tipo_contrato=8,
+         meses=8)
+
+Base_datos=caracteristicas_hogar  %>% inner_join(datos_hogar,by="DIRECTORIO") %>% 
+  inner_join(vivienda,by="DIRECTORIO") %>% inner_join(educacion,by="DIRECTORIO") %>% inner_join(trabajo,by="DIRECTORIO") %>% 
+  filter(Departamento%in%c(76,19,52,27),Edad!=0,Edad>=18,`Ingreso del hogar`<=50000000) %>% 
+  select(Departamento,`Ingreso del hogar`,`Cantidad de personas en el hogar`,Sexo,
+         Edad,CATEGORIA_EDUCATIVA,Tiempo_trabajado,Horas_trabajadas_semana,
+         sastifacion) %>% mutate(
+           Departamento= case_when(
+             Departamento == 76 ~ "Valle del Cauca",
+             Departamento == 19 ~ "Cauca",
+             Departamento == 52 ~ "Nariño",
+             Departamento == 27 ~ "Chocó"),
+           Sexo= case_when(Sexo==1~ "Hombre",
+                           Sexo==2~ "Mujer"))
+
+
 ```
+# Resultados del modelo
+En esta sección se presentan los resultados del modelo de regresión lineal estimado.  
+Inicialmente se analiza la asociación entre la variable dependiente y las variables explicativas mediante el coeficiente de correlación de Pearson. Posteriormente, se resume la bondad de ajuste del modelo utilizando el análisis de varianza (ANOVA) y el resumen del modelo.  
 
-## R Markdown
+Finalmente, se valida el cumplimiento de los supuestos clásicos del modelo lineal:  
+(1) la media de los errores es cero,  
+(2) la varianza de los errores es constante (homocedasticidad),  
+(3) los errores son aleatorios e independientes entre sí, y  
+(4) los errores se distribuyen normalmente.  
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+La validación se realiza en dos etapas: una evaluación gráfica y una validación estadística mediante pruebas de hipótesis específicas para cada supuesto.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+```{r}
+Modelo_final=lm(log(`Ingreso del hogar`)~Sexo+Tiempo_trabajado+CATEGORIA_EDUCATIVA+
+                  `Cantidad de personas en el hogar`+Edad+sastifacion+Horas_trabajadas_semana+
+                  Departamento
+                ,Base_datos)
 
-```{r cars}
-summary(cars)
+summary(Modelo_final)
 ```
+```{r correlacio}
+library(tidyverse)
+#  Seleccionar solo variables numéricas
+num_vars <- Base_datos %>% 
+  select_if(is.numeric)
 
-## Including Plots
+#  Calcular correlaciones de Pearson
+corr_result <- Hmisc::rcorr(as.matrix(num_vars))
 
-You can also embed plots, for example:
+#  Extraer correlaciones y p-valores con la variable dependiente
+cor_y <- corr_result$r[, "Ingreso del hogar"]
+pval_y <- corr_result$P[, "Ingreso del hogar"]
+summary(pval_y)
+view(pval_y)
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+Modelop=lm(`Ingreso del hogar`~Tiempo_trabajado,Base_datos)
+summary
+
+
+tabla_corr <- tibble(
+  Variable = names(cor_y),
+  `Coef. de Pearson (r)` = round(cor_y, 3),
+  `Valor p` = pval_y) %>%
+  filter(Variable != "Ingreso del hogar", Variable != "Sexo") %>%
+  mutate(
+    `Valor p` = case_when(
+      is.na(`Valor p`) ~ NA_character_,
+      `Valor p` < 2e-16 ~ "2e-16",
+      TRUE ~ formatC(`Valor p`, format = "e", digits = 3)),
+    Significativo = ifelse(as.numeric(pval_y[match(Variable, names(pval_y))]) < 0.05, "Sí", "No"))
+
+tabla_corr %>%
+  kbl(caption = "Coeficiente de Correlación de Pearson con la Variable Dependiente",
+    align = c("l", "r", "r", "c"),
+    col.names = c("Variable", "Coef. de Pearson (r)", "Valor p", "Significativo")) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = FALSE,
+    font_size = 14,
+    position = "center") %>%
+  row_spec(0, background = "#2b6cb0", color = "white", bold = TRUE) %>%
+  column_spec(1, bold = TRUE, width = "3cm") %>%
+  column_spec(2:4, width = "2.5cm") %>%
+  footnote(general = "Elaboración propia con base en ECV DANE 2024",
+    general_title = "Nota:",
+    footnote_as_chunk = TRUE)
 ```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
