@@ -569,7 +569,7 @@ La Encuesta Nacional de Calidad de Vida (ECV) 2024 tuvo como objetivo general ob
 
 **Cobertura geográfica**: Nacional con desagregaciones para:
 
-Total nacional y áreas (cabecera y centros poblados-rural disperso)
+### Total nacional y áreas (cabecera y centros poblados-rural disperso)
 
 Bogotá y los treinta y dos departamentos del país con sus respectivas áreas, a excepción de San Andrés, donde solo se cuenta con información de la cabecera municipal
 
