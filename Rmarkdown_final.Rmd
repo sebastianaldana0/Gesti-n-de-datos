@@ -594,6 +594,9 @@ La región (departamento) corresponde a la Región Pacífica, la cual se escoge 
 
 La edad es un factor que se considera relacionado con una mayor experiencia y, por lo tanto, con mayores ingresos. Sin embargo, las jubilaciones pueden afectar el comportamiento lineal que se esperaría, haciendo que este se estabilice o disminuya. Por ello, la edad se reconoce como una variable importante para relacionar con los ingresos, ya que estos tienden a variar a lo largo del ciclo de vida laboral. En Colombia, menos de una cuarta parte de los adultos mayores reciben pensión, y los ingresos laborales siguen siendo la principal fuente de sustento incluso en la vejez (Villar et al., 2016).
 
+**Ecuación del modelo:**
+$$ING = \beta_0 + \beta_1(Edad) + \beta_2(Dpto) + \beta_3(Sexo) + \beta_4(C.de personas) + \beta_5(Estudios) + \beta_6(Sastifacion) + \epsilon$$
+
 ## Base de datos del estudio
 
 Para el presente trabajo, se utiliza la base de datos de la ECV 2024 filtrada específicamente para la región Pacífica, que incluye los departamentos de Chocó, Cauca, Nariño y Valle del Cauca. La base de datos ha sido depurada y contiene únicamente las variables de interés para el modelo de regresión lineal:
@@ -667,9 +670,8 @@ trabajo=read.csv("Fuerza de trabajo.CSV",sep=";") %>%
          meses=8)
 
 Base_datos=caracteristicas_hogar  %>% inner_join(datos_hogar,by="DIRECTORIO") %>% 
-  inner_join(vivienda,by="DIRECTORIO") %>% inner_join(educacion,by="DIRECTORIO") %>% inner_join(trabajo,by="DIRECTORIO")%>% 
-  mutate(`Ingreso del hogar`=log(`Ingreso del hogar`),Edad2=Edad*Edad) %>% 
-  filter(Departamento%in%c(76,19,52,27),Edad!=0,Edad>=18) %>% 
+  inner_join(vivienda,by="DIRECTORIO") %>% inner_join(educacion,by="DIRECTORIO") %>% inner_join(trabajo,by="DIRECTORIO") %>% 
+  filter(Departamento%in%c(76,19,52,27),Edad!=0,Edad>=18,`Ingreso del hogar`<=50000000) %>% 
   select(Departamento,`Ingreso del hogar`,`Cantidad de personas en el hogar`,Sexo,
          Edad,CATEGORIA_EDUCATIVA,Tiempo_trabajado,Horas_trabajadas_semana,
          sastifacion) %>% mutate(
@@ -677,7 +679,9 @@ Base_datos=caracteristicas_hogar  %>% inner_join(datos_hogar,by="DIRECTORIO") %>
              Departamento == 76 ~ "Valle del Cauca",
              Departamento == 19 ~ "Cauca",
              Departamento == 52 ~ "Nariño",
-             Departamento == 27 ~ "Choco"))
+             Departamento == 27 ~ "Chocó"),
+           Sexo= case_when(Sexo==1~ "Hombre",
+                           Sexo==2~ "Mujer"))
 
 
 library(reactable)
@@ -715,6 +719,118 @@ reactable(
 ```
 
 # Resultados descriptivos
+
+```{r tabla-promedios, echo=FALSE, warning=FALSE}
+library(dplyr)
+library(kableExtra)
+
+
+tabla_promedios <- Base_datos %>%
+  group_by(Departamento) %>%  
+  summarise(
+    `N Observaciones` = n(),
+    `Ingreso Promedio` = mean(`Ingreso del hogar`, na.rm = TRUE),
+    `Edad Promedio` = mean(Edad, na.rm = TRUE),
+    `C. personas promedio` = mean(`Cantidad de personas en el hogar`, na.rm = TRUE),
+    `Desv. Estándar Ingreso` = sd(`Ingreso del hogar`, na.rm = TRUE),
+    `Ingreso Mínimo` = min(`Ingreso del hogar`, na.rm = TRUE),
+    `Ingreso Máximo` = max(`Ingreso del hogar`, na.rm = TRUE),
+    .groups = 'drop'
+  ) %>%
+  mutate(
+    `Ingreso Promedio` = round(`Ingreso Promedio`, 2),
+    `Edad Promedio` = round(`Edad Promedio`, 1),
+    `Desv. Estándar Ingreso` = round(`Desv. Estándar Ingreso`, 2)
+  )
+
+
+tabla_promedios %>%
+  kbl(
+    caption = "Tabla 1: Estadísticas Descriptivas Agrupadas por Código",
+    align = c("l", "r", "r","r", "r", "r", "r", "r"),
+    col.names = c("Código", "N", "Ingreso Promedio", "Edad Promedio","C. personas promedio",
+                  "Desv. Estándar", "Mínimo", "Máximo")
+  ) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = FALSE,
+    font_size = 14,
+    position = "center"
+  ) %>%
+  row_spec(0, background = "#2b6cb0", color = "white", bold = TRUE) %>%
+  column_spec(1, bold = TRUE, width = "3cm") %>%
+  column_spec(2:7, width = "2.5cm") %>%
+  footnote(
+    general = "Fuente: Elaboración propia con base en ECV DANE 2024",
+    general_title = "Nota:",
+    footnote_as_chunk = TRUE
+  )
+
+```
+
+```{r mapa}
+library(rnaturalearth)
+library(sf)
+library(devtools)
+
+colombia <- ne_states(country = "colombia", returnclass = "sf")
+pacifica <- colombia %>% filter(name %in% c("Chocó", "Valle del Cauca", "Cauca", "Nariño"))
+
+pacifica_con_ingresos <- pacifica %>%
+  left_join(tabla_promedios, by = c("name" = "Departamento"))
+
+azules_puros <- c("#3E4A89", "#31688E", "#26828E", "#1F9E89")
+
+
+g_mapa=ggplot() +
+  geom_sf(data = colombia, fill = "lightgray", color = "white", alpha = 0.5) +
+  geom_sf(data = pacifica_con_ingresos, 
+          aes(fill = `Ingreso Promedio`), 
+          color = "white", size = 0.8) +
+   scale_fill_gradientn(
+    name = "Ingreso Promedio (COP)",
+    labels = dollar_format(prefix = "$", big.mark = ","),
+    colors = azules_puros  
+  ) +
+  labs(
+    title = "Mapa de Ingresos Promedio - Región Pacífica de Colombia",
+    subtitle = "Distribución del ingreso familiar por departamento",
+    caption = "Fuente: ECV DANE 2024"
+  ) +theme_void() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 16),
+    plot.subtitle = element_text(hjust = 0.5, size = 12),
+    legend.position = "right",
+    legend.title = element_text(face = "bold")
+  )
+
+mapa_interactivo <- ggplotly(g_mapa, tooltip = "text", width = 800, height = 600) %>%
+  layout(
+    title = list(
+      text = "Mapa de Ingresos Promedio - Región Pacífica de Colombia",
+      x = 0.5,
+      font = list(size = 18, weight = "bold")
+    ),
+    hoverlabel = list(
+      bgcolor = "white",
+      bordercolor = "black",
+      font = list(size = 12, color = "black")
+    ),
+    margin = list(t = 60, b = 20, l = 20, r = 20),
+    legend = list(
+      orientation = "v",
+      x = 0.9,
+      y = 0.9,
+      bgcolor = "rgba(255,255,255,0.8)",
+      bordercolor = "lightgray"
+    )
+  ) %>%
+  config(displayModeBar = TRUE, displaylogo = FALSE)
+
+mapa_interactivo
+```
+
+
 
 ```{r grafica 1}
 Base_datos1 <- Base_datos %>%
@@ -811,7 +927,6 @@ G1_interactivo <- ggplotly(G1_powerbi, tooltip = "text", height = 600) %>%
     )
   )
 
-G1_interactivo
 
 ```
 
@@ -819,6 +934,14 @@ G1_interactivo
 
 # Resultados del modelo
 
+```{r}
+Modelo_final=lm(log(`Ingreso del hogar`)~Sexo+Tiempo_trabajado+CATEGORIA_EDUCATIVA+
+                  `Cantidad de personas en el hogar`+Edad+sastifacion+Horas_trabajadas_semana+
+                  Departamento
+                ,Base_datos)
+
+summary(Modelo_final)
+```
 
 
 
