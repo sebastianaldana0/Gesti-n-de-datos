@@ -719,6 +719,55 @@ reactable(
 
 # Resultados descriptivos
 
+```{r tabla-promedios, echo=FALSE, warning=FALSE}
+library(dplyr)
+library(kableExtra)
+
+
+tabla_promedios <- Base_datos %>%
+  group_by(Departamento) %>%  
+  summarise(
+    `N Observaciones` = n(),
+    `Ingreso Promedio` = mean(`Ingreso del hogar`, na.rm = TRUE),
+    `Edad Promedio` = mean(Edad, na.rm = TRUE),
+    `C. personas promedio` = mean(`Cantidad de personas en el hogar`, na.rm = TRUE),
+    `Desv. Estándar Ingreso` = sd(`Ingreso del hogar`, na.rm = TRUE),
+    `Ingreso Mínimo` = min(`Ingreso del hogar`, na.rm = TRUE),
+    `Ingreso Máximo` = max(`Ingreso del hogar`, na.rm = TRUE),
+    .groups = 'drop'
+  ) %>%
+  mutate(
+    `Ingreso Promedio` = round(`Ingreso Promedio`, 2),
+    `Edad Promedio` = round(`Edad Promedio`, 1),
+    `Desv. Estándar Ingreso` = round(`Desv. Estándar Ingreso`, 2)
+  )
+
+
+tabla_promedios %>%
+  kbl(
+    caption = "Tabla 1: Estadísticas Descriptivas Agrupadas por Código",
+    align = c("l", "r", "r","r", "r", "r", "r", "r"),
+    col.names = c("Código", "N", "Ingreso Promedio", "Edad Promedio","C. personas promedio",
+                  "Desv. Estándar", "Mínimo", "Máximo")
+  ) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = FALSE,
+    font_size = 14,
+    position = "center"
+  ) %>%
+  row_spec(0, background = "#2b6cb0", color = "white", bold = TRUE) %>%
+  column_spec(1, bold = TRUE, width = "3cm") %>%
+  column_spec(2:7, width = "2.5cm") %>%
+  footnote(
+    general = "Fuente: Elaboración propia con base en ECV DANE 2024",
+    general_title = "Nota:",
+    footnote_as_chunk = TRUE
+  )
+
+```
+
+
 ```{r grafica 1}
 Base_datos1 <- Base_datos %>%
   mutate(
