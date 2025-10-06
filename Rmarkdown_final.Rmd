@@ -927,7 +927,6 @@ G1_interactivo <- ggplotly(G1_powerbi, tooltip = "text", height = 600) %>%
     )
   )
 
-G1_interactivo
 
 ```
 
