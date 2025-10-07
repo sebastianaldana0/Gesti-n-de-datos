@@ -521,7 +521,7 @@ for(pkg in required_packages) {
 }
 
 # Configurar tema para gráficos
-tema_powerbi <- theme_minimal() +
+tema<- theme_minimal() +
   theme(
     text = element_text(family = "Segoe UI", color = "#2d3748"),
     plot.title = element_text(face = "bold", size = 18, hjust = 0.5, color = "#323130"),
@@ -681,7 +681,9 @@ Base_datos=caracteristicas_hogar  %>% inner_join(datos_hogar,by="DIRECTORIO") %>
              Departamento == 52 ~ "Nariño",
              Departamento == 27 ~ "Chocó"),
            Sexo= case_when(Sexo==1~ "Hombre",
-                           Sexo==2~ "Mujer"))
+                           Sexo==2~ "Mujer")) %>% 
+  filter(!is.na(Horas_trabajadas_semana)) %>% 
+  rename(Estudios=6,"Tiempo total trabajado"=7,"Horas trabajadas la semana pasada"=8)
 
 
 library(reactable)
@@ -833,100 +835,45 @@ mapa_interactivo
 
 
 ```{r grafica 1}
-Base_datos1 <- Base_datos %>%
-  mutate(
-    tooltip_text = paste(
-      "Edad:", Edad, "años<br>",
-      "Ingreso: $", format(round(`Ingreso del hogar`), big.mark = ","), "<br>",
-      "Grupo Etario: ", cut(Edad, breaks = c(0, 25, 35, 45, 55, 65, 100),
-                           labels = c("18-25", "26-35", "36-45", "46-55", "56-65", "65+")), "<br>",
-      "Nivel Ingreso: ", ifelse(`Ingreso del hogar` < quantile(`Ingreso del hogar`, 0.33), "Bajo",
-                               ifelse(`Ingreso del hogar` < quantile(`Ingreso del hogar`, 0.66), "Medio", "Alto")),
-      sep = ""
-    )
-  )
-
-G1_powerbi <- ggplot(Base_datos1, aes(x = Edad, y = `Ingreso del hogar`, text = tooltip_text)) +
-  geom_point(alpha = 0.4, color = "#0078D4", size = 2, position = position_jitter(width = 0.3)) +
-  geom_smooth(method = "loess", span = 0.7, color = "#E81123", 
-              linewidth = 2, fill = "#FFB900", alpha = 0.3, se = TRUE) +
+grafica_ggplot <- ggplot(Base_datos, aes(x =`Cantidad de personas en el hogar`, y = `Ingreso del hogar`)) +
+  geom_jitter(aes(color = Departamento, text = paste(
+    "\nPersonas:", `Cantidad de personas en el hogar`,
+    "\nIngreso:", dollar(`Ingreso del hogar`),
+    "\nRegión:", Departamento
+  )),
+  alpha = 0.7, 
+  width = 0.2,    
+  height = 0,     
+  show.legend = TRUE) +
+  geom_smooth(method = "lm", formula = y ~ x, 
+              color = "#E63946", se = TRUE, fill = "#F4A261", 
+              alpha = 0.2, size = 1.2) +
+  scale_color_manual(values = c("#1D3557", "#E63946", "#2A9D8F", "#F4A261")) +
+  scale_size_continuous(range = c(2, 8), guide = "none") +
+  scale_x_continuous(breaks = 1:8) +
+  scale_y_continuous(labels = dollar_format(prefix = "$", big.mark = ",")) +
   labs(
-    title = "📈 RELACIÓN ENTRE EDAD E INGRESOS DEL HOGAR",
-    subtitle = "Análisis del ciclo de vida económico y patrones de ingresos",
-    x = "EDAD",
-    y = "INGRESO ANUAL DEL HOGAR (USD)",
-    caption = "Fuente: Encuesta ECV DANE 2024 | Análisis: Equipo de Investigación"
-  ) +
-  scale_y_continuous(
-    labels = dollar_format(prefix = "$", big.mark = ","),
-    limits = c(0, max(Base_datos$`Ingreso del hogar`) * 1.1)
-  ) +
-  scale_x_continuous(breaks = seq(20, 80, by = 10)) +
-  geom_hline(yintercept = mean(Base_datos$`Ingreso del hogar`), 
-             linetype = "dashed", color = "#605e5c", alpha = 0.6, linewidth = 0.5) +
-  geom_vline(xintercept = 50, linetype = "dashed", color = "#605e5c", alpha = 0.7, linewidth = 0.8) +
-  annotate("text", x = 52, y = max(Base_datos$`Ingreso del hogar`) * 0.85, 
-           label = "PICO DE INGRESOS\n~50 AÑOS", 
-           color = "#323130", size = 3.2, hjust = 0, fontface = "bold", lineheight = 0.9) +
-  annotate("text", x = 25, y = mean(Base_datos$`Ingreso del hogar`) * 1.05, 
-           label = paste("MEDIA: $", format(round(mean(Base_datos$`Ingreso del hogar`)), big.mark = ",")), 
-           color = "#605e5c", size = 3, hjust = 0) +
-  tema_powerbi
+    title = "Relación entre Ingreso Familiar y Tamaño del Hogar",
+    subtitle = "Análisis interactivo de la distribución de ingresos",
+    x = "Cantidad de Personas en el Hogar",
+    y = "Ingreso Familiar Anual (USD)",
+    color = "Departamento",
+    caption = "Cada punto representa un hogar. Pasa el mouse para ver detalles."
+  ) + tema
 
-G1_interactivo <- ggplotly(G1_powerbi, tooltip = "text", height = 600) %>%
+print(grafica_ggplot)
+
+grafica_interactiva <- ggplotly(grafica_ggplot, tooltip = "text") %>%
   layout(
-    font = list(family = "Segoe UI, Arial, sans-serif"),
-    plot_bgcolor = '#ffffff',
-    paper_bgcolor = '#ffffff',
-    title = list(
-      text = "📈 RELACIÓN ENTRE EDAD E INGRESOS DEL HOGAR<br>
-             <sub style='color:#605e5c; font-size:12px'>Análisis del ciclo de vida económico y patrones de ingresos</sub>",
-      x = 0.05,
-      y = 0.95,
-      font = list(size = 20, color = "#323130")
-    ),
     hoverlabel = list(
       bgcolor = "white",
-      bordercolor = "#0078D4",
-      font = list(family = "Segoe UI", size = 11, color = "#323130"),
-      align = "left"
-    ),
-    xaxis = list(
-      title = list(text = "<b>EDAD</b>", font = list(size = 14, color = "#323130")),
-      gridcolor = "#f3f2f1",
-      zerolinecolor = "#f3f2f1"
-    ),
-    yaxis = list(
-      title = list(text = "<b>INGRESO ANUAL DEL HOGAR (USD)</b>", font = list(size = 14, color = "#323130")),
-      gridcolor = "#f3f2f1",
-      zerolinecolor = "#f3f2f1"
-    ),
-    margin = list(l = 80, r = 50, t = 120, b = 80),
-    annotations = list(
-      list(
-        x = 0.02, y = -0.15,
-        text = "Fuente: Encuesta ECV DANE 2024 | Análisis: Equipo de Investigación",
-        showarrow = FALSE,
-        xref = "paper", yref = "paper",
-        xanchor = "left", yanchor = "bottom",
-        font = list(size = 10, color = "#605e5c")
-      )
+      bordercolor = "black",
+      font = list(color = "black", size = 12)
     )
   ) %>%
-  config(
-    displayModeBar = TRUE,
-    modeBarButtonsToRemove = c("pan2d", "select2d", "lasso2d", "autoScale2d"),
-    modeBarButtonsToAdd = list("drawline", "drawopenpath", "drawclosedpath", "drawcircle", "drawrect", "eraseshape"),
-    displaylogo = FALSE,
-    toImageButtonOptions = list(
-      format = "png",
-      filename = "analisis_ingresos_edad",
-      height = 600,
-      width = 1000,
-      scale = 2
-    )
-  )
-
+  config(displayModeBar = TRUE, 
+         modeBarButtonsToAdd = list("drawline", "drawopenpath", "eraseshape"),
+         displaylogo = FALSE)
 
 ```
 
@@ -934,17 +881,48 @@ G1_interactivo <- ggplotly(G1_powerbi, tooltip = "text", height = 600) %>%
 
 # Resultados del modelo
 
-```{r}
-Modelo_final=lm(log(`Ingreso del hogar`)~Sexo+Tiempo_trabajado+CATEGORIA_EDUCATIVA+
-                  `Cantidad de personas en el hogar`+Edad+sastifacion+Horas_trabajadas_semana+
-                  Departamento
-                ,Base_datos)
+```{r correlacion}
+num_vars <- Base_datos %>% 
+  select_if(is.numeric)
 
-summary(Modelo_final)
+corr_result <- Hmisc::rcorr(as.matrix(num_vars))
+
+cor_y <- corr_result$r[, "Ingreso del hogar"]
+pval_y <- corr_result$P[, "Ingreso del hogar"]
+
+Modelop=lm(`Ingreso del hogar`~`Tiempo total trabajado`,Base_datos)
+
+
+tabla_corr <- tibble(
+  Variable = names(cor_y),
+  `Coef. de Pearson (r)` = round(cor_y, 3),
+  `Valor p` = pval_y) %>%
+  filter(Variable != "Ingreso del hogar") %>%
+  mutate(
+    `Valor p` = case_when(
+      is.na(`Valor p`) ~ NA_character_,
+      `Valor p` < 2e-16 ~ "2e-16",
+      TRUE ~ formatC(`Valor p`, format = "e", digits = 3)),
+    Significativo = ifelse(as.numeric(pval_y[match(Variable, names(pval_y))]) < 0.05, "Sí", "No"))
+
+tabla_corr %>%
+  kbl(caption = "Coeficiente de Correlación de Pearson con la Variable Dependiente",
+    align = c("l", "r", "r", "c"),
+    col.names = c("Variable", "Coef. de Pearson (r)", "Valor p", "Significativo")) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = FALSE,
+    font_size = 14,
+    position = "center") %>%
+  row_spec(0, background = "#2b6cb0", color = "white", bold = TRUE) %>%
+  column_spec(1, bold = TRUE, width = "3cm") %>%
+  column_spec(2:4, width = "2.5cm") %>%
+  footnote(general = "Elaboración propia con base en ECV DANE 2024",
+    general_title = "Nota:")
 ```
 
 
 
-# Concluciones 
+# Conclusiones 
 
 # Bibliografia
