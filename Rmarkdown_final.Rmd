@@ -662,7 +662,7 @@ caracteristicas_hogar=read.csv("Características_composición.CSV",sep= ";") %>%
 vivienda=read.csv("Datos de la vivienda.csv",sep=";") %>% 
   select(DIRECTORIO,CLASE,P1_DEPARTAMENTO,P8520S1A1) %>% rename(Ubicacion=2,Departamento=3,Estrato=4) %>% 
   distinct(DIRECTORIO, .keep_all = TRUE) %>% 
-  filter(Estrato==1)
+  filter(Estrato%in%c(1,2))
 
 trabajo=read.csv("Fuerza de trabajo.CSV",sep=";") %>% 
   select(DIRECTORIO,P8624,P415,P8634,P6426,P416,P6440,P6460,P6426,P8636) %>% 
@@ -854,7 +854,8 @@ grafica_boxplot_estudios <- ggplot(Base_datos,
     fill = "Nivel Educativo"
   ) +tema
 
-ggplotly(grafica_boxplot_estudios, tooltip = "text")
+
+print(grafica_boxplot_estudios)
 ```
 
 
@@ -902,6 +903,11 @@ grafica_interactiva <- ggplotly(grafica_ggplot, tooltip = "text") %>%
          displaylogo = FALSE)
 
 ```
+
+```{r Grafica 3}
+
+```
+
 
 
 

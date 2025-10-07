@@ -71,8 +71,11 @@ trabajo=read.csv("Fuerza de trabajo.CSV",sep=";") %>%
          
 
 vivienda=read.csv("Datos de la vivienda.csv",sep=";") %>% 
-  select(DIRECTORIO,CLASE,P1_DEPARTAMENTO) %>% rename(Ubicacion=2,Departamento=3) %>% 
+  select(DIRECTORIO,CLASE,P1_DEPARTAMENTO,P8520S1A1) %>% rename(Ubicacion=2,Departamento=3,Estrato=4) %>% 
   distinct(DIRECTORIO, .keep_all = TRUE)
+
+%>% 
+  filter(Estrato%in%c(1,2,3))
 
 salud=read.csv("Salud.CSV", sep=";")  %>%
   select(DIRECTORIO,P6090) %>% 
@@ -98,7 +101,8 @@ Base_datos=caracteristicas_hogar  %>% inner_join(datos_hogar,by="DIRECTORIO") %>
              Departamento == 76 ~ "Valle del Cauca",
              Departamento == 19 ~ "Cauca",
              Departamento == 52 ~ "Nariño",
-             Departamento == 27 ~ "Choco"))
+             Departamento == 27 ~ "Choco")) %>% 
+  rename(Estudios=6,"Tiempo total trabajado"=7,"Horas trabajadas la semana pasada"=8)
   
 
 #Modelos
@@ -107,8 +111,8 @@ Base_datos=caracteristicas_hogar  %>% inner_join(datos_hogar,by="DIRECTORIO") %>
 
 #Modelo final
 
-Modelo_final=lm(log(`Ingreso del hogar`)~Sexo+Tiempo_trabajado+CATEGORIA_EDUCATIVA+
-                  `Cantidad de personas en el hogar`+Edad+sastifacion+Horas_trabajadas_semana+
+Modelo_final=lm(log(`Ingreso del hogar`)~Sexo+`Tiempo total trabajado`+Estudios+
+                  `Cantidad de personas en el hogar`+Edad+sastifacion+`Horas trabajadas la semana pasada`+
                   Departamento
                 ,Base_datos)
 
@@ -118,6 +122,17 @@ plot(Modelo_final,which=1)
 plot(Modelo_final,which=2)
 plot(Modelo_final,which=3)
 plot(Modelo_final,which=5)
+
+Modelo_pruebas=lm(log(`Ingreso del hogar`)~Estudios+`Cantidad de personas en el hogar`+
+                    `Horas trabajadas la semana pasada`+Edad+Sexo
+                ,Base_datos)
+
+summary(Modelo_pruebas)
+
+plot(Modelo_pruebas,which=1)
+plot(Modelo_pruebas,which=2)
+plot(Modelo_pruebas,which=3)
+plot(Modelo_pruebas,which=5)
 
 #Pruebas modelo
 shapiro.test(Modelo_final$residuals)
