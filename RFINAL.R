@@ -90,7 +90,6 @@ Muestra=read.csv("muestral.CSV",sep=";") %>%
 
 Base_datos=caracteristicas_hogar  %>% inner_join(datos_hogar,by="DIRECTORIO") %>% 
   inner_join(vivienda,by="DIRECTORIO") %>% inner_join(educacion,by="DIRECTORIO") %>% inner_join(trabajo,by="DIRECTORIO")%>% 
-  mutate(`Ingreso del hogar`=log(`Ingreso del hogar`),Edad2=Edad*Edad) %>% 
   filter(Departamento%in%c(76,19,52,27),Edad!=0,Edad>=18) %>% 
   select(Departamento,`Ingreso del hogar`,`Cantidad de personas en el hogar`,Sexo,
          Edad,CATEGORIA_EDUCATIVA,Tiempo_trabajado,Horas_trabajadas_semana,
@@ -108,7 +107,7 @@ Base_datos=caracteristicas_hogar  %>% inner_join(datos_hogar,by="DIRECTORIO") %>
 
 #Modelo final
 
-Modelo_final=lm(`Ingreso del hogar`~Sexo+Tiempo_trabajado+CATEGORIA_EDUCATIVA+
+Modelo_final=lm(log(`Ingreso del hogar`)~Sexo+Tiempo_trabajado+CATEGORIA_EDUCATIVA+
                   `Cantidad de personas en el hogar`+Edad+sastifacion+Horas_trabajadas_semana+
                   Departamento
                 ,Base_datos)
