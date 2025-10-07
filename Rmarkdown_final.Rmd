@@ -832,9 +832,34 @@ mapa_interactivo <- ggplotly(g_mapa, tooltip = "text", width = 800, height = 600
 mapa_interactivo
 ```
 
-
-
 ```{r grafica 1}
+grafica_boxplot_estudios <- ggplot(Base_datos, 
+                                   aes(x = Estudios, y = `Ingreso del hogar`, 
+                                       fill = Estudios)) +
+  geom_boxplot(alpha = 0.8, outlier.shape = NA) +
+  geom_jitter(aes(text = paste("Nivel:", Estudios,
+                              "\nIngreso: $", format(round(`Ingreso del hogar`), big.mark = ","),
+                              "\nEdad:", Edad)),
+              width = 0.2, alpha = 0.4, size = 1.5, color = "gray30") +
+  stat_summary(fun = mean, geom = "point", shape = 23, size = 3, fill = "white") +
+  scale_fill_manual(values = c("#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd")) +
+  scale_y_continuous(labels = function(x) format(x, big.mark = ",", scientific = FALSE)) +
+  scale_x_discrete(limits = c("Primaria", "Secundaria", "Técnico", "Universitario", "Posgrado")) +
+  labs(
+    title = "Distribución de Ingresos por Nivel Educativo",
+    subtitle = "Cada punto representa un individuo. Rombo blanco: ingreso promedio",
+    x = "Nivel Educativo",
+    y = "Ingreso Mensual (COP)",
+    fill = "Nivel Educativo"
+  ) +tema
+
+ggplotly(grafica_boxplot_estudios, tooltip = "text")
+```
+
+
+
+
+```{r grafica 2}
 grafica_ggplot <- ggplot(Base_datos, aes(x =`Cantidad de personas en el hogar`, y = `Ingreso del hogar`)) +
   geom_jitter(aes(color = Departamento, text = paste(
     "\nPersonas:", `Cantidad de personas en el hogar`,
