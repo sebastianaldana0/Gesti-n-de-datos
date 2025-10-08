@@ -724,6 +724,12 @@ reactable(
 
 # Resultados descriptivos
 
+## Análisis Univariado de las Variables del Modelo
+
+### Caracterización de la Variable Dependiente: Ingreso Total del Hogar
+
+Los resultados del análisis descriptivo para el ingreso total mensual de los hogares colombianos revelan características estructurales relevantes para la comprensión de la distribución del ingreso nacional. En la tabla 1 vemos los analisis descriptivos para esta variable.
+
 ```{r tabla-promedios, echo=FALSE, warning=FALSE}
 library(dplyr)
 library(kableExtra)
@@ -734,8 +740,6 @@ tabla_promedios <- Base_datos %>%
   summarise(
     `N Observaciones` = n(),
     `Ingreso Promedio` = mean(`Ingreso del hogar`, na.rm = TRUE),
-    `Edad Promedio` = mean(Edad, na.rm = TRUE),
-    `C. personas promedio` = mean(`Cantidad de personas en el hogar`, na.rm = TRUE),
     `Desv. Estándar Ingreso` = sd(`Ingreso del hogar`, na.rm = TRUE),
     `Ingreso Mínimo` = min(`Ingreso del hogar`, na.rm = TRUE),
     `Ingreso Máximo` = max(`Ingreso del hogar`, na.rm = TRUE),
@@ -743,16 +747,14 @@ tabla_promedios <- Base_datos %>%
   ) %>%
   mutate(
     `Ingreso Promedio` = round(`Ingreso Promedio`, 2),
-    `Edad Promedio` = round(`Edad Promedio`, 1),
     `Desv. Estándar Ingreso` = round(`Desv. Estándar Ingreso`, 2)
   )
 
-
 tabla_promedios %>%
   kbl(
-    caption = "Tabla 1: Estadísticas Descriptivas Agrupadas por Código",
-    align = c("l", "r", "r","r", "r", "r", "r", "r"),
-    col.names = c("Código", "N", "Ingreso Promedio", "Edad Promedio","C. personas promedio",
+    caption = "Tabla 1: Estadísticas Descriptivas del ingreso del hogar por Departamento",
+    align = c("l", "r", "r", "r", "r", "r"),
+    col.names = c("Departamento", "N", "Ingreso promedio",
                   "Desv. Estándar", "Mínimo", "Máximo")
   ) %>%
   kable_styling(
@@ -763,13 +765,18 @@ tabla_promedios %>%
   ) %>%
   row_spec(0, background = "#2b6cb0", color = "white", bold = TRUE) %>%
   column_spec(1, bold = TRUE, width = "3cm") %>%
-  column_spec(2:7, width = "2.5cm") %>%
+  column_spec(2:6, width = "2.5cm") %>%  # Corregido: de 2:7 a 2:6
   footnote(
     general = "Fuente: Elaboración propia con base en ECV DANE 2024",
     general_title = "Nota:",
     footnote_as_chunk = TRUE
   )
 ```
+
+La distribución del ingreso total mensual de los hogares en la región Pacífica de Colombia refleja dinámicas económicas y sociales diferenciadas entre sus departamentos. De acuerdo con los datos de la ECV DANE 2024, presentados en la Tabla 1, se observa que el Valle del Cauca es el departamento con el ingreso promedio más alto ($2,348,430 COP), seguido del Cauca ($2,207,561 COP), Chocó ($1,930,799 COP) y Nariño ($1,767,745 COP). Estas diferencias no solo responden a factores productivos y de acceso a mercados, sino también a condiciones estructurales históricas, como la presencia de economías formales e informales, y niveles desiguales de inversión pública.
+
+La figura 1 permite identificar con claridad un gradiente descendente desde el norte hacia el sur de la región. El Valle del Cauca, con su posición geoestratégica y su base económica diversificada, presenta el mayor ingreso promedio, mientras que Nariño, a pesar de su importancia agrícola, registra el menor. Chocó y Cauca se ubican en posiciones intermedias, aunque con notorias brechas internas, como lo sugieren sus altas desviaciones estándar, lo que evidencia una significativa heterogeneidad en la distribución al interior de estos territorios.
+
 
 
 ```{r mapa}
@@ -833,6 +840,11 @@ mapa_interactivo <- ggplotly(g_mapa, tooltip = "text", width = 800, height = 600
 
 mapa_interactivo
 ```
+
+### Variables Explicativas Cuantitativas: Caracterización Estadística
+
+
+
 
 ```{r grafica 1}
 grafica_boxplot_estudios <- ggplot(Base_datos, 
