@@ -1012,9 +1012,9 @@ tabla_resultadoses <- Base_datos %>%
 tabla_resultadoses %>%
   kable(
     format = "html",
-    col.names = c("Departamento", "Frecuencia", "Porcentaje (%)", "Porcentaje Acumulado (%)"),
+    col.names = c("Estudios", "Frecuencia", "Porcentaje (%)", "Porcentaje Acumulado (%)"),
     align = c("l", "c", "c", "c"),
-    caption = "Distribución de Frecuencias del nivel de estudios"
+    caption = "Tabla 5 Distribución de Frecuencias del nivel de estudios"
   ) %>%
  kable_styling(
     bootstrap_options = c("striped", "hover", "condensed"),
@@ -1033,6 +1033,10 @@ tabla_resultadoses %>%
 
 #### Sexo
 
+La tabla 6 revela una marcada disparidad de género. Los datos muestran una predominancia significativa de hombres como jefes de hogar, representando el 64.6% del total (2,694 casos), mientras que las mujeres constituyen el 35.4% (1,475 casos). Esta relación de aproximadamente 2:1 evidencia una estructura patriarcal aún persistente en la conformación de los hogares de la región.
+
+La sobrerrepresentación masculina en la jefatura del hogar puede asociarse a factores culturales, económicos y sociales característicos de la región Pacífica. Esta distribución desigual refleja patrones tradicionales de organización familiar donde el hombre sigue siendo percibido como el principal proveedor económico del hogar. Para el modelo de regresión, esta variable adquiere especial relevancia al permitir analizar posibles brechas de ingreso asociadas al género del jefe de hogar, así como diferentes patrones de composición y distribución del ingreso familiar según el sexo de quien ejerce la jefatura
+
 ```{r tabla sexo}
 tabla_resultadossex <- Base_datos %>%
   group_by(Sexo) %>%  
@@ -1048,9 +1052,9 @@ tabla_resultadossex <- Base_datos %>%
 tabla_resultadossex %>%
   kable(
     format = "html",
-    col.names = c("Departamento", "Frecuencia", "Porcentaje (%)", "Porcentaje Acumulado (%)"),
+    col.names = c("Ganero", "Frecuencia", "Porcentaje (%)", "Porcentaje Acumulado (%)"),
     align = c("l", "c", "c", "c"),
-    caption = "Distribución de Frecuencias del nivel de estudios"
+    caption = "Tabla 6 Distribución de Frecuencias del genero"
   ) %>%
  kable_styling(
     bootstrap_options = c("striped", "hover", "condensed"),
@@ -1092,7 +1096,7 @@ tabla_resultados %>%
     format = "html",
     col.names = c("Departamento", "Frecuencia", "Porcentaje (%)", "Porcentaje Acumulado (%)"),
     align = c("l", "c", "c", "c"),
-    caption = "Distribución de Frecuencias por Departamento"
+    caption = "Tabla 7 Distribución de Frecuencias por Departamento"
   ) %>%
  kable_styling(
     bootstrap_options = c("striped", "hover", "condensed"),
