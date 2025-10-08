@@ -841,9 +841,9 @@ mapa_interactivo <- ggplotly(g_mapa, tooltip = "text", width = 800, height = 600
 mapa_interactivo
 ```
 
-### Variables Explicativas Cuantitativas: Caracterización Estadística
+## Variables Explicativas Cuantitativas: Caracterización Estadística
 
-#### Edad del jefe del hogar
+### Edad del jefe del hogar
 
 la edad del jefe de hogar se introduce como una variable independiente clave. Las estadísticas descriptivas presentadas en la Tabla 2 revelan la variabilidad transversal entre departamentos, lo cual es fundamental para identificar posibles patrones que el modelo econométrico puede capturar.
 
@@ -889,7 +889,7 @@ tabla_promedios_edad %>%
 
 La dispersión de esta variable, medida através de la desviación estándar, se mantiene relativamente estable entre los departamentos (alrededor de 16 años), indicando una heterogeneidad similar en la composición etaria de los jefes de hogar dentro de cada territorio. El rango de edades abarca desde los 18 años hasta los 99 años, cubriendo así todo el espectro de la vida adulta productiva y post-productiva en la región.
 
-#### Cantidad de personas en el hogar
+### Cantidad de personas en el hogar
 
 La cantidad de personas en el hogar se introduce como una variable independiente clave. Las estadísticas descriptivas presentadas en la Tabla 3 revelan la variabilidad transversal entre departamentos, lo cual es fundamental para identificar posibles patrones que el modelo econométrico puede capturar.
 
@@ -936,6 +936,132 @@ tabla_promedios_cp %>%
 La estructura de los hogares en la región Pacífica colombiana presenta notables diferencias en cuanto al número de personas que los conforman. De acuerdo con los datos de la ECV DANE 2024, el departamento de Nariño registra el tamaño promedio de hogar más alto (54.0 personas), seguido muy de cerca por Valle del Cauca (53.1 personas) y Cauca (52.8 personas). En contraste, Chocó presenta un promedio significativamente menor (47.5 personas), lo que sugiere dinámicas familiares y patrones de conformación de hogares diferenciados en este territorio
 
 La dispersión en el tamaño de los hogares, medida a través de la desviación estándar, es relativamente homogénea entre los departamentos, oscilando alrededor de 16 personas. Los valores mínimos y máximos revelan que en toda la región existen hogares que van desde conformaciones unipersonales (1 persona) hasta hogares extensos de más de 90 integrantes, lo que evidencia la diversidad en las estructuras familiares y los arreglos residenciales presentes en la zona.
+
+```{r correlacion cantidad}
+scatter_facet_blue <- ggplot(Base_datos, aes(x = `Cantidad de personas en el hogar`, 
+                                       y = log(`Ingreso del hogar`))) +
+  
+  # Capa de puntos con gradiente azul
+  geom_point(
+    aes(color = `Ingreso del hogar`, fill = `Ingreso del hogar`),
+    alpha = 0.7,
+    size = 2.8,
+    shape = 21,
+    stroke = 0.3
+  ) +
+  
+  # Línea de tendencia en azul oscuro
+  geom_smooth(
+    method = "lm",
+    color = "#1a3c5f",  # Azul oscuro
+    fill = "#6baed6",   # Azul medio para intervalo de confianza
+    alpha = 0.3,
+    linewidth = 1.1,
+    se = TRUE
+  ) +
+  
+  # Crear facetas por departamento
+  facet_wrap(~ Departamento, 
+             ncol = 2,
+             scales = "fixed") +
+  
+  # Escalas de color en tonos azules
+  scale_color_gradient(
+    low = "#d0e1f9",   # Azul muy claro
+    high = "#1a3c5f",  # Azul oscuro
+    labels = dollar_format(prefix = "$", big.mark = ","),
+    guide = guide_colorbar(
+      title = "Ingreso Familiar",
+      barwidth = 12,
+      barheight = 0.8,
+      direction = "horizontal"
+    )
+  ) +
+  
+  scale_fill_gradient(
+    low = "#d0e1f9",
+    high = "#1a3c5f",
+    guide = "none"  # Solo usamos una leyenda para color
+  ) +
+  
+  # Formato de ejes
+  scale_y_continuous(
+    labels = dollar_format(prefix = "$", big.mark = ","),
+    breaks = breaks_extended(6)
+  ) +
+  
+  scale_x_continuous(
+    breaks = function(x) unique(floor(pretty(seq(0, (max(x) + 1) * 1.1))))
+  ) +
+  
+  # Títulos y etiquetas
+  labs(
+    title = "RELACIÓN TAMAÑO DEL HOGAR - INGRESO FAMILIAR POR DEPARTAMENTO",
+    subtitle = "Análisis individual de la correlación en cada departamento - Paleta de azules",
+    x = "Cantidad de Personas en el Hogar",
+    y = "Ingreso Familiar Mensual",
+    caption = "Fuente: Encuesta Nacional de Hogares | Tendencias lineales mostradas en azul oscuro"
+  ) +
+  
+  # Tema profesional con tonos azules
+  theme_minimal(base_size = 12) +
+  theme(
+    # Textos generales
+    text = element_text(family = "sans"),
+    plot.title = element_text(
+      face = "bold",
+      size = 16,
+      hjust = 0.5,
+      margin = margin(b = 10),
+      color = "#2c3e50"
+    ),
+    plot.subtitle = element_text(
+      size = 12,
+      hjust = 0.5,
+      color = "#34495e",
+      margin = margin(b = 20)
+    ),
+    plot.caption = element_text(
+      size = 10,
+      color = "#7f8c8d",
+      hjust = 0.5,
+      margin = margin(t = 15)
+    ),
+    
+    # Facetas - fondo azul para títulos
+    strip.background = element_rect(
+      fill = "#3498db",  # Azul vibrante
+      color = "#2980b9",
+      linewidth = 1
+    ),
+    strip.text = element_text(
+      color = "white",
+      face = "bold",
+      size = 11
+    ),
+    
+    # Ejes
+    axis.title = element_text(face = "bold", size = 12, color = "#2c3e50"),
+    axis.text = element_text(size = 9, color = "#34495e"),
+    
+    # Leyenda de color
+    legend.position = "bottom",
+    legend.title = element_text(face = "bold", size = 10, color = "#2c3e50"),
+    legend.text = element_text(size = 9, color = "#34495e"),
+    
+    # Grid en tonos azules suaves
+    panel.grid.major = element_line(color = "#ecf0f1", linewidth = 0.4),
+    panel.grid.minor = element_line(color = "#f8f9fa", linewidth = 0.2),
+    panel.background = element_rect(fill = "white", color = NA),
+    plot.background = element_rect(fill = "white", color = NA),
+    
+    # Márgenes
+    plot.margin = margin(20, 20, 20, 20)
+  )
+
+# Mostrar gráfica
+print(scatter_facet_blue)
+```
 
 
 #### Horas trabjadas la semana pasada
@@ -985,9 +1111,135 @@ La dispersión de los datos, medida através de la desviación estándar (aproxi
 
 Estas diferencias en la dedicación laboral pueden estar asociadas a múltiples factores estructurales. La mayor jornada en Valle del Cauca podría relacionarse con su mayor diversificación económica y dinamismo industrial, mientras que las menores jornadas en Chocó podrían reflejar las limitadas oportunidades del mercado laboral formal y la predominancia de actividades económicas estacionales. La distribución horaria observada sugiere que la relación entre horas trabajadas e ingresos del hogar podría no ser lineal, aspecto que el modelo de regresión deberá explorar en profundidad, considerando posibles efectos de rendimientos decrecientes o diferencias en la productividad laboral entre territorios.
 
-### Variables Categóricas: Distribución de Frecuencias
+```{r correlacion horas}
+scatter_horas <- ggplot(Base_datos, aes(x = `Horas trabajadas la semana pasada`, 
+                                  y = log(`Ingreso del hogar`))) +
+  geom_point(
+    aes(color = `Ingreso del hogar`, fill = `Ingreso del hogar`),
+    alpha = 0.7,
+    size = 2.8,
+    shape = 21,
+    stroke = 0.3
+  ) +
+  
+  # Línea de tendencia
+  geom_smooth(
+    method = "lm",
+    color = "#1a3c5f",
+    fill = "#6baed6",
+    alpha = 0.3,
+    linewidth = 1.1,
+    se = TRUE
+  ) +
+  
+  # Facetas por departamento
+  facet_wrap(~ Departamento, 
+             ncol = 2,
+             scales = "fixed") +
+  
+  # Escalas de color en tonos azules
+  scale_color_gradient(
+    low = "#d0e1f9",
+    high = "#1a3c5f",
+    labels = dollar_format(prefix = "$", big.mark = ","),
+    guide = guide_colorbar(
+      title = "Ingreso Familiar",
+      barwidth = 12,
+      barheight = 0.8,
+      direction = "horizontal"
+    )
+  ) +
+  
+  scale_fill_gradient(
+    low = "#d0e1f9",
+    high = "#1a3c5f",
+    guide = "none"
+  ) +
+  
+  # Formato de ejes
+  scale_y_continuous(
+    labels = dollar_format(prefix = "$", big.mark = ","),
+    breaks = breaks_extended(6)
+  ) +
+  
+  scale_x_continuous(
+    breaks = function(x) unique(floor(pretty(seq(0, (max(x) + 1) * 1.1)))),
+    labels = function(x) paste(x, "horas")
+  ) +
+  
+  # Títulos y etiquetas
+  labs(
+    title = "RELACIÓN HORAS TRABAJADAS - INGRESO FAMILIAR POR DEPARTAMENTO",
+    subtitle = "Análisis de correlación entre jornada laboral e ingresos familiares",
+    x = "Horas Trabajadas Promedio",
+    y = "Ingreso Familiar Mensual",
+    caption = "Fuente: Encuesta Nacional de Hogares | Líneas muestran tendencia lineal"
+  ) +
+  
+  # Tema profesional
+  theme_minimal(base_size = 12) +
+  theme(
+    text = element_text(family = "sans"),
+    plot.title = element_text(
+      face = "bold",
+      size = 16,
+      hjust = 0.5,
+      margin = margin(b = 10),
+      color = "#2c3e50"
+    ),
+    plot.subtitle = element_text(
+      size = 12,
+      hjust = 0.5,
+      color = "#34495e",
+      margin = margin(b = 20)
+    ),
+    plot.caption = element_text(
+      size = 10,
+      color = "#7f8c8d",
+      hjust = 0.5,
+      margin = margin(t = 15)
+    ),
+    
+    # Facetas
+    strip.background = element_rect(
+      fill = "#3498db",
+      color = "#2980b9",
+      linewidth = 1
+    ),
+    strip.text = element_text(
+      color = "white",
+      face = "bold",
+      size = 11
+    ),
+    
+    # Ejes
+    axis.title = element_text(face = "bold", size = 12, color = "#2c3e50"),
+    axis.text = element_text(size = 9, color = "#34495e"),
+    
+    # Leyenda
+    legend.position = "bottom",
+    legend.title = element_text(face = "bold", size = 10, color = "#2c3e50"),
+    legend.text = element_text(size = 9, color = "#34495e"),
+    
+    # Grid
+    panel.grid.major = element_line(color = "#ecf0f1", linewidth = 0.4),
+    panel.grid.minor = element_line(color = "#f8f9fa", linewidth = 0.2),
+    panel.background = element_rect(fill = "white", color = NA),
+    plot.background = element_rect(fill = "white", color = NA),
+    
+    plot.margin = margin(20, 20, 20, 20)
+  )
 
-#### Estudios
+# Mostrar gráfica
+print(scatter_horas)
+
+```
+
+
+
+## Variables Categóricas: Distribución de Frecuencias
+
+### Estudios
 
 La tabla 5 revela una estructura formativa predominantemente básica en la región Pacífica colombiana. El nivel de secundaria concentra la mayor proporción con 3,306 casos (79.3%), constituyéndose como la característica educativa más representativa entre los jefes de hogar. Le siguen en importancia la formación técnica o tecnológica con 398 casos (9.5%) y la educación universitaria con 262 observaciones (6.3%).
 
@@ -1162,7 +1414,7 @@ tabla_resultadossex %>%
 ```
 
 ```{r Boxplot sexo}
-boxplot_ingresosex <- ggplot(datos, aes(x = Sexo, y = log(`Ingreso del hogar`), fill = Sexo)) +
+boxplot_ingresosex <- ggplot(Base_datos, aes(x = Sexo, y = log(`Ingreso del hogar`), fill = Sexo)) +
   geom_boxplot(alpha = 0.8, outlier.shape = 21, outlier.size = 2, 
                outlier.fill = "red", outlier.alpha = 0.6)  +
   scale_fill_brewer(palette = "Set2") +
@@ -1208,18 +1460,7 @@ boxplot_ingresosex <- ggplot(datos, aes(x = Sexo, y = log(`Ingreso del hogar`), 
     panel.grid.major = element_line(color = "gray90", linewidth = 0.3),
     panel.grid.minor = element_blank(),
     plot.margin = margin(30, 30, 30, 30)
-  ) +
-  annotate(
-    "text",
-    x = Inf,
-    y = -Inf,
-    label = "Nota: Escala logarítmica utilizada para mejor visualización de la distribución",
-    hjust = 1,
-    vjust = -1,
-    size = 3,
-    color = "gray50",
-    fontface = "italic"
-  )
+  ) 
 
 print(boxplot_ingresosex)
 
