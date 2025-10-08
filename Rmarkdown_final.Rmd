@@ -847,7 +847,7 @@ mapa_interactivo
 
 la edad del jefe de hogar se introduce como una variable independiente clave. Las estadísticas descriptivas presentadas en la Tabla 2 revelan la variabilidad transversal entre departamentos, lo cual es fundamental para identificar posibles patrones que el modelo econométrico puede capturar.
 
-```{r}
+```{r tabla edad}
 tabla_promedios_edad <- Base_datos %>%
   group_by(Departamento) %>%  
   summarise(
@@ -1031,6 +1031,96 @@ tabla_resultadoses %>%
   )
 ```
 
+```{r Box plot estudios}
+
+datos <- Base_datos %>%
+  mutate(
+    Estudios = factor(Estudios, 
+                          levels = c("Primaria", "Secundaria", "Técnica/Tecnológica", "Universitaria", "	
+Postgrado"),
+                          ordered = TRUE)
+  )
+
+boxplot_ingresos <- ggplot(datos, aes(x = Estudios, y = log(`Ingreso del hogar`), fill = Estudios)) +
+  geom_boxplot(
+    alpha = 0.85,
+    outlier.shape = 21,
+    outlier.size = 2.5,
+    outlier.fill = "#e74c3c",
+    outlier.alpha = 0.7,
+    outlier.stroke = 0.5,
+    width = 0.7,
+    lwd = 0.6
+  ) +
+  stat_summary(
+    fun = mean,
+    geom = "point",
+    shape = 23,
+    size = 3,
+    fill = "white",
+    color = "black"
+  ) +
+  scale_fill_manual(values = c("#3498db", "#2ecc71", "#9b59b6", "#e67e22", "#1abc9c")) +
+  labs(
+    title = "RELACIÓN ENTRE NIVEL EDUCATIVO E INGRESO FAMILIAR",
+    subtitle = "Distribución del ingreso familiar según el nivel de estudios del jefe de hogar\n(escala logarítmica)",
+    x = "Nivel de Estudios",
+    y = "Ingreso Familiar Mensual (Escala Logarítmica)",
+    caption = "Fuente: Encuesta Nacional de Hogares | Elaboración propia"
+  ) +tema +
+  theme(
+    text = element_text(family = "sans"),
+    plot.title = element_text(
+      face = "bold",
+      size = 18,
+      hjust = 0.5,
+      margin = margin(b = 10)
+    ),
+    plot.subtitle = element_text(
+      size = 12,
+      hjust = 0.5,
+      color = "gray40",
+      margin = margin(b = 20)
+    ),
+    plot.caption = element_text(
+      size = 10,
+      color = "gray50",
+      hjust = 1,
+      margin = margin(t = 15)
+    ),
+    axis.title = element_text(face = "bold", size = 12),
+    axis.text.x = element_text(
+      angle = 45,
+      hjust = 1,
+      size = 10,
+      face = "bold"
+    ),
+    axis.text.y = element_text(size = 10),
+    legend.position = "none",
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.background = element_rect(fill = "white", color = NA),
+    panel.grid.major = element_line(color = "gray90", linewidth = 0.3),
+    panel.grid.minor = element_blank(),
+    plot.margin = margin(30, 30, 30, 30)
+  ) +
+  annotate(
+    "text",
+    x = Inf,
+    y = -Inf,
+    label = "Nota: Escala logarítmica utilizada para mejor visualización de la distribución",
+    hjust = 1,
+    vjust = -1,
+    size = 3,
+    color = "gray50",
+    fontface = "italic"
+  )
+
+print(boxplot_ingresos)
+
+```
+
+
+
 #### Sexo
 
 La tabla 6 revela una marcada disparidad de género. Los datos muestran una predominancia significativa de hombres como jefes de hogar, representando el 64.6% del total (2,694 casos), mientras que las mujeres constituyen el 35.4% (1,475 casos). Esta relación de aproximadamente 2:1 evidencia una estructura patriarcal aún persistente en la conformación de los hogares de la región.
@@ -1069,6 +1159,71 @@ tabla_resultadossex %>%
     general_title = "Nota:",
     footnote_as_chunk = TRUE
   )
+```
+
+```{r Boxplot sexo}
+boxplot_ingresosex <- ggplot(datos, aes(x = Sexo, y = log(`Ingreso del hogar`), fill = Sexo)) +
+  geom_boxplot(alpha = 0.8, outlier.shape = 21, outlier.size = 2, 
+               outlier.fill = "red", outlier.alpha = 0.6)  +
+  scale_fill_brewer(palette = "Set2") +
+  scale_y_continuous(labels = dollar_format(prefix = "$", big.mark = ",")) +
+  labs(
+    title = "Distribución del Ingreso Familiar por Nivel de Estudio",
+    subtitle = "Análisis de la relación entre educación e ingresos familiares",
+    x = "Nivel de Estudio",
+    y = "Ingreso Familiar Mensual",
+    caption = "Fuente: Datos de la encuesta nacional"
+  )  +tema +
+  theme(
+    text = element_text(family = "sans"),
+    plot.title = element_text(
+      face = "bold",
+      size = 18,
+      hjust = 0.5,
+      margin = margin(b = 10)
+    ),
+    plot.subtitle = element_text(
+      size = 12,
+      hjust = 0.5,
+      color = "gray40",
+      margin = margin(b = 20)
+    ),
+    plot.caption = element_text(
+      size = 10,
+      color = "gray50",
+      hjust = 1,
+      margin = margin(t = 15)
+    ),
+    axis.title = element_text(face = "bold", size = 12),
+    axis.text.x = element_text(
+      angle = 45,
+      hjust = 1,
+      size = 10,
+      face = "bold"
+    ),
+    axis.text.y = element_text(size = 10),
+    legend.position = "none",
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.background = element_rect(fill = "white", color = NA),
+    panel.grid.major = element_line(color = "gray90", linewidth = 0.3),
+    panel.grid.minor = element_blank(),
+    plot.margin = margin(30, 30, 30, 30)
+  ) +
+  annotate(
+    "text",
+    x = Inf,
+    y = -Inf,
+    label = "Nota: Escala logarítmica utilizada para mejor visualización de la distribución",
+    hjust = 1,
+    vjust = -1,
+    size = 3,
+    color = "gray50",
+    fontface = "italic"
+  )
+
+print(boxplot_ingresosex)
+
+
 ```
 
 
