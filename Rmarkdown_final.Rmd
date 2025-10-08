@@ -889,6 +889,116 @@ tabla_promedios_edad %>%
 
 La dispersión de esta variable, medida através de la desviación estándar, se mantiene relativamente estable entre los departamentos (alrededor de 16 años), indicando una heterogeneidad similar en la composición etaria de los jefes de hogar dentro de cada territorio. El rango de edades abarca desde los 18 años hasta los 99 años, cubriendo así todo el espectro de la vida adulta productiva y post-productiva en la región.
 
+```{r correlacion edad}
+
+scatter_edad <- ggplot(Base_datos, aes(x = Edad,  # Ajusta el nombre de la variable
+                                 y = log(`Ingreso del hogar`))) +
+  geom_point(
+    aes(color = log(`Ingreso del hogar`)),
+    alpha = 0.7,
+    size = 2.8
+  ) +
+  geom_smooth(
+    method = "loess",  # Usamos loess para mejor ajuste con edad
+    color = "#1a3c5f",
+    fill = "#6baed6",
+    alpha = 0.3,
+    linewidth = 1.1,
+    se = TRUE
+  ) +
+  
+  # Facetas por departamento
+  facet_wrap(~ Departamento, ncol = 2) +
+  
+  # Leyenda corregida para log(ingreso)
+  scale_color_gradient(
+    name = "Ingreso Familiar",
+    low = "#d0e1f9",
+    high = "#1a3c5f",
+    labels = function(x) {
+      dollar_format(prefix = "$", big.mark = ",")(exp(x))
+    },
+    breaks = log(c(500000, 1000000, 2000000, 5000000)),
+    guide = guide_colorbar(
+      barwidth = 12,
+      barheight = 0.8,
+      direction = "horizontal",
+      title.position = "top"
+    )
+  ) +
+  
+  # Eje X para edad
+  scale_x_continuous(
+    name = "Edad del Jefe de Hogar",
+    breaks = seq(20, 80, by = 10),
+    limits = c(18, 85)  # Ajustar según el rango de edades en tus datos
+  ) +
+  
+  # Títulos y etiquetas
+  labs(
+    title = "RELACIÓN EDAD DEL JEFE DE HOGAR - INGRESO FAMILIAR POR DEPARTAMENTO",
+    subtitle = "Transformación logarítmica aplicada al ingreso | Curva de tendencia LOESS",
+    caption = "Fuente: Encuesta Nacional de Hogares | Edad del jefe de hogar vs log(ingreso familiar)"
+  ) +
+  
+  # Tema profesional
+  theme_minimal(base_size = 12) +
+  theme(
+    text = element_text(family = "sans"),
+    plot.title = element_text(
+      face = "bold",
+      size = 14,
+      hjust = 0.5,
+      margin = margin(b = 10),
+      color = "#2c3e50"
+    ),
+    plot.subtitle = element_text(
+      size = 11,
+      hjust = 0.5,
+      color = "#34495e",
+      margin = margin(b = 15)
+    ),
+    plot.caption = element_text(
+      size = 9,
+      color = "#7f8c8d",
+      hjust = 0.5,
+      margin = margin(t = 10)
+    ),
+    
+    # Facetas
+    strip.background = element_rect(
+      fill = "#3498db",
+      color = "#2980b9",
+      linewidth = 1
+    ),
+    strip.text = element_text(
+      color = "white",
+      face = "bold",
+      size = 10
+    ),
+    
+    # Ejes
+    axis.title = element_text(face = "bold", size = 11, color = "#2c3e50"),
+    axis.text = element_text(size = 9, color = "#34495e"),
+    
+    # Leyenda
+    legend.position = "bottom",
+    legend.title = element_text(face = "bold", size = 10, color = "#2c3e50"),
+    legend.text = element_text(size = 8, color = "#34495e"),
+    
+    # Grid
+    panel.grid.major = element_line(color = "#ecf0f1", linewidth = 0.4),
+    panel.grid.minor = element_line(color = "#f8f9fa", linewidth = 0.2),
+    
+    plot.margin = margin(15, 15, 15, 15)
+  )
+
+# Mostrar gráfica
+print(scatter_edad)
+
+```
+
+
 ### Cantidad de personas en el hogar
 
 La cantidad de personas en el hogar se introduce como una variable independiente clave. Las estadísticas descriptivas presentadas en la Tabla 3 revelan la variabilidad transversal entre departamentos, lo cual es fundamental para identificar posibles patrones que el modelo econométrico puede capturar.
@@ -1064,7 +1174,7 @@ print(scatter_facet_blue)
 ```
 
 
-#### Horas trabjadas la semana pasada
+### Horas trabjadas la semana pasada
 
 ```{r cantidad de horas}
 tabla_promedios_ch <- Base_datos %>%
@@ -1373,7 +1483,7 @@ print(boxplot_ingresos)
 
 
 
-#### Sexo
+### Sexo
 
 La tabla 6 revela una marcada disparidad de género. Los datos muestran una predominancia significativa de hombres como jefes de hogar, representando el 64.6% del total (2,694 casos), mientras que las mujeres constituyen el 35.4% (1,475 casos). Esta relación de aproximadamente 2:1 evidencia una estructura patriarcal aún persistente en la conformación de los hogares de la región.
 
@@ -1460,7 +1570,8 @@ boxplot_ingresosex <- ggplot(Base_datos, aes(x = Sexo, y = log(`Ingreso del hoga
     panel.grid.major = element_line(color = "gray90", linewidth = 0.3),
     panel.grid.minor = element_blank(),
     plot.margin = margin(30, 30, 30, 30)
-  ) 
+  )
+
 
 print(boxplot_ingresosex)
 
@@ -1510,127 +1621,6 @@ tabla_resultados %>%
 ```
 
 
-
-
-```{r grafica 1}
-grafica_boxplot_estudios <- ggplot(Base_datos, 
-                                   aes(x = Estudios, y = `Ingreso del hogar`, 
-                                       fill = Estudios)) +
-  geom_boxplot(alpha = 0.8, outlier.shape = NA) +
-  geom_jitter(aes(text = paste("Nivel:", Estudios,
-                              "\nIngreso: $", format(round(`Ingreso del hogar`), big.mark = ","),
-                              "\nEdad:", Edad)),
-              width = 0.2, alpha = 0.4, size = 1.5, color = "gray30") +
-  stat_summary(fun = mean, geom = "point", shape = 23, size = 3, fill = "white") +
-  scale_fill_manual(values = c("#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd")) +
-  scale_y_continuous(labels = function(x) format(x, big.mark = ",", scientific = FALSE)) +
-  scale_x_discrete(limits = c("Primaria", "Secundaria", "Técnico", "Universitario", "Posgrado")) +
-  labs(
-    title = "Distribución de Ingresos por Nivel Educativo",
-    subtitle = "Cada punto representa un individuo. Rombo blanco: ingreso promedio",
-    x = "Nivel Educativo",
-    y = "Ingreso Mensual (COP)",
-    fill = "Nivel Educativo"
-  ) +tema
-
-
-print(grafica_boxplot_estudios)
-```
-
-
-
-
-```{r grafica 2}
-grafica_ggplot <- ggplot(Base_datos, aes(x =`Cantidad de personas en el hogar`, y = `Ingreso del hogar`)) +
-  geom_jitter(aes(color = Departamento, text = paste(
-    "\nPersonas:", `Cantidad de personas en el hogar`,
-    "\nIngreso:", dollar(`Ingreso del hogar`),
-    "\nRegión:", Departamento
-  )),
-  alpha = 0.7, 
-  width = 0.2,    
-  height = 0,     
-  show.legend = TRUE) +
-  geom_smooth(method = "lm", formula = y ~ x, 
-              color = "#E63946", se = TRUE, fill = "#F4A261", 
-              alpha = 0.2, size = 1.2) +
-  scale_color_manual(values = c("#1D3557", "#E63946", "#2A9D8F", "#F4A261")) +
-  scale_size_continuous(range = c(2, 8), guide = "none") +
-  scale_x_continuous(breaks = 1:8) +
-  scale_y_continuous(labels = dollar_format(prefix = "$", big.mark = ",")) +
-  labs(
-    title = "Relación entre Ingreso Familiar y Tamaño del Hogar",
-    subtitle = "Análisis interactivo de la distribución de ingresos",
-    x = "Cantidad de Personas en el Hogar",
-    y = "Ingreso Familiar Anual (USD)",
-    color = "Departamento",
-    caption = "Cada punto representa un hogar. Pasa el mouse para ver detalles."
-  ) + tema
-
-print(grafica_ggplot)
-
-grafica_interactiva <- ggplotly(grafica_ggplot, tooltip = "text") %>%
-  layout(
-    hoverlabel = list(
-      bgcolor = "white",
-      bordercolor = "black",
-      font = list(color = "black", size = 12)
-    )
-  ) %>%
-  config(displayModeBar = TRUE, 
-         modeBarButtonsToAdd = list("drawline", "drawopenpath", "eraseshape"),
-         displaylogo = FALSE)
-
-```
-
-```{r Grafica 3}
-
-ggplot(Base_datos, aes(x = Departamento, y = `Ingreso del hogar`, fill = Departamento)) +
-  geom_boxplot(
-    alpha = 0.8,               # Transparencia suave
-    outlier.color = "#e74c3c", # Color de valores atípicos
-    outlier.shape = 19,        # Forma de los puntos atípicos
-    size = 0.8                 # Grosor de las líneas
-  ) +
-  scale_fill_brewer(palette = "Set2")+
-  labs(
-    title = "Relación entre Departamento e Ingreso del Hogar",
-    subtitle = "Distribución de ingresos mensuales por región",
-    x = "Departamento",
-    y = "Ingreso Mensual",
-    caption = "Fuente: DANE ECV"
-  ) +
-  tema+
-  scale_y_continuous(
-    labels = label_number(big.mark = ",", prefix = "S/ "),
-    breaks = breaks_extended(8)  
-  )
-```
-
-
-```{r}
-ggplot(Base_datos, aes(x =`Horas trabajadas la semana pasada`, y = `Ingreso del hogar`)) +
-  geom_point(
-    size = 4,
-    stroke = 1
-  ) +
-  geom_smooth(
-    method = "lm",
-    se = TRUE,
-    color = "#A23B72",
-    fill = "#F18C8E",
-    alpha = 0.2
-  ) +tema +
-  labs(
-    title = "Relación: Horas Trabajadas vs Ingreso Familiar",
-    subtitle = "Semana anterior con línea de tendencia lineal",
-    x = "Horas Trabajadas",
-    y = "Ingreso Familiar (USD)",
-    caption = "Datos semanales | Elaboración propia"
-  ) +
-  scale_y_continuous(labels = scales::dollar) +
-  scale_fill_identity()
-```
 
 
 
