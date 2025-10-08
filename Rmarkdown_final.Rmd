@@ -1627,6 +1627,249 @@ tabla_resultados %>%
 
 # Resultados del modelo
 
+```{r tabla supuestos, echo= FALSE}
+Modelo_final=lm(log(`Ingreso del hogar`)~Sexo+Estudios+
+                  `Cantidad de personas en el hogar`+Edad+`Horas trabajadas la semana pasada`+
+                  Departamento
+                ,Base_datos)
+library(broom)
+
+resumen_mod <- broom::tidy(Modelo_final) %>%
+  mutate(across(where(is.numeric), ~ round(., 5))) %>%
+  rename(`Variable` = term,
+    `Coeficiente` = estimate,
+    `Error Estándar` = std.error,
+    `Estadístico t` = statistic,
+    `Valor p` = p.value) %>%
+  mutate(Significancia = case_when(
+      `Valor p` < 0.001 ~ "***",
+      `Valor p` < 0.01  ~ "**",
+      `Valor p` < 0.05  ~ "*",
+      TRUE ~ "")) %>% 
+  mutate(`Valor p` = case_when(
+      is.na(`Valor p`) ~ "1",
+      `Valor p` < 2e-16 ~ "2e-16",
+      TRUE ~ formatC(`Valor p`, format = "e", digits = 3)),
+    Sig. = case_when(
+      as.numeric(`Valor p`) < 0.001 ~ "***",
+      as.numeric(`Valor p`) < 0.01  ~ "**",
+      as.numeric(`Valor p`) < 0.05  ~ "*",
+      as.numeric(`Valor p`) < 0.1  ~ ".",
+      TRUE ~ ""))
+
+
+resumen_global <- glance(Modelo_final)
+summary(resumen_global)
+
+
+resumen_global <- glance(Modelo_final)
+R2 <- round(resumen_global$adj.r.squared, 4)
+Fstat <- round(resumen_global$statistic, 2)
+pvalor_modelo <- formatC(resumen_global$p.value, format = "e", digits = 2)
+N <- resumen_global$df.residual + length(Modelo_final$coefficients)
+
+filas_resumen <- tibble(
+  Variable = c("R² ajustado", "F", "Valor p (modelo)", "N"),
+  Coeficiente = as.character(c(R2, Fstat, pvalor_modelo, N)),
+  `Error Estándar` = as.character(c("", "", "", "")),
+  `Estadístico t` = as.character(c("", "", "", "")),
+  `Valor p` = as.character(c("", "", "", "")),
+  Sig. = as.character(c("", "", "", "")))
+
+resumen_mod_chr= resumen_mod %>%
+  mutate_all(as.character)
+
+tabla_final <- bind_rows(resumen_mod_chr, filas_resumen)
+
+tabla_final <- tabla_final %>% 
+  select(Variable, Coeficiente, `Error Estándar`, `Estadístico t`, `Valor p`, Sig.)
+
+kbl(tabla_final,
+    caption = "Resultados del modelo de regresión lineal múltiple",
+    align = c("l", "r", "r", "r", "r", "c"),
+    col.names = names(tabla_final)) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = FALSE,
+    font_size = 14,
+    position = "center") %>%
+  row_spec(0, background = "#2b6cb0", color = "white", bold = TRUE) %>%
+  column_spec(1, bold = TRUE, width = "4cm") %>%
+  column_spec(2:6, width = "2.5cm") %>%
+  row_spec((nrow(resumen_mod_chr) + 1):(nrow(resumen_mod_chr) + nrow(filas_resumen)),
+           bold = TRUE, italic = FALSE, background = "#e6f0ff") %>%
+  footnote(
+    general = "Elaboración propia con base en ECV DANE 2024.",
+    general_title = "Nota:",
+    footnote_as_chunk = TRUE)
+```
+
+
+
+```{r Grafico plot 1}
+library(plotly)
+res_df <- augment(Modelo_final)
+
+G_residuos_hist <- ggplot(res_df, aes(x = .resid)) +
+  geom_histogram(
+    aes(y = after_stat(density)),
+    bins = 30,
+    fill = "#3498db",
+    color = "white",
+    alpha = 0.8
+  ) +
+  # Línea de densidad
+  geom_density(linewidth = 1, color = "#e74c3c") +
+  # Línea vertical en cero
+  geom_vline(
+    xintercept = 0,
+    color = "#2c3e50",
+    linetype = "dashed",
+    linewidth = 1
+  ) +
+  # Línea de distribución normal teórica
+  stat_function(
+    fun = dnorm,
+    args = list(mean = mean(res_df$.resid), sd = sd(res_df$.resid)),
+    color = "#27ae60",
+    linewidth = 1,
+    linetype = "dashed"
+  ) +
+  labs(
+    title = "Distribución de los Residuos del Modelo",
+    subtitle = "Validación del supuesto de normalidad de los errores\nLínea roja: densidad observada | Línea verde: distribución normal teórica",
+    x = "Residuos", 
+    y = "Densidad",
+    caption = "Fuente: Elaboración propia con base en ECV DANE 2024"
+  ) +
+  tema
+
+print(G_residuos_hist)
+
+```
+
+```{r plot 2}
+G_qq <- ggplot(res_df, aes(sample = .resid)) +
+  geom_qq(alpha = 0.6, color = "#2b6cb0") +
+  geom_qq_line(color = "#e74c3c", linewidth = 1) +
+  labs(
+    title = "Gráfico Q-Q de los Residuos",
+    subtitle = "Validación de normalidad - Residuos vs Distribución Normal Teórica",
+    x = "Cuantiles Teóricos",
+    y = "Cuantiles de los Residuos",
+    caption = "Fuente: Elaboración propia con base en ECV DANE 2024"
+  ) +
+  tema
+
+print(G_qq)
+```
+
+
+```{r plot 3}
+G_resid_ajust <- ggplot(res_df, aes(x = .fitted, y = .resid)) +
+  geom_point(alpha = 0.6, color = "#2b6cb0") +
+  geom_hline(
+    yintercept = 0,
+    color = "#e74c3c",
+    linetype = "dashed",
+    linewidth = 1
+  ) +
+  geom_smooth(
+    method = "loess",
+    color = "#2c3e50",
+    fill = "#bdc3c7",
+    alpha = 0.3
+  ) +
+  labs(
+    title = "Residuos vs Valores Ajustados",
+    subtitle = "Validación de homocedasticidad y linealidad",
+    x = "Valores Ajustados",
+    y = "Residuos",
+    caption = "Fuente: Elaboración propia con base en ECV DANE 2024"
+  ) +
+  tema
+
+print(G_resid_ajust)
+```
+
+```{r cook}
+
+res_df <- res_df %>%
+  mutate(
+    cooksd = cooks.distance(Modelo_final),
+    obs_number = row_number()
+  )
+
+G_cooksd <- ggplot(res_df, aes(x = obs_number, y = cooksd)) +
+  geom_point(
+    aes(color = cooksd, size = cooksd),
+    alpha = 0.7
+  ) +
+  geom_hline(
+    yintercept = 4/nrow(res_df),
+    color = "#e74c3c",
+    linetype = "dashed",
+    linewidth = 1.2
+  ) +
+  
+  # Destacar observaciones influyentes
+  geom_point(
+    data = res_df %>% filter(cooksd > 4/nrow(res_df)),
+    aes(x = obs_number, y = cooksd),
+    color = "#e74c3c",
+    size = 3,
+    shape = 21,
+    fill = "transparent",
+    stroke = 1.5
+  ) +
+  geom_text(
+    data = res_df %>% 
+      filter(cooksd > 4/nrow(res_df)) %>%
+      arrange(desc(cooksd)) %>%
+      head(5),  # Etiquetar las 5 más influyentes
+    aes(label = obs_number),
+    vjust = -1,
+    hjust = 0.5,
+    size = 3,
+    fontface = "bold",
+    color = "#c0392b"
+  ) +
+  scale_color_gradient(
+    name = "Distancia de Cook",
+    low = "#3498db",
+    high = "#e74c3c",
+    guide = guide_colorbar(
+      barwidth = 10,
+      barheight = 0.6,
+      direction = "horizontal"
+    )
+  ) +
+  
+  scale_size_continuous(
+    name = "Influencia",
+    range = c(1, 4),
+    guide = "none"
+  ) +
+  labs(
+    title = "Análisis de Observaciones Influentes - Distancia de Cook",
+    subtitle = paste(
+      "Línea roja: umbral de influencia (4/n =", 
+      round(4/nrow(res_df), 4), 
+      ")\nPuntos rojos: observaciones potencialmente influyentes"
+    ),
+    x = "Número de Observación",
+    y = "Distancia de Cook",
+    caption = paste(
+      "Fuente: Elaboración propia con base en ECV DANE 2024 |",
+      "Total de observaciones:", nrow(res_df)
+    )
+  ) + tema
+
+print(G_cooksd)
+
+```
+
+
+
 ```{r correlacion}
 num_vars <- Base_datos %>% 
   select_if(is.numeric)
@@ -1667,6 +1910,8 @@ tabla_corr %>%
     general_title = "Nota:")
 ```
 
+
+# Prediccion
 
 
 # Conclusiones 
