@@ -843,6 +843,272 @@ mapa_interactivo
 
 ### Variables Explicativas Cuantitativas: Caracterización Estadística
 
+#### Edad del jefe del hogar
+
+la edad del jefe de hogar se introduce como una variable independiente clave. Las estadísticas descriptivas presentadas en la Tabla 2 revelan la variabilidad transversal entre departamentos, lo cual es fundamental para identificar posibles patrones que el modelo econométrico puede capturar.
+
+```{r}
+tabla_promedios_edad <- Base_datos %>%
+  group_by(Departamento) %>%  
+  summarise(
+    `Edad Promedio` = mean(Edad, na.rm = TRUE),
+    `Desv. Estándar Ingreso` = sd(Edad, na.rm = TRUE),
+    `Ingreso Mínimo` = min(Edad, na.rm = TRUE),
+    `Ingreso Máximo` = max(Edad, na.rm = TRUE),
+    .groups = 'drop'
+  ) %>%
+  mutate(
+    `Edad Promedio` = round(`Edad Promedio`, 1),
+    `Desv. Estándar Ingreso` = round(`Desv. Estándar Ingreso`, 2)
+  )
+
+
+tabla_promedios_edad %>%
+  kbl(
+    caption = "Tabla 2: Estadísticas Descriptivas de la edad del jefe del hogar Agrupadas por departamento",
+    align = c("l", "r","r", "r", "r", "r", "r"),
+    col.names = c("Código", "Edad Promedio",
+                  "Desv. Estándar de la edad", "Mínimo de la edad", "Máximo de la edad")
+  ) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = FALSE,
+    font_size = 14,
+    position = "center"
+  ) %>%
+  row_spec(0, background = "#2b6cb0", color = "white", bold = TRUE) %>%
+  column_spec(1, bold = TRUE, width = "3cm") %>%
+  column_spec(2:5, width = "2.5cm") %>%
+  footnote(
+    general = "Fuente: Elaboración propia con base en ECV DANE 2024",
+    general_title = "Nota:",
+    footnote_as_chunk = TRUE
+  )
+
+```
+
+La dispersión de esta variable, medida através de la desviación estándar, se mantiene relativamente estable entre los departamentos (alrededor de 16 años), indicando una heterogeneidad similar en la composición etaria de los jefes de hogar dentro de cada territorio. El rango de edades abarca desde los 18 años hasta los 99 años, cubriendo así todo el espectro de la vida adulta productiva y post-productiva en la región.
+
+#### Cantidad de personas en el hogar
+
+La cantidad de personas en el hogar se introduce como una variable independiente clave. Las estadísticas descriptivas presentadas en la Tabla 3 revelan la variabilidad transversal entre departamentos, lo cual es fundamental para identificar posibles patrones que el modelo econométrico puede capturar.
+
+```{r cantidad de personas en el hogar}
+tabla_promedios_cp <- Base_datos %>%
+  group_by(Departamento) %>%  
+  summarise(
+    `Edad Promedio` = mean(`Cantidad de personas en el hogar`, na.rm = TRUE),
+    `Desv. Estándar Ingreso` = sd(`Cantidad de personas en el hogar`, na.rm = TRUE),
+    `Ingreso Mínimo` = min(`Cantidad de personas en el hogar`, na.rm = TRUE),
+    `Ingreso Máximo` = max(`Cantidad de personas en el hogar`, na.rm = TRUE),
+    .groups = 'drop'
+  ) %>%
+  mutate(
+    `Edad Promedio` = round(`Edad Promedio`, 1),
+    `Desv. Estándar Ingreso` = round(`Desv. Estándar Ingreso`, 2)
+  )
+
+
+tabla_promedios_cp %>%
+  kbl(
+    caption = "Tabla 3: Estadísticas Descriptivas de la cantidad de personas en el hogar Agrupadas por departamento",
+    align = c("l", "r","r", "r", "r", "r", "r"),
+    col.names = c("Departamento", "Cantidad de personas Promedio",
+                  "Desv. Estándar", "Mínimo", "Máximo")
+  ) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = FALSE,
+    font_size = 14,
+    position = "center"
+  ) %>%
+  row_spec(0, background = "#2b6cb0", color = "white", bold = TRUE) %>%
+  column_spec(1, bold = TRUE, width = "3cm") %>%
+  column_spec(2:5, width = "2.5cm") %>%
+  footnote(
+    general = "Fuente: Elaboración propia con base en ECV DANE 2024",
+    general_title = "Nota:",
+    footnote_as_chunk = TRUE
+  )
+
+```
+
+La estructura de los hogares en la región Pacífica colombiana presenta notables diferencias en cuanto al número de personas que los conforman. De acuerdo con los datos de la ECV DANE 2024, el departamento de Nariño registra el tamaño promedio de hogar más alto (54.0 personas), seguido muy de cerca por Valle del Cauca (53.1 personas) y Cauca (52.8 personas). En contraste, Chocó presenta un promedio significativamente menor (47.5 personas), lo que sugiere dinámicas familiares y patrones de conformación de hogares diferenciados en este territorio
+
+La dispersión en el tamaño de los hogares, medida a través de la desviación estándar, es relativamente homogénea entre los departamentos, oscilando alrededor de 16 personas. Los valores mínimos y máximos revelan que en toda la región existen hogares que van desde conformaciones unipersonales (1 persona) hasta hogares extensos de más de 90 integrantes, lo que evidencia la diversidad en las estructuras familiares y los arreglos residenciales presentes en la zona.
+
+
+#### Horas trabjadas la semana pasada
+
+```{r cantidad de horas}
+tabla_promedios_ch <- Base_datos %>%
+  group_by(Departamento) %>%  
+  summarise(
+    `Edad Promedio` = mean(`Horas trabajadas la semana pasada`, na.rm = TRUE),
+    `Desv. Estándar Ingreso` = sd(`Horas trabajadas la semana pasada`, na.rm = TRUE),
+    `Ingreso Mínimo` = min(`Horas trabajadas la semana pasada`, na.rm = TRUE),
+    `Ingreso Máximo` = max(`Horas trabajadas la semana pasada`, na.rm = TRUE),
+    .groups = 'drop'
+  ) %>%
+  mutate(
+    `Edad Promedio` = round(`Edad Promedio`, 1),
+    `Desv. Estándar Ingreso` = round(`Desv. Estándar Ingreso`, 2)
+  )
+
+
+tabla_promedios_ch %>%
+  kbl(
+    caption = "Tabla 4: Estadísticas Descriptivas de las horas trabajas la semana pasada por el jefe del hogar en el hogar Agrupadas por departamento",
+    align = c("l", "r","r", "r", "r", "r", "r"),
+    col.names = c("Departamento", "Cantidad de horas promedio trabajadas",
+                  "Desv. Estándar", "Mínimo", "Máximo")
+  ) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = FALSE,
+    font_size = 14,
+    position = "center"
+  ) %>%
+  row_spec(0, background = "#2b6cb0", color = "white", bold = TRUE) %>%
+  column_spec(1, bold = TRUE, width = "3cm") %>%
+  column_spec(2:5, width = "2.5cm") %>%
+  footnote(
+    general = "Fuente: Elaboración propia con base en ECV DANE 2024",
+    general_title = "Nota:",
+    footnote_as_chunk = TRUE
+  )
+```
+
+La Tabla 4 presenta las estadísticas descriptivas de las horas trabajadas por los jefes de hogar en la región Pacífica colombiana, revelando patrones laborales diferenciados entre departamentos. El Valle del Cauca destaca con la jornada laboral promedio más extensa (42.1 horas semanales), superando en aproximadamente 6 horas el promedio de Chocó (33.1 horas), que registra la menor dedicación laboral. Cauca (36.3 horas) y Nariño (34.0 horas) se ubican en posiciones intermedias, mostrando una distribución regional norte-sur en cuanto a intensidad laboral.
+
+La dispersión de los datos, medida através de la desviación estándar (aproximadamente 15 horas en la mayoría de departamentos), indica una heterogeneidad significativa en las jornadas laborales dentro de cada territorio. Los valores extremos son particularmente reveladores: mientras el mínimo de 1 hora sugiere situaciones de subempleo crítico, el máximo de 120 horas semanales evidencia casos de pluriempleo o trabajos con jornadas extensivas, posiblemente en el sector informal.
+
+Estas diferencias en la dedicación laboral pueden estar asociadas a múltiples factores estructurales. La mayor jornada en Valle del Cauca podría relacionarse con su mayor diversificación económica y dinamismo industrial, mientras que las menores jornadas en Chocó podrían reflejar las limitadas oportunidades del mercado laboral formal y la predominancia de actividades económicas estacionales. La distribución horaria observada sugiere que la relación entre horas trabajadas e ingresos del hogar podría no ser lineal, aspecto que el modelo de regresión deberá explorar en profundidad, considerando posibles efectos de rendimientos decrecientes o diferencias en la productividad laboral entre territorios.
+
+### Variables Categóricas: Distribución de Frecuencias
+
+#### Estudios
+
+La tabla 5 revela una estructura formativa predominantemente básica en la región Pacífica colombiana. El nivel de secundaria concentra la mayor proporción con 3,306 casos (79.3%), constituyéndose como la característica educativa más representativa entre los jefes de hogar. Le siguen en importancia la formación técnica o tecnológica con 398 casos (9.5%) y la educación universitaria con 262 observaciones (6.3%).
+
+Los niveles educativos extremos muestran una participación marginal: la educación primaria representa apenas el 3.6% (149 casos), mientras que los estudios de postgrado constituyen el segmento más reducido con solo 54 casos (1.3%). Esta distribución evidencia una pirámide educativa marcadamente amplia en la base y muy estrecha en la cúspide, patrón que sugiere limitaciones en el acceso a educación superior y especializada en la región.
+
+La concentración del 79.3% en el nivel de secundaria implica que la gran mayoría de la población cuenta con educación básica completa, pero presenta una brecha significativa en formación avanzada. Esta característica resulta particularmente relevante para el modelo de regresión, ya que el capital humano, medido a través del nivel educativo, se constituye en un determinante fundamental de la capacidad generadora de ingreso de los hogares.
+
+
+```{r tabla de estudios}
+
+tabla_resultadoses <- Base_datos %>%
+  group_by(Estudios) %>%  # Cambia 'Departamento' por tu variable
+  summarise(Frecuencia = n()) %>%
+  arrange(desc(Frecuencia)) %>%
+  mutate(
+    Porcentaje = round((Frecuencia / sum(Frecuencia)) * 100, 1),
+    Porcentaje_Acumulado = cumsum(Porcentaje)
+  )
+
+
+
+tabla_resultadoses %>%
+  kable(
+    format = "html",
+    col.names = c("Departamento", "Frecuencia", "Porcentaje (%)", "Porcentaje Acumulado (%)"),
+    align = c("l", "c", "c", "c"),
+    caption = "Distribución de Frecuencias del nivel de estudios"
+  ) %>%
+ kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = FALSE,
+    font_size = 14,
+    position = "center"
+  ) %>%
+  row_spec(0, background = "#2b6cb0", color = "white", bold = TRUE) %>%
+ column_spec(2:4, width = "2.5cm") %>% 
+  footnote(
+    general = "Fuente: Elaboración propia con base en ECV DANE 2024",
+    general_title = "Nota:",
+    footnote_as_chunk = TRUE
+  )
+```
+
+#### Sexo
+
+```{r tabla sexo}
+tabla_resultadossex <- Base_datos %>%
+  group_by(Sexo) %>%  
+  summarise(Frecuencia = n()) %>%
+  arrange(desc(Frecuencia)) %>%
+  mutate(
+    Porcentaje = round((Frecuencia / sum(Frecuencia)) * 100, 1),
+    Porcentaje_Acumulado = cumsum(Porcentaje)
+  )
+
+
+
+tabla_resultadossex %>%
+  kable(
+    format = "html",
+    col.names = c("Departamento", "Frecuencia", "Porcentaje (%)", "Porcentaje Acumulado (%)"),
+    align = c("l", "c", "c", "c"),
+    caption = "Distribución de Frecuencias del nivel de estudios"
+  ) %>%
+ kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = FALSE,
+    font_size = 14,
+    position = "center"
+  ) %>%
+  row_spec(0, background = "#2b6cb0", color = "white", bold = TRUE) %>%
+ column_spec(2:4, width = "2.5cm") %>% 
+  footnote(
+    general = "Fuente: Elaboración propia con base en ECV DANE 2024",
+    general_title = "Nota:",
+    footnote_as_chunk = TRUE
+  )
+```
+
+
+#### Departamento
+
+La tabla 7 revela la composición de la muestra estudiada en la región Pacífica colombiana. Cauca representa la mayor proporción con 1,392 observaciones (33.4%), seguido por Nariño con 1,292 casos (31.0%). En conjunto, estos dos departamentos concentran el 64.4% del total de la muestra, indicando una sobrerrepresentación relativa en el estudio. Valle del Cauca contribuye con 782 hogares (18.8%), mientras que Chocó presenta la menor representación con 703 casos (16.9%).
+
+Esta distribución muestral refleja variaciones en el tamaño poblacional de cada departamento y posiblemente en la intensidad del trabajo de campo. La predominancia de Cauca y Nariño en la composición muestral sugiere que los resultados del análisis de regresión podrían estar más influenciados por las características de estos territorios. La representación diferenciada entre departamentos deberá considerarse en la interpretación de los resultados, particularmente en lo relacionado con la generalización de hallazgos a toda la región Pacífica.
+
+```{r tabla de departamento}
+
+tabla_resultados <- Base_datos %>%
+  group_by(Departamento) %>%  # Cambia 'Departamento' por tu variable
+  summarise(Frecuencia = n()) %>%
+  arrange(desc(Frecuencia)) %>%
+  mutate(
+    Porcentaje = round((Frecuencia / sum(Frecuencia)) * 100, 1),
+    Porcentaje_Acumulado = cumsum(Porcentaje)
+  )
+
+
+
+tabla_resultados %>%
+  kable(
+    format = "html",
+    col.names = c("Departamento", "Frecuencia", "Porcentaje (%)", "Porcentaje Acumulado (%)"),
+    align = c("l", "c", "c", "c"),
+    caption = "Distribución de Frecuencias por Departamento"
+  ) %>%
+ kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = FALSE,
+    font_size = 14,
+    position = "center"
+  ) %>%
+  row_spec(0, background = "#2b6cb0", color = "white", bold = TRUE) %>%
+ column_spec(2:4, width = "2.5cm") %>% 
+  footnote(
+    general = "Fuente: Elaboración propia con base en ECV DANE 2024",
+    general_title = "Nota:",
+    footnote_as_chunk = TRUE
+  )
+```
+
 
 
 
