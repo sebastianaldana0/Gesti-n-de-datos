@@ -1,28 +1,46 @@
 ---
-title: "Resultados"
+title: "**Analisis del modelo**"
 author: "Camilo Portilla"
-date: "2025-10-06"
-output: html_document
+date: "2025-10-9"
+output: 
+    html_document:
+      toc: true #crear indice 
+      toc_float: true #colocar el indice a la izquierda
+      smooth_scroll: true #animacion del indice 
+      highlight: kate 
+      theme: yeti  # tema estetico 
+      df_print: paged 
+      code_folding: show
 ---
 
 ```{r base de datos}
-#Librerias
-library(tidyverse)
-library(scales)
-library(readxl)
-library(ggcorrplot)
-library(visreg)
-library(nortest)
-library(lmtest)
-library(ggthemes)
-library(ggpmisc)
-library(DT)
-library(plotly)
+knitr::opts_chunk$set(
+  message = FALSE,
+  warning = FALSE,
+  echo = FALSE)
+
+# Cargar librerías sin mostrar mensajes
+suppressPackageStartupMessages({
+  library(tidyverse)
+  library(scales)
+  library(readxl)
+  library(ggcorrplot)
+  library(visreg)
+  library(nortest)
+  library(lmtest)
+  library(ggthemes)
+  library(ggpmisc)
+  library(DT)
+  library(plotly)
+  library(kableExtra)
+  library(car)
+  library(broom)})
 
 datos_hogar=read.csv("datos_hogar.csv", sep = ";") %>% 
-  select(DIRECTORIO,I_HOGAR,CANT_PERSONAS_HOGAR) %>% 
-  rename("Ingreso del hogar"=2,"Cantidad de personas en el hogar"=3) %>% 
+  select(DIRECTORIO,I_HOGAR,PERCAPITA,CANT_PERSONAS_HOGAR) %>% 
+  rename("Ingreso del hogar"=2,"Cantidad de personas en el hogar"=4) %>% 
   distinct(DIRECTORIO, .keep_all = TRUE) %>% filter(`Ingreso del hogar`!=0)
+
 
 educacion=read.csv("educacion.csv", sep= ";") %>% 
   select(DIRECTORIO,P8587) %>% 
@@ -60,33 +78,81 @@ educacion=read.csv("educacion.csv", sep= ";") %>%
 
 caracteristicas_hogar=read.csv("Características_composición.CSV",sep= ";") %>% 
   filter(P6051==1) %>% 
-  select(DIRECTORIO,P6020,P6040,P1895) %>% rename(Sexo=2,Edad=3,
-                                                              sastifacion=4)
+  select(DIRECTORIO,P6020,P6040,P6051,P5502,P1895) %>% rename(Sexo=2,Edad=3,Parentesco=4,Casado=5,
+                                                              sastifacion=6) 
 
-vivienda=read.csv("Datos de la vivienda.csv",sep=";") %>% 
-  select(DIRECTORIO,P1_DEPARTAMENTO) %>% rename(Departamento=2) %>% 
+tenencia=read.csv("tenencia y financiación de la vivienda.CSV",sep=";") %>%
+  filter(P5130!=99) %>% 
+  mutate(Arriendo_estimacion=rowSums(select(., P5130, P5140), na.rm = TRUE)) %>% 
+  select(DIRECTORIO,Arriendo_estimacion) %>% 
   distinct(DIRECTORIO, .keep_all = TRUE)
+
 
 trabajo=read.csv("Fuerza de trabajo.CSV",sep=";") %>% 
   select(DIRECTORIO,P8624,P415,P8634,P6426,P416,P6440,P6460,P6426,P8636) %>% 
   rename(Ingresos_mes=2,Horas_trabajadas_semana=3,"Lugar de trabajo"=4,Tiempo_trabajado=5,
          Semana_horas=6,contrato=7,Tipo_contrato=8,
-         meses=8)
+         meses=8) 
 
-Base_datos=caracteristicas_hogar  %>% inner_join(datos_hogar,by="DIRECTORIO") %>% 
-  inner_join(vivienda,by="DIRECTORIO") %>% inner_join(educacion,by="DIRECTORIO") %>% inner_join(trabajo,by="DIRECTORIO") %>% 
-  filter(Departamento%in%c(76,19,52,27),Edad!=0,Edad>=18,`Ingreso del hogar`<=50000000) %>% 
-  select(Departamento,`Ingreso del hogar`,`Cantidad de personas en el hogar`,Sexo,
-         Edad,CATEGORIA_EDUCATIVA,Tiempo_trabajado,Horas_trabajadas_semana,
-         sastifacion) %>% mutate(
-           Departamento= case_when(
-             Departamento == 76 ~ "Valle del Cauca",
-             Departamento == 19 ~ "Cauca",
-             Departamento == 52 ~ "Nariño",
-             Departamento == 27 ~ "Chocó"),
-           Sexo= case_when(Sexo==1~ "Hombre",
-                           Sexo==2~ "Mujer"))
 
+vivienda=read.csv("Datos de la vivienda.csv",sep=";") %>% 
+  select(DIRECTORIO,CLASE,P1_DEPARTAMENTO) %>% rename(Ubicacion=2,Departamento=3) %>% 
+  distinct(DIRECTORIO, .keep_all = TRUE)
+
+salud=read.csv("Salud.CSV", sep=";")  %>%
+  select(DIRECTORIO,P6090) %>% 
+  group_by(DIRECTORIO) %>%
+  filter(P6090 == max(P6090)) %>%
+  rename(Afiliado=2)%>%
+  ungroup() %>% 
+  distinct(DIRECTORIO, .keep_all = TRUE)
+
+Muestra=read.csv("muestral.CSV",sep=";") %>% 
+  select(DIRECTORIO,MPIO) %>% rename(Municipio=2) %>% 
+  distinct(DIRECTORIO, .keep_all = TRUE)
+
+#Base de datos final
+
+suppressWarnings({
+  Base_datos <- caracteristicas_hogar %>%
+    inner_join(datos_hogar, by = "DIRECTORIO") %>%
+    inner_join(vivienda, by = "DIRECTORIO") %>%
+    inner_join(educacion, by = "DIRECTORIO") %>%
+    inner_join(trabajo, by = "DIRECTORIO") %>%
+    filter(
+      Departamento %in% c(76, 19, 52, 27),
+      Edad != 0, Edad >= 18,
+      `Ingreso del hogar` <= 50000000
+    ) %>%
+    select(
+      Departamento, `Ingreso del hogar`, `Cantidad de personas en el hogar`, Sexo,
+      Edad, CATEGORIA_EDUCATIVA, Tiempo_trabajado, Horas_trabajadas_semana, sastifacion
+    ) %>%
+    mutate(
+      Departamento = case_when(
+        Departamento == 76 ~ "Valle del Cauca",
+        Departamento == 19 ~ "Cauca",
+        Departamento == 52 ~ "Nariño",
+        Departamento == 27 ~ "Chocó"
+      ),
+      Sexo = case_when(
+        Sexo == 1 ~ "Hombre",
+        Sexo == 2 ~ "Mujer"))
+})
+
+# tema 
+tema_powerbi <- theme_minimal() +
+  theme(text = element_text(family = "Segoe UI", color = "#2d3748"),
+  plot.title = element_text(face = "bold", size = 18, hjust = 0.5, color = "#323130"),
+  plot.subtitle = element_text(size = 12, hjust = 0.5, color = "#605e5c", margin = margin(b = 15)),
+  plot.caption = element_text(size = 10, color = "#605e5c", hjust = 0),
+  panel.grid.major = element_line(color = "#f3f2f1"),
+  panel.grid.minor = element_blank(),
+  plot.background = element_rect(fill = "white", color = NA),
+  panel.background = element_rect(fill = "white", color = NA),
+  axis.title = element_text(face = "bold", color = "#323130"),
+  axis.text = element_text(color = "#605e5c"),
+  legend.position = "none")
 
 ```
 # Resultados del modelo
@@ -100,7 +166,7 @@ Finalmente, se valida el cumplimiento de los supuestos clásicos del modelo line
 (4) los errores se distribuyen normalmente.  
 
 La validación se realiza en dos etapas: una evaluación gráfica y una validación estadística mediante pruebas de hipótesis específicas para cada supuesto.
-
+## Análisis de correlación
 ```{r}
 library(kableExtra)
 Modelo_final=lm(log(`Ingreso del hogar`)~Sexo+Tiempo_trabajado+CATEGORIA_EDUCATIVA+
@@ -108,8 +174,8 @@ Modelo_final=lm(log(`Ingreso del hogar`)~Sexo+Tiempo_trabajado+CATEGORIA_EDUCATI
                   Departamento
                 ,Base_datos)
 
-summary(Modelo_final)
 ```
+
 ```{r correlacio}
 library(tidyverse)
 #  Seleccionar solo variables numéricas
@@ -122,11 +188,8 @@ corr_result <- Hmisc::rcorr(as.matrix(num_vars))
 #  Extraer correlaciones y p-valores con la variable dependiente
 cor_y <- corr_result$r[, "Ingreso del hogar"]
 pval_y <- corr_result$P[, "Ingreso del hogar"]
-summary(pval_y)
-view(pval_y)
 
 Modelop=lm(`Ingreso del hogar`~Tiempo_trabajado,Base_datos)
-summary
 
 
 tabla_corr <- tibble(
@@ -156,7 +219,7 @@ tabla_corr %>%
   footnote(general = "Elaboración propia con base en ECV DANE 2024",
     general_title = "Nota:")
 ``` 
-
+## Resultados del modelo y ANOVA
 ```{r Anova}
 library(Hmisc)
 library(tidyverse)
@@ -190,8 +253,6 @@ resumen_mod <- broom::tidy(Modelo_final) %>%
 # Extraer medidas globales del modelo
 
 resumen_global <- glance(Modelo_final)
-summary(resumen_global)
-
 # Crear tabla principal
 
 resumen_global <- glance(Modelo_final)
@@ -199,8 +260,6 @@ R2 <- round(resumen_global$adj.r.squared, 4)
 Fstat <- round(resumen_global$statistic, 2)
 pvalor_modelo <- formatC(resumen_global$p.value, format = "e", digits = 2)
 N <- resumen_global$df.residual + length(Modelo_final$coefficients)
-
-# ---- 3️⃣ Crear filas resumen y añadirlas debajo ----
 
 filas_resumen <- tibble(
   Variable = c("R² ajustado", "F", "Valor p (modelo)", "N"),
@@ -233,6 +292,262 @@ kbl(tabla_final,
            bold = TRUE, italic = FALSE, background = "#e6f0ff") %>%
   footnote(
     general = "Elaboración propia con base en ECV DANE 2024.",
+    general_title = "Nota:",
+    footnote_as_chunk = TRUE)
+
+```
+## Validacion de los supuestos 
+
+### Media cero de los residuos 
+
+```{r Media cero}
+res_df <- augment(Modelo_final)
+
+G_residuos_hist <- ggplot(res_df, aes(x = .resid)) +
+  geom_histogram(bins = 30, fill = "#0078D4", color = "white", alpha = 0.7) +
+  geom_vline(xintercept = 0, color = "#E81123", linetype = "dashed", linewidth = 1) +
+  labs(
+    title = "📊 Figura 1. Distribución de los residuos del modelo",
+    subtitle = "Validación del supuesto de media cero de los errores",
+    x = "Residuos", y = "Frecuencia",
+    caption = "Fuente: Elaboración propia con base en ECV DANE 2024 | Análisis: Equipo de Investigación"
+  ) +
+  tema_powerbi
+G_residuos_hist
+
+Grafico1=ggplot(res_df, aes(.fitted, .resid)) +
+  geom_point(color = "#0078D4", alpha = 0.5, size = 1.5) +
+  geom_smooth(method = "loess", se = FALSE, color = "#FFB900", linewidth = 0.8) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "#E81123") +
+  labs(
+    title = "Residuos vs Valores Ajustados",
+    subtitle = "Evaluación de la linealidad y homocedasticidad",
+    x = "Valores ajustados", y = "Residuos",
+    caption = "Fuente: Elaboración propia con base en ECV DANE 2024 | Análisis: Equipo de Investigación"
+  ) +
+  tema_powerbi
+
+G1_interactivo <- ggplotly(Grafico1, tooltip = c("x", "y")) %>%
+  layout(font = list(family = "Segoe UI", size = 12, color = "#323130"),
+    title = list(x = 0.05, y = 0.95),
+    plot_bgcolor = "#ffffff",
+    paper_bgcolor = "#ffffff",
+    xaxis = list(title = "<b>Valores ajustados</b>", gridcolor = "#f3f2f1"),
+    yaxis = list(title = "<b>Residuos</b>", gridcolor = "#f3f2f1"),
+    margin = list(l = 70, r = 40, t = 90, b = 60),
+    annotations = list(
+      list(x = 0.02, y = -0.15,
+        text = "Fuente: Encuesta ECV DANE 2024 | Análisis: Equipo de Investigación",
+        showarrow = FALSE,
+        xref = "paper", yref = "paper",
+        xanchor = "left", yanchor = "bottom",
+        font = list(size = 10, color = "#605e5c")))) %>%
+  config(displaylogo = FALSE, displayModeBar = TRUE)
+
+G1_interactivo
+```
+### Normalidad de los residuos 
+```{r Normalidad}
+qq_data <- qqnorm(res_df$.std.resid, plot.it = FALSE)
+qq_df <- data.frame(
+  teóricos = qq_data$x,
+  muestrales = qq_data$y)
+
+Grafico2= ggplot(qq_df, aes(x = teóricos, y = muestrales)) +
+  geom_point(color = "#0078D4", alpha = 0.6, size = 1) +
+  geom_abline(slope = 1, intercept = 0, color = "#E81123", linetype = "dashed", linewidth = 0.8) +
+  labs(
+    title = "Gráfico Q-Q de los residuos estandarizados",
+    subtitle = "Evaluación del supuesto de normalidad",
+    x = "Cuantiles teóricos", y = "Cuantiles muestrales",
+    caption = "Fuente: Elaboración propia con base en ECV DANE 2024 | Análisis: Equipo de Investigación") +
+  tema_powerbi
+
+G2_interactivo <- ggplotly(Grafico2, tooltip = c("x", "y")) %>%
+  layout(
+    font = list(family = "Segoe UI", size = 12, color = "#323130"),
+    title = list(x = 0.05, y = 0.95),
+    plot_bgcolor = "#ffffff",
+    paper_bgcolor = "#ffffff",
+    xaxis = list(title = "<b>Cuantiles teóricos</b>", gridcolor = "#f3f2f1"),
+    yaxis = list(title = "<b>Cuantiles muestrales</b>", gridcolor = "#f3f2f1"),
+    margin = list(l = 70, r = 40, t = 90, b = 60),
+    annotations = list(
+      list(
+        x = 0.02, y = -0.15,
+        text = "Fuente: Encuesta ECV DANE 2024 | Análisis: Equipo de Investigación",
+        showarrow = FALSE,
+        xref = "paper", yref = "paper",
+        xanchor = "left", yanchor = "bottom",
+        font = list(size = 10, color = "#605e5c")))) %>%
+  config(displaylogo = FALSE, displayModeBar = TRUE)
+
+G2_interactivo
+```
+### Varianza constante(homocedasticidad)
+```{r Varianza constante}
+G3=ggplot(res_df, aes(x = .fitted, y = sqrt(abs(.std.resid)))) +
+  geom_point(color = "#0078D4", alpha = 0.6, size = 1) +
+  geom_smooth(method = "loess", se = FALSE, color = "#FFB900", linewidth = 1) +
+  labs(
+    title = "Gráfico Scale-Location",
+    subtitle = "Evaluación de la homocedasticidad de los residuos",
+    x = "Valores ajustados",
+    y = expression(sqrt("|Residuos estandarizados|")),
+    caption = "Fuente: Elaboración propia con base en ECV DANE 2024 | Análisis: Equipo de Investigación") +
+  tema_powerbi
+
+G3_interactivo <- ggplotly(G3, tooltip = c("x", "y")) %>%
+  layout(
+    font = list(family = "Segoe UI", size = 12, color = "#323130"),
+    title = list(x = 0.05, y = 0.95),
+    plot_bgcolor = "#ffffff",
+    paper_bgcolor = "#ffffff",
+    xaxis = list(title = "<b>Valores ajustados</b>", gridcolor = "#f3f2f1"),
+    yaxis = list(title = "<b>√|Residuos estandarizados|</b>", gridcolor = "#f3f2f1"),
+    margin = list(l = 70, r = 40, t = 90, b = 60),
+    annotations = list(
+      list(
+        x = 0.02, y = -0.15,
+        text = "Fuente: Encuesta ECV DANE 2024 | Análisis: Equipo de Investigación",
+        showarrow = FALSE,
+        xref = "paper", yref = "paper",
+        xanchor = "left", yanchor = "bottom",
+        font = list(size = 10, color = "#605e5c")))) %>%
+  config(displaylogo = FALSE, displayModeBar = TRUE)
+
+G3_interactivo
+```
+### Independencia de los errores 
+```{r Independencia}
+res_df$orden <- 1:nrow(res_df)
+
+Grafico4=ggplot(res_df, aes(x = orden, y = .resid)) +
+  geom_point(color = "#0078D4", alpha = 0.5, size = 1) +
+  geom_line(color = "#0078D4", alpha = 0.4, linewidth = 0.4) +
+  geom_hline(yintercept = 0, color = "#E81123", linetype = "dashed") +
+  labs(
+    title = "Residuos vs Orden de Observación",
+    subtitle = "Evaluación del supuesto de independencia de los errores",
+    x = "Orden de observación", y = "Residuos",
+    caption = "Fuente: Elaboración propia con base en ECV DANE 2024 | Análisis: Equipo de Investigación"
+  ) +
+  tema_powerbi
+
+G4_interactivo=ggplotly(Grafico4, tooltip = c("x", "y")) %>%
+  layout(
+    font = list(family = "Segoe UI", size = 12, color = "#323130"),
+    title = list(x = 0.05, y = 0.95),
+    plot_bgcolor = "#ffffff",
+    paper_bgcolor = "#ffffff",
+    xaxis = list(title = "<b>Orden de observación</b>", gridcolor = "#f3f2f1"),
+    yaxis = list(title = "<b>Residuos</b>", gridcolor = "#f3f2f1"),
+    margin = list(l = 70, r = 40, t = 90, b = 60),
+    annotations = list(
+      list(
+        x = 0.02, y = -0.15,
+        text = "Fuente: Encuesta ECV DANE 2024 | Análisis: Equipo de Investigación",
+        showarrow = FALSE,
+        xref = "paper", yref = "paper",
+        xanchor = "left", yanchor = "bottom",
+        font = list(size = 10, color = "#605e5c")))) %>%
+  config(displaylogo = FALSE, displayModeBar = TRUE)
+
+G4_interactivo
+```
+### Observaciones influyentes 
+```{r Validacion adicional}
+res_df$CooksD <- cooks.distance(Modelo_final)
+
+GraficoValidacion=ggplot(res_df, aes(x = .hat, y = .std.resid, text = paste(
+  "Leverage:", round(.hat, 3), "<br>",
+  "Residuos estandarizados:", round(.std.resid, 3), "<br>",
+  "Cook’s Distance:", round(CooksD, 4)))) +
+  geom_point(aes(size = CooksD, 
+                 color = ifelse(CooksD > 4 / nrow(res_df), "#E81123", "#0078D4")),
+             alpha = 0.6) +
+  geom_smooth(method = "loess", se = FALSE, color = "#FFB900", linewidth = 1) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "#E81123") +
+  labs(
+    title = "Residuos estandarizados vs Leverage",
+    subtitle = "Identificación de observaciones influyentes (Cook’s distance)",
+    x = "Leverage", y = "Residuos estandarizados",
+    caption = "Fuente: Elaboración propia con base en ECV DANE 2024 | Análisis: Equipo de Investigación") +
+  tema_powerbi +
+  guides(size = "none", color = "none")
+
+GV_interactivo <- ggplotly(GraficoValidacion, tooltip = "text") %>%
+  layout(
+    font = list(family = "Segoe UI", size = 12, color = "#323130"),
+    title = list(x = 0.05, y = 0.95),
+    plot_bgcolor = "#ffffff",
+    paper_bgcolor = "#ffffff",
+    xaxis = list(title = "<b>Leverage</b>", gridcolor = "#f3f2f1"),
+    yaxis = list(title = "<b>Residuos estandarizados</b>", gridcolor = "#f3f2f1"),
+    margin = list(l = 70, r = 40, t = 90, b = 60),
+    annotations = list(
+      list(
+        x = 0.02, y = -0.15,
+        text = "Fuente: Encuesta ECV DANE 2024 | Análisis: Equipo de Investigación",
+        showarrow = FALSE,
+        xref = "paper", yref = "paper",
+        xanchor = "left", yanchor = "bottom",
+        font = list(size = 10, color = "#605e5c")))) %>%
+  config(displaylogo = FALSE, displayModeBar = TRUE)
+
+GV_interactivo
+
+```
+## Análisis estadístico de los supuestos (Pruebas de hipótesis)
+```{r  Tabla supuestos}
+# 1️ Pruebas individuales
+shapiro <- shapiro.test(Modelo_final$residuals)
+lillie <- lillie.test(Modelo_final$residuals)
+bp <- bptest(Modelo_final)
+dw <- dwtest(Modelo_final)
+vif_val <- vif(Modelo_final)
+
+# 2️ Tabla resumen
+tabla_supuestos <- tibble(
+  `Supuesto evaluado` = c(
+    "Normalidad de los residuos",
+    "Varianza constante (homocedasticidad)",
+    "Independencia de los errores",
+    "Ausencia de multicolinealidad"),
+  `Prueba aplicada` = c(
+    "Shapiro–Wilk / Lilliefors",
+    "Breusch–Pagan",
+    "Durbin–Watson",
+    "Factor de inflación de varianza (VIF)"),
+  `Hipótesis nula (H₀)` = c(
+    "Los residuos siguen una distribución normal",
+    "La varianza de los errores es constante",
+    "Los residuos son independientes",
+    "No existe colinealidad entre predictores"),
+  `Valor p / Estadístico` = c(
+    paste0("p = ", signif(shapiro$p.value, 3), " / ", signif(lillie$p.value, 3)),
+    paste0("p = ", signif(bp$p.value, 3)),
+    paste0("DW = ", round(dw$statistic, 2)),
+    paste0("Máx VIF = ", round(max(vif_val), 2))),
+  `Resultado` = c(
+    ifelse(shapiro$p.value > 0.05 & lillie$p.value > 0.05, "p > 0.05 → No se rechaza H₀", "p < 0.05 → Se rechaza H₀"),
+    ifelse(bp$p.value > 0.05, "p > 0.05 → No se rechaza H₀", "p < 0.05 → Se rechaza H₀"),
+    ifelse(dw$statistic >= 1.5 & dw$statistic <= 2.5, "Entre 1.5–2.5 → Sin autocorrelación", "Fuera de rango → Posible autocorrelación"),
+    ifelse(max(vif_val) < 5, "VIF < 5 → Cumple", "VIF ≥ 5 → No cumple")))
+
+tabla_supuestos %>%
+  kbl(caption = "Pruebas de Hipótesis para la Validación de Supuestos del Modelo",
+    align = c("l", "l", "l", "c", "c")) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = FALSE,
+    font_size = 14,
+    position = "center") %>%
+  row_spec(0, background = "#2b6cb0", color = "white", bold = TRUE) %>%
+  column_spec(1, bold = TRUE, width = "4cm") %>%
+  column_spec(4:5, width = "3cm") %>%
+  footnote(
+    general = "Fuente: Elaboración propia con base en ECV DANE 2024 y pruebas estadísticas aplicadas a los residuos del modelo.",
     general_title = "Nota:",
     footnote_as_chunk = TRUE)
 
