@@ -914,7 +914,7 @@ Dispercion_edad <- ggplot(Base_datos, aes(x = Edad,
     labels = function(x) {
       dollar_format(prefix = "$", big.mark = ",")(exp(x))
     },
-    breaks = log(c(500000, 1000000, 2000000, 5000000)),
+    breaks = log(c(5, 10, 15, 20)),
     guide = guide_colorbar(
       barwidth = 12,
       barheight = 0.8,
@@ -930,7 +930,7 @@ Dispercion_edad <- ggplot(Base_datos, aes(x = Edad,
   labs(
     title = "Figura 2. RELACIÓN EDAD DEL JEFE DE HOGAR - INGRESO FAMILIAR ",
     subtitle = "Transformación logarítmica aplicada al ingreso | Curva de tendencia lineal",
-    caption = "Fuente: Encuesta Nacional de Hogares | Edad del jefe de hogar vs log(ingreso familiar)"
+    caption = "Fuente: Encuesta Nacional de Hogares ECV 2024"
   ) +tema+
   theme(
     text = element_text(family = "sans"),
@@ -1027,129 +1027,88 @@ La estructura de los hogares en la región Pacífica colombiana presenta notable
 La dispersión en el tamaño de los hogares, medida a través de la desviación estándar, es relativamente homogénea entre los departamentos, oscilando alrededor de 16 personas. Los valores mínimos y máximos revelan que en toda la región existen hogares que van desde conformaciones unipersonales (1 persona) hasta hogares extensos de más de 90 integrantes, lo que evidencia la diversidad en las estructuras familiares y los arreglos residenciales presentes en la zona.
 
 ```{r correlacion cantidad}
-scatter_facet_blue <- ggplot(Base_datos, aes(x = `Cantidad de personas en el hogar`, 
-                                       y = log(`Ingreso del hogar`))) +
-  
-  # Capa de puntos con gradiente azul
-  geom_point(
-    aes(color = `Ingreso del hogar`, fill = `Ingreso del hogar`),
+Dispercion_cantidad <- ggplot(Base_datos, aes(x = `Cantidad de personas en el hogar`, 
+                                       y = log(`Ingreso del hogar`)))+
+   geom_point(
+    aes(color = log(`Ingreso del hogar`)),
     alpha = 0.7,
-    size = 2.8,
-    shape = 21,
-    stroke = 0.3
+    size = 2.8
   ) +
-  
-  # Línea de tendencia en azul oscuro
   geom_smooth(
-    method = "lm",
-    color = "#1a3c5f",  # Azul oscuro
-    fill = "#6baed6",   # Azul medio para intervalo de confianza
+    method = "lm",  
+    color = "#1a3c5f",
+    fill = "#6baed6",
     alpha = 0.3,
     linewidth = 1.1,
     se = TRUE
   ) +
-  
-  # Crear facetas por departamento
-  facet_wrap(~ Departamento, 
-             ncol = 2,
-             scales = "fixed") +
-  
-  # Escalas de color en tonos azules
+  facet_wrap(~ Departamento, ncol = 2) +
   scale_color_gradient(
-    low = "#d0e1f9",   # Azul muy claro
-    high = "#1a3c5f",  # Azul oscuro
-    labels = dollar_format(prefix = "$", big.mark = ","),
-    guide = guide_colorbar(
-      title = "Ingreso Familiar",
-      barwidth = 12,
-      barheight = 0.8,
-      direction = "horizontal"
-    )
-  ) +
-  
-  scale_fill_gradient(
+    name = "Ingreso Familiar",
     low = "#d0e1f9",
     high = "#1a3c5f",
-    guide = "none"  # Solo usamos una leyenda para color
+    labels = function(x) {
+      dollar_format(prefix = "$", big.mark = ",")(exp(x))
+    },
+    breaks = log(c(5, 10, 15, 20)),
+    guide = guide_colorbar(
+      barwidth = 12,
+      barheight = 0.8,
+      direction = "horizontal",
+      title.position = "top"
+    )
   ) +
-  
-  # Formato de ejes
-  scale_y_continuous(
-    labels = dollar_format(prefix = "$", big.mark = ","),
-    breaks = breaks_extended(6)
-  ) +
-  
-  scale_x_continuous(
+   scale_x_continuous(
     breaks = function(x) unique(floor(pretty(seq(0, (max(x) + 1) * 1.1))))
-  ) +
-  
-  # Títulos y etiquetas
+  )+
   labs(
-    title = "RELACIÓN TAMAÑO DEL HOGAR - INGRESO FAMILIAR POR DEPARTAMENTO",
-    subtitle = "Análisis individual de la correlación en cada departamento - Paleta de azules",
-    x = "Cantidad de Personas en el Hogar",
-    y = "Ingreso Familiar Mensual",
-    caption = "Fuente: Encuesta Nacional de Hogares | Tendencias lineales mostradas en azul oscuro"
-  ) +
-  
-  # Tema profesional con tonos azules
-  theme_minimal(base_size = 12) +
+    title = "Figura 2. RELACIÓN EDAD DEL JEFE DE HOGAR - INGRESO FAMILIAR ",
+    subtitle = "Transformación logarítmica aplicada al ingreso | Curva de tendencia lineal",
+    caption = "Fuente: Encuesta Nacional de Hogares ECV 2024"
+  ) +tema+
   theme(
-    # Textos generales
     text = element_text(family = "sans"),
     plot.title = element_text(
       face = "bold",
-      size = 16,
+      size = 14,
       hjust = 0.5,
       margin = margin(b = 10),
       color = "#2c3e50"
     ),
     plot.subtitle = element_text(
-      size = 12,
+      size = 11,
       hjust = 0.5,
       color = "#34495e",
-      margin = margin(b = 20)
+      margin = margin(b = 15)
     ),
     plot.caption = element_text(
-      size = 10,
+      size = 9,
       color = "#7f8c8d",
       hjust = 0.5,
-      margin = margin(t = 15)
+      margin = margin(t = 10)
     ),
-    
-    # Facetas - fondo azul para títulos
     strip.background = element_rect(
-      fill = "#3498db",  # Azul vibrante
+      fill = "#3498db",
       color = "#2980b9",
       linewidth = 1
     ),
     strip.text = element_text(
       color = "white",
       face = "bold",
-      size = 11
+      size = 10
     ),
-    
-    # Ejes
-    axis.title = element_text(face = "bold", size = 12, color = "#2c3e50"),
+    axis.title = element_text(face = "bold", size = 11, color = "#2c3e50"),
     axis.text = element_text(size = 9, color = "#34495e"),
-    
-    # Leyenda de color
     legend.position = "bottom",
     legend.title = element_text(face = "bold", size = 10, color = "#2c3e50"),
-    legend.text = element_text(size = 9, color = "#34495e"),
-    
-    # Grid en tonos azules suaves
+    legend.text = element_text(size = 8, color = "#34495e"),
     panel.grid.major = element_line(color = "#ecf0f1", linewidth = 0.4),
     panel.grid.minor = element_line(color = "#f8f9fa", linewidth = 0.2),
-    panel.background = element_rect(fill = "white", color = NA),
-    plot.background = element_rect(fill = "white", color = NA),
-    
-    # Márgenes
-    plot.margin = margin(20, 20, 20, 20)
+    plot.margin = margin(15, 15, 15, 15)
   )
 
-# Mostrar gráfica
-print(scatter_facet_blue)
+
+print(Dispercion_cantidad)
 ```
 
 
