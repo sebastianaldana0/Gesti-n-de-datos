@@ -539,19 +539,36 @@ tema<- theme_minimal() +
 
 # Introducción
 
-La comprensión de los determinantes del ingreso familiar constituye uno de los elementos centrales para el diseño de políticas públicas orientadas a la reducción de la pobreza y la promoción del desarrollo socioeconómico equitativo. En Colombia, esta problemática adquiere especial relevancia en regiones como el Pacífico, caracterizada por persistentes brechas de desigualdad y condiciones socioeconómicas adversas que contrastan con la riqueza de sus recursos naturales y diversidad cultural.
+Entender los determinantes del ingreso familiar constituye uno de los elementos centrales para el diseño de políticas públicas que serán centradas en la reducción de la pobreza y la promoción del desarrollo socioeconómico equitativo (Muñoz, 2004). En Colombia, esta problemática adquiere mucha relevancia en regiones como el Pacífico, la cual será nuestro objeto de estudio, caracterizada por persistentes brechas de desigualdad y condiciones socioeconómicas adversas que contrastan con la riqueza de sus recursos naturales y diversidad cultural (Galvis-Aponte et al., 2016)
 
-La región Pacífica colombiana, conformada por los departamentos de Chocó, Cauca, Nariño y Valle del Cauca, alberga aproximadamente 1.5 millones de habitantes, de los cuales el 80% pertenece a comunidades afrodescendientes, 12% a población indígena y 8% a población mestiza. Esta región presenta los mayores niveles de pobreza del país: Chocó registra una incidencia de pobreza monetaria del 67.7%, seguido por Cauca con 58.4% y Nariño con 47.6%, cifras significativamente superiores al promedio nacional. Estas condiciones de vulnerabilidad socioeconómica, sumadas al aislamiento geográfico y la débil presencia institucional, configuran un escenario complejo que requiere análisis detallados de los factores que influyen en la generación de ingresos familiares.
+La región pacífica colombiana, conformada por los departamentos de Chocó, Cauca, Nariño y Valle del Cauca, cuenta con una población aproximada de 0.55 millones, 1.56 millones, 1.70 millones y 4.64 millones respectivamente. En estos departamentos predominan las comunidades afrodescendientes, las cuales representan alrededor del 74.4% de la población en Chocó, 22.8% en Nariño, 20.0% en Cauca y 17.5% en Valle del Cauca. y con una población indígena cerca del 15% en Chocó (según censo 2018), 15.9% en Nariño y 25.4% en Cauca, mientras que en Valle del Cauca apenas alcanza el 0.8%.
 
-La Encuesta Nacional de Calidad de Vida (ECV) del DANE constituye la herramienta estadística más importante para el análisis de las condiciones socioeconómicas de los hogares colombianos. Esta encuesta, que recopila información sobre diversas dimensiones del bienestar como características de vivienda, educación, salud, fuerza de trabajo y percepciones sobre calidad de vida, proporciona una base de datos robusta para la aplicación de modelos econométricos que permitan identificar los determinantes del ingreso familiar.
+Según el DANE, la incidencia de pobreza monetaria en 2024 fue extremadamente alta en la región Pacífica: Chocó 67.4%, Cauca 43.1%, Nariño 39.2% y Valle del Cauca 25.7%. Estos valores superan con creces el promedio nacional (31.8%). En conjunto, estas cifras, sumadas al aislamiento geográfico de la región y a la limitada presencia institucional, reflejan una alta vulnerabilidad socioeconómica en el Pacífico colombiano, lo que resalta la necesidad de analizar detalladamente los factores que afectan la generación de ingresos familiares (Sánchez-Torres, 2024).
 
-Los modelos lineales han demostrado ser herramientas efectivas para el análisis de los determinantes del ingreso familiar, permitiendo cuantificar el efecto de variables socioeconómicas y demográficas sobre los ingresos de los hogares. La literatura internacional y nacional ha documentado consistentemente la relevancia de factores como el nivel educativo, la experiencia laboral, el género, la composición del hogar y las características demográficas en la determinación de los ingresos familiares.
+En Colombia, la Encuesta Nacional de Calidad de Vida (ECV) es una operación estadística que el DANE realiza con el objeto de recoger información sobre diferentes aspectos y dimensiones del bienestar y las condiciones de vida de los hogares, incluyendo temas como lo son el acceso a bienes y servicios públicos, privados o comunales, salud, educación, atención integral de niños menores de 5 años, entre otros (DANE, 2025). La consideración de estos aspectos hace posible realizar análisis a los factores que explican los diferentes niveles de vida existentes en la sociedad. La Encuesta Nacional de Calidad de Vida (ECV) es, además, la fuente de información del cálculo del Índice de Pobreza Multidimensional, IPM (DNP, 2016).
 
-En el contexto específico de la región Pacífica, el análisis de estos determinantes cobra particular importancia debido a las características específicas de su población. Los bajos niveles educativos, la alta informalidad laboral, las estructuras familiares complejas y las condiciones de exclusión social que caracterizan a esta región sugieren que los patrones de determinación del ingreso pueden diferir significativamente de los observados en otras regiones del país.
+Adicionalmente, un modelo lineal es una ecuación matemática o representación que describe la relación entre dos o más cantidades, asumiendo que la relación es directa y tiene una tasa de cambio constante (Contreras Navarrete, 2011). Estos han demostrado ser herramientas efectivas para el análisis de los determinantes del ingreso familiar, permitiendo cuantificar el efecto de variables socioeconómicas y demográficas sobre los ingresos de los hogares (Gaviria Ríos et al., 2007).
 
-El presente estudio aplica un modelo de regresión lineal múltiple utilizando los datos de la ECV para la región Pacífica, con el objetivo de analizar la relación entre el ingreso familiar y un conjunto de variables explicativas que incluyen el nivel de estudios, el tiempo trabajado la semana pasada, el sexo del jefe de hogar, la cantidad de personas en el hogar y la edad. Esta selección de variables se fundamenta tanto en la revisión de la literatura especializada como en las características socioeconómicas específicas de la región Pacífica.
+En el contexto específico de la región Pacífica, el análisis de estos determinantes cobra particular importancia debido a las características específicas de su población. Los bajos niveles educativos, la alta informalidad laboral, las estructuras familiares complejas y las condiciones de exclusión social que caracterizan a esta región sugieren que los patrones de determinación del ingreso pueden diferir significativamente de los observados en otras regiones del país (Espinosa-Espinosa, 2021).
+
+El presente estudio aplica un modelo de regresión lineal múltiple utilizando los datos de la ECV para la región Pacífica, con el objetivo de analizar la relación entre el ingreso familiar y un conjunto de variables que incluyen la edad, el departamento, el sexo del jefe de hogar, la cantidad de personas, y el nivel educativo del jefe de hogar. Esta selección de variables se basa tanto en la revisión de la literatura especializada como en las características socioeconómicas específicas de la región Pacífica (Auvert Albornoz, 2014)
 
 # Metodologia
+
+## Metodo empleado
+
+El estudio partió de una búsqueda en la página del DANE para obtener una base de datos adecuada, a la que se le aplicaría el método de Regresión Lineal Múltiple. Se seleccionó la Encuesta de Calidad de Vida (ECV) 2024 como fuente de información, reconocida como la principal operación estadística que el DANE realiza para recoger información sobre diferentes aspectos y dimensiones del bienestar y las condiciones de vida de los hogares (DANE, 2024). A partir del archivo original, se seleccionaron las variables a emplear, las cuales como variable dependiente se escogió el ingreso del hogar, y como variables independientes se escogieron la edad, el departamento, el sexo del jefe del hogar, la cantidad de personas que habitan el hogar, el nivel educativo alcanzado por el jefe de hogar, y la cantidad de horas trabajadas la semana pasada. Se prosiguió con un filtro en la base de datos de estas variables para tener solamente los datos de interés, como lo es que nuestro estudio se realizará en la región pacífica.
+
+Al analizar los recursos o capitales, muchas veces los datos reales no siempre se comportan de manera lineal. Muchas veces, la variable dependiente puede tener una relación asimétrica. Para contrarrestar esto, se utilizó la función logaritmo natural de una variable en vez de la variable en sí. Esto tiene muchas propiedades que pueden mejorar los modelos, ya que puede transformar una relación no lineal en una lineal (Vidal Sánchez, 2024). Además, según la University of Virginia Library (2018), aplicar un logaritmo ayuda a "estabilizar la varianza y reducir la asimetría" de los datos, lo que contribuye a que los modelos cumplan mejor los supuestos estadísticos.
+
+Previo a la estimación se realizó un análisis descriptivo por medio de tablas de frecuencias, medias, desviaciones estándar y revisión de extremos con el fin de caracterizar la muestra, detectar valores atípicos y decidir las codificaciones definitivas. A continuación, se estimaron modelos de Regresión Lineal Múltiple (Mínimos Cuadrados Ordinarios), incorporando los controles demográficos, laborales y educativos señalados. La regresión lineal múltiple permite generar un modelo lineal en el que el valor de la variable dependiente se determina a partir de un conjunto de variables predictoras, siguiendo la ecuación: Yi = (β₀ + β₁X₁ᵢ + β₂X₂ᵢ + ⋯ + βₙXₙᵢ) + eᵢ (Ciencia de Datos, 2017)
+
+Para comprobar la validez de las inferencias se efectuó un diagnóstico gráfico y analítico de los supuestos clásicos del modelo de regresión lineal múltiple. Los principales supuestos evaluados fueron: linealidad (la relación entre las variables independientes y la dependiente es lineal), independencia (los residuos son independientes entre sí), homocedasticidad (la varianza de los residuos es constante para cada valor de las variables independientes), normalidad (los residuos se distribuyen normalmente con media cero), y no multicolinealidad (no existe relación lineal exacta entre las variables independientes) (Marín, 2018).
+
+Tambien, Se calculó el Factor de Inflación de la Varianza (VIF) para cada variable independiente con el fin de detectar la presencia de multicolinealidad. Un VIF menor a 5 indica que no existen problemas graves de colinealidad, mientras que valores superiores a 10 señalan multicolinealidad severa que puede distorsionar las estimaciones de los coeficientes (Dormann et al., 2013).
+
+La validación de estos supuestos se realizó mediante: visualización de residuos (gráfico de residuos vs valores ajustados) para evaluar homocedasticidad y linealidad, gráfico Q-Q para verificar la normalidad aproximada de residuos, pruebas de heterocedasticidad, y cálculo de medidas de influencia como las distancias de Cook para identificar observaciones atípicas que pudieran estar afectando significativamente los resultados del modelo (Barragán-Moreno et al., 2024). El análisis de los residuos es fundamental en la regresión, ya que informa sobre el grado de exactitud de los pronósticos y permite detectar casos atípicos que pueden ayudar a perfeccionar la ecuación de regresión (Marín, 2018)
+
 
 ## Descripcion de la encuesta
 
@@ -585,20 +602,22 @@ Unidades de muestreo: segmento o conglomerado, conformado en promedio por 10 hog
 
 ## Variables
 
-Las variables utilizadas en el estudio se dividen en dos grupos: dependientes e independientes. En primer lugar, la variable dependiente seleccionada es el Ingreso del hogar, la cual busca medir el nivel monetario total percibido por los miembros del hogar. Este indicador refleja el grado de bienestar económico, la capacidad de consumo y las oportunidades de inversión en educación, salud y vivienda.
-En cuanto a las variables independientes, se consideran varios factores cuyo nivel de significancia resulta fundamental para explicar el ingreso. En primer lugar, la educación: las personas con mayor nivel educativo tienden a acceder a empleos mejor remunerados y con mayores oportunidades de ascenso, además de aumentar su productividad y capital humano. Por lo tanto, se espera que a mayor grado educativo alcanzado, el ingreso también sea más alto. Como señalan Psacharopoulos y Patrinos (2018), “por esta razón la educación, y en particular la educación superior, constituyen un elemento importante dentro de los múltiples determinantes del crecimiento económico.”
+Las variables utilizadas en el estudio se dividen en dos grupos: dependientes e independientes. La variable dependiente que fue seleccionada es el ingreso del hogar, la cual busca medir el nivel monetario total percibido por los miembros del hogar. Este indicador refleja el grado de bienestar económico, la capacidad de consumo y las oportunidades de inversión en educación, salud y vivienda (Muñoz, 2004).
 
-El sexo constituye un factor determinante en los ingresos del hogar debido a una combinación de factores sociales, económicos y culturales que, en los países latinoamericanos, reproducen desigualdades estructurales entre hombres y mujeres. Como señala la Organización Internacional del Trabajo (2019), “las mujeres siguen ganando aproximadamente un 20 por ciento menos que los hombres, y gran parte de esta brecha no puede explicarse por las características objetivas del mercado laboral” (p. vi).
+En cuanto a las variables independientes, se consideran varios factores cuyo nivel de significancia resulta fundamental para explicar el ingreso. En primer lugar, la edad es un factor que se considera relacionado con una mayor experiencia y, por lo tanto, con mayores ingresos. Sin embargo, las jubilaciones pueden afectar el comportamiento lineal que se esperaría, haciendo que este se estabilice o disminuya (Guataquí, 2009). Por ello, la edad se reconoce como una variable importante para relacionar con los ingresos, ya que estos tienden a variar a lo largo del ciclo de vida laboral. En Colombia, menos de una cuarta parte de los adultos mayores reciben pensión, y los ingresos laborales siguen siendo la principal fuente de sustento incluso en la vejez (Villar et al., 2016)
 
-La región (departamento) corresponde a la Región Pacífica, la cual se escoge como filtro focal del estudio, dado que es una de las zonas de Colombia más diversas en cuanto a clima, población y condiciones económicas, lo que se supone que permitirá realizar un análisis más preciso de las dinámicas económicas regionales.
+La región corresponde a la Región Pacífica, la cual se escoge como filtro focal del estudio, dado que es una de las zonas de Colombia más diversas en cuanto a clima, población y condiciones económicas, lo que se supone que permitirá realizar un análisis más preciso de las dinámicas económicas regionales. Los estudios muestran que existen diferencias salariales significativas según el área geográfica, lo que da evidencia de segmentación del mercado laboral en Colombia (Mesa et al., 2008)
 
-También se considera que la cantidad de personas en el hogar es una variable influyente en los ingresos, ya que el número de integrantes de un hogar determina tanto su capacidad productiva como sus necesidades económicas. A medida que aumenta el tamaño del hogar, el ingreso total puede incrementarse debido a la presencia de más miembros potencialmente activos en el mercado laboral; sin embargo, este aumento no siempre es proporcional, lo que puede generar una disminución en el ingreso disponible por persona.
-Este comportamiento se relaciona con las economías de escala en el consumo y con la estructura demográfica del hogar, factores que condicionan la distribución y el aprovechamiento del ingreso total. De acuerdo con la Comisión Económica para América Latina y el Caribe (CEPAL, 2020), “los hogares más numerosos presentan, en promedio, menores niveles de ingreso por persona y mayores tasas de pobreza, lo que refleja una relación inversa entre tamaño del hogar y bienestar económico” (p. 47). En consecuencia, se espera que, a mayor número de personas en el hogar, el ingreso per cápita tienda a disminuir, reflejando una menor capacidad de consumo individual y mayores presiones presupuestarias para cubrir las necesidades básicas del grupo familiar.
+El sexo (género) se incluye porque influye de manera sistemática en las oportunidades laborales y en la remuneración. A nivel agregado, las mujeres suelen enfrentar brechas salariales respecto a los hombres, mayor participación en empleos de menor remuneración o en sectores con alta informalidad, y sobrecarga de responsabilidades de cuidado que limitan las horas trabajadas o la disponibilidad para empleos formales (DANE, 2024). La brecha salarial en Colombia no cede, las mujeres continúan en desventaja, ganando 6,3% menos que los hombres en 2021. Por tanto, el indicador de sexo permite captar efectos de segregación ocupacional, diferencias en la participación laboral y posibles discriminaciones salariales (Gómez-Segura, 2018).
 
-La edad es un factor que se considera relacionado con una mayor experiencia y, por lo tanto, con mayores ingresos. Sin embargo, las jubilaciones pueden afectar el comportamiento lineal que se esperaría, haciendo que este se estabilice o disminuya. Por ello, la edad se reconoce como una variable importante para relacionar con los ingresos, ya que estos tienden a variar a lo largo del ciclo de vida laboral. En Colombia, menos de una cuarta parte de los adultos mayores reciben pensión, y los ingresos laborales siguen siendo la principal fuente de sustento incluso en la vejez (Villar et al., 2016).
+La cantidad de personas en el hogar, porque afecta la distribución de recursos y la presión sobre el ingreso total del hogar. Hogares con mayor número de miembros enfrentan mayores necesidades de consumo y, salvo que aumente proporcionalmente el número de miembros que generan ingresos, presentan menores ingresos per cápita (Lora, 2025). Además, el tamaño del hogar está ligado a razones demográficas (niñez, dependencia de adultos mayores) que inciden en la capacidad de ahorro e inversión en capital humano. Los estudios muestran que las economías de escala y las escalas de equivalencia deben considerarse al analizar el bienestar de los hogares según su composición demográfica (Muñoz & Ramos, 2002).
 
-**Ecuación del modelo:**
-$$ING = \beta_0 + \beta_1(Edad) + \beta_2(Dpto) + \beta_3(Sexo) + \beta_4(C.de personas) + \beta_5(Estudios) + \beta_6() + \epsilon$$
+La educación es otra variable para tomar en cuenta, las personas con mayor nivel educativo tienden a acceder a empleos mejor remunerados y con mayores oportunidades de ascenso, además de aumentar su productividad y capital humano (Meza Buchely, 2020). Por lo tanto, se espera que, a mayor grado educativo alcanzado, el ingreso también sea más alto. Los estudios econométricos confirman que la educación tiene una relación significativa en la disminución del Coeficiente de Gini en Colombia, y que los retornos de la escolaridad guardan relación directa y permanente con el salario (Buelvas, 2019). Como señalan Psacharopoulos y Patrinos (2018), "por esta razón la educación, y en particular la educación superior, constituyen un elemento importante dentro de los múltiples determinantes del crecimiento económico."
+
+La cantidad de horas trabajadas la semana pasada constituye una variable fundamental que refleja la intensidad laboral y mantiene una relación directa con el nivel de ingresos percibidos por los trabajadores. En Colombia, donde la jornada laboral máxima se ha reducido gradualmente desde 48 a 47 horas semanales en 2023, con proyección a 42 horas en 2026 (Ministerio del Trabajo, 2023), los estudios empíricos demuestran que existe una correlación positiva entre horas trabajadas e ingresos laborales. Guataquí et al. (2009) encontraron que los asalariados, quienes trabajaban en promedio 49.9 horas semanales, tenían ingresos por hora 18% mayores que los trabajadores cuenta propia que laboraban 47.8 horas semanales. En el contexto de la región Pacífica, donde predominan actividades informales, las horas trabajadas adquieren particular relevancia como mecanismo compensatorio, ya que trabajadores en sectores informales requieren jornadas extendidas para obtener ingresos equiparables al salario mínimo (Vargas et al., 2015). 
+
+### Ecuación del modelo:
+$$log(ING) = \beta_0 + \beta_1(Edad) + \beta_2(Dpto) + \beta_3(Sexo) + \beta_4(C.de personas) + \beta_5(H. trabajadas) + \epsilon$$
 
 ## Base de datos del estudio
 
@@ -728,7 +747,7 @@ reactable(
 
 ### Caracterización de la Variable Dependiente: Ingreso Total del Hogar
 
-Los resultados del análisis descriptivo para el ingreso total mensual de los hogares colombianos revelan características estructurales relevantes para la comprensión de la distribución del ingreso nacional. En la tabla 1 vemos los analisis descriptivos para esta variable.
+Los resultados que otorgó el análisis descriptivo para el ingreso total mensual de los hogares colombianos se colocaron en la tabla 1. Estos revelan características estructurales relevantes para la comprensión de la distribución del ingreso nacional.
 
 ```{r tabla-promedios, echo=FALSE, warning=FALSE}
 library(dplyr)
@@ -773,9 +792,10 @@ tabla_promedios %>%
   )
 ```
 
-La distribución del ingreso total mensual de los hogares en la región Pacífica de Colombia refleja dinámicas económicas y sociales diferenciadas entre sus departamentos. De acuerdo con los datos de la ECV DANE 2024, presentados en la Tabla 1, se observa que el Valle del Cauca es el departamento con el ingreso promedio más alto ($2,348,430 COP), seguido del Cauca ($2,207,561 COP), Chocó ($1,930,799 COP) y Nariño ($1,767,745 COP). Estas diferencias no solo responden a factores productivos y de acceso a mercados, sino también a condiciones estructurales históricas, como la presencia de economías formales e informales, y niveles desiguales de inversión pública.
+La distribución del ingreso total mensual de los hogares en la región Pacífica de Colombia refleja dinámicas económicas y sociales diferenciadas entre sus departamentos. Se observa que el Valle del Cauca es el departamento con el ingreso promedio más alto ($2,348,430 COP), seguido del Cauca ($2,207,561 COP), Chocó ($1,930,799 COP) y Nariño ($1,767,745 COP). Estas diferencias no solo responden a factores productivos y de acceso a mercados, sino también a condiciones estructurales históricas, como la presencia de economías formales e informales, y niveles desiguales de inversión pública.
 
-La figura 1 permite identificar con claridad un gradiente descendente desde el norte hacia el sur de la región. El Valle del Cauca, con su posición geoestratégica y su base económica diversificada, presenta el mayor ingreso promedio, mientras que Nariño, a pesar de su importancia agrícola, registra el menor. Chocó y Cauca se ubican en posiciones intermedias, aunque con notorias brechas internas, como lo sugieren sus altas desviaciones estándar, lo que evidencia una significativa heterogeneidad en la distribución al interior de estos territorios.
+La figura 1 permite visualizar con mayor claridad lo presentado en la tabla, pero desde una perspectiva geográfica, otorgando la ubicación de cada región, cada una con su respectivo ingreso promedio. El Valle del Cauca, con su posición geoestratégica y su base económica diversificada, presenta el mayor ingreso promedio, mientras que Nariño, a pesar de su importancia agrícola, registra el menor ingreso promedio. El Chocó y El Cauca se ubican en posiciones intermedias, pero presentan notorias brechas internas debido a sus altas desviaciones estándar, lo que representa una significativa heterogeneidad en la distribución al interior de estos territorios.
+
 
 
 
@@ -845,7 +865,7 @@ mapa_interactivo
 
 ### Edad del jefe del hogar
 
-la edad del jefe de hogar se introduce como una variable independiente clave. Las estadísticas descriptivas presentadas en la Tabla 2 revelan la variabilidad transversal entre departamentos, lo cual es fundamental para identificar posibles patrones que el modelo econométrico puede capturar.
+Edad del jefe o responsable del hogar, la cual es medida en años tal como la reporta la Encuesta de Calidad de Vida (ECV) 2024. La Tabla 2 resume las estadísticas descriptivas por departamento.
 
 ```{r tabla edad}
 tabla_promedios_edad <- Base_datos %>%
@@ -887,7 +907,7 @@ tabla_promedios_edad %>%
 
 ```
 
-La dispersión de esta variable, medida através de la desviación estándar, se mantiene relativamente estable entre los departamentos (alrededor de 16 años), indicando una heterogeneidad similar en la composición etaria de los jefes de hogar dentro de cada territorio. El rango de edades abarca desde los 18 años hasta los 99 años, cubriendo así todo el espectro de la vida adulta productiva y post-productiva en la región.
+Con los datos de la tabla se observa una presencia marcada de adultos en etapa de consolidación laboral y también una porción significativa de personas en edad cercana a la jubilación; las medias departamentales se ubican en la franja alta de la vida productiva, entre aproximadamente 47 y 54 años, y los extremos se extienden desde los 18 hasta casi los 100 años, lo que indica cobertura de todo el ciclo adulto. La desviación estándar, que es de alrededor de 15–17 años según departamento, refleja una dispersión que combina cohortes jóvenes y mayores dentro de cada muestra, generando colas a ambos lados de la distribución. Esta composición etaria sugiere que, en la muestra, los hogares incorporan tanto efectos de experiencia acumulada como situaciones vinculadas a retiro o inactividad por edad avanzada.
 
 ```{r correlacion edad}
 
@@ -1022,9 +1042,7 @@ tabla_promedios_cp %>%
 
 ```
 
-La estructura de los hogares en la región Pacífica colombiana presenta notables diferencias en cuanto al número de personas que los conforman. De acuerdo con los datos de la ECV DANE 2024, el departamento de Nariño registra el tamaño promedio de hogar más alto (54.0 personas), seguido muy de cerca por Valle del Cauca (53.1 personas) y Cauca (52.8 personas). En contraste, Chocó presenta un promedio significativamente menor (47.5 personas), lo que sugiere dinámicas familiares y patrones de conformación de hogares diferenciados en este territorio
-
-La dispersión en el tamaño de los hogares, medida a través de la desviación estándar, es relativamente homogénea entre los departamentos, oscilando alrededor de 16 personas. Los valores mínimos y máximos revelan que en toda la región existen hogares que van desde conformaciones unipersonales (1 persona) hasta hogares extensos de más de 90 integrantes, lo que evidencia la diversidad en las estructuras familiares y los arreglos residenciales presentes en la zona.
+Los tamaños domésticos observados tienden a concentrarse en valores pequeños (la mayoría entre 1 y 4 integrantes), aunque también existen casos aislados de hogares considerablemente mayores que alargan la cola superior. Los promedios por departamento oscilan en una banda estrecha de entre 1.9 a 2.6 personas, pero esa similitud promedio oculta variaciones en la forma de la distribución, ya que mientras muchos hogares son unipersonales o nucleares, la presencia puntual de hogares con 8–9 miembros muestran arreglos residenciales más complejos presentes en la muestra. La desviación estándar cercana a 1 persona sugiere que, en términos generales, la mayoría de las observaciones se agrupan cerca del promedio, aunque los extremos indican heterogeneidad en tamaños familiares que podría relacionarse con diferencias generacionales, formas de convivencia y arreglos intergeneracionales dentro de la región
 
 ```{r correlacion cantidad}
 Dispercion_cantidad <- ggplot(Base_datos, aes(x = `C. personas en el hogar`, 
@@ -1112,7 +1130,7 @@ print(Dispercion_cantidad)
 ```
 
 
-### Horas trabjadas la semana pasada
+### Horas trabajadas la semana pasada
 
 ```{r cantidad de horas}
 tabla_promedios_ch <- Base_datos %>%
@@ -1153,11 +1171,7 @@ tabla_promedios_ch %>%
   )
 ```
 
-La Tabla 4 presenta las estadísticas descriptivas de las horas trabajadas por los jefes de hogar en la región Pacífica colombiana, revelando patrones laborales diferenciados entre departamentos. El Valle del Cauca destaca con la jornada laboral promedio más extensa (42.1 horas semanales), superando en aproximadamente 6 horas el promedio de Chocó (33.1 horas), que registra la menor dedicación laboral. Cauca (36.3 horas) y Nariño (34.0 horas) se ubican en posiciones intermedias, mostrando una distribución regional norte-sur en cuanto a intensidad laboral.
-
-La dispersión de los datos, medida através de la desviación estándar (aproximadamente 15 horas en la mayoría de departamentos), indica una heterogeneidad significativa en las jornadas laborales dentro de cada territorio. Los valores extremos son particularmente reveladores: mientras el mínimo de 1 hora sugiere situaciones de subempleo crítico, el máximo de 120 horas semanales evidencia casos de pluriempleo o trabajos con jornadas extensivas, posiblemente en el sector informal.
-
-Estas diferencias en la dedicación laboral pueden estar asociadas a múltiples factores estructurales. La mayor jornada en Valle del Cauca podría relacionarse con su mayor diversificación económica y dinamismo industrial, mientras que las menores jornadas en Chocó podrían reflejar las limitadas oportunidades del mercado laboral formal y la predominancia de actividades económicas estacionales. La distribución horaria observada sugiere que la relación entre horas trabajadas e ingresos del hogar podría no ser lineal, aspecto que el modelo de regresión deberá explorar en profundidad, considerando posibles efectos de rendimientos decrecientes o diferencias en la productividad laboral entre territorios.
+La variable muestra una distribución amplia y asimetrías notorias, como lo son los promedios departamentales que varían (con Valle del Cauca claramente por encima del resto) y desviaciones estándar elevadas que señalan variabilidad en jornadas recientes. Los valores máximos registrados (hasta 120 horas en algunos casos) generan colas largas en la parte superior de la distribución y reflejan tanto jornadas extraordinarias como registros extremos que conviven con observaciones de jornadas muy reducidas o nulas. La coexistencia de jornadas cortas y registros de alta intensidad productiva implica una muestra con experiencias laborales muy diversas en términos de tiempo efectivo trabajado durante la última semana; esta dispersión se manifiesta en diferencias de concentración y en asimetría positiva en la mayoría de los departamentos
 
 ```{r correlacion horas}
 Dispercion_horas <- ggplot(Base_datos, aes(x = `Horas trabajadas la semana pasada`, 
@@ -1253,10 +1267,6 @@ print(Dispercion_horas)
 
 La tabla 5 revela una estructura formativa predominantemente básica en la región Pacífica colombiana. El nivel de secundaria concentra la mayor proporción con 3,306 casos (79.3%), constituyéndose como la característica educativa más representativa entre los jefes de hogar. Le siguen en importancia la formación técnica o tecnológica con 398 casos (9.5%) y la educación universitaria con 262 observaciones (6.3%).
 
-Los niveles educativos extremos muestran una participación marginal: la educación primaria representa apenas el 3.6% (149 casos), mientras que los estudios de postgrado constituyen el segmento más reducido con solo 54 casos (1.3%). Esta distribución evidencia una pirámide educativa marcadamente amplia en la base y muy estrecha en la cúspide, patrón que sugiere limitaciones en el acceso a educación superior y especializada en la región.
-
-La concentración del 79.3% en el nivel de secundaria implica que la gran mayoría de la población cuenta con educación básica completa, pero presenta una brecha significativa en formación avanzada. Esta característica resulta particularmente relevante para el modelo de regresión, ya que el capital humano, medido a través del nivel educativo, se constituye en un determinante fundamental de la capacidad generadora de ingreso de los hogares.
-
 
 ```{r tabla de estudios}
 
@@ -1292,6 +1302,8 @@ tabla_resultadosestudios %>%
     footnote_as_chunk = TRUE
   )
 ```
+
+La tabla 5 revela una estructura formativa predominantemente básica en la región Pacífica colombiana, teniendo el nivel de secundaria con la mayor proporción con un total de 3,306 casos (79.3%), esta concentración implica que la gran mayoría de la población cuenta con educación básica completa, pero presenta una brecha significativa en formación avanzada. Le siguen en importancia la formación técnica o tecnológica con 398 casos (9.5%) y la educación universitaria con 262 observaciones (6.3%). La educación primaria representa apenas el 3.6% (149 casos), mientras que los estudios de postgrado constituyen el segmento más reducido con solo 54 casos (1.3%). Esta distribución evidencia una pirámide educativa marcadamente amplia en la base y muy estrecha en la cúspide, patrón que sugiere limitaciones en el acceso a educación superior y especializada en la región.
 
 ```{r Box plot estudios}
 
@@ -1375,7 +1387,6 @@ print(boxplot_ingresos)
 
 La tabla 6 revela una marcada disparidad de género. Los datos muestran una predominancia significativa de hombres como jefes de hogar, representando el 64.6% del total (2,694 casos), mientras que las mujeres constituyen el 35.4% (1,475 casos). Esta relación de aproximadamente 2:1 evidencia una estructura patriarcal aún persistente en la conformación de los hogares de la región.
 
-La sobrerrepresentación masculina en la jefatura del hogar puede asociarse a factores culturales, económicos y sociales característicos de la región Pacífica. Esta distribución desigual refleja patrones tradicionales de organización familiar donde el hombre sigue siendo percibido como el principal proveedor económico del hogar. Para el modelo de regresión, esta variable adquiere especial relevancia al permitir analizar posibles brechas de ingreso asociadas al género del jefe de hogar, así como diferentes patrones de composición y distribución del ingreso familiar según el sexo de quien ejerce la jefatura
 
 ```{r tabla sexo}
 tabla_resultadossex <- Base_datos %>%
@@ -1410,6 +1421,11 @@ tabla_resultadossex %>%
     footnote_as_chunk = TRUE
   )
 ```
+
+La tabla 6 revela una marcada disparidad de género. Los datos muestran una predominancia significativa de hombres como jefes de hogar, representando el 64.6% del total (2,694 casos), mientras que las mujeres constituyen el 35.4% (1,475 casos). Lo que significa que los hombres superan en casi el doble en proporción a las mujeres como jefe de hogar, que puede asociarse a factores culturales, económicos y sociales característicos de la región Pacífica
+
+La siguiente gráfica muestra cómo se distribuye el ingreso familiar mensual en las muestras. Las cajas de ambas categorías tienen una forma muy parecida y las líneas de la mediana quedan en posiciones similares, lo que indica que los valores centrales del ingreso familiar encabezados por hombres y encabezados por mujeres son comparables en la muestra. Al mismo tiempo, en ambos grupos se observan puntos atípicos por encima y por debajo del rango intercuartílico, hay observaciones con ingresos muy superiores a la mediana y también con ingresos notablemente bajos, lo que genera colas en ambas direcciones. 
+
 
 ```{r Boxplot sexo}
 boxplot_ingresosex <- ggplot(Base_datos, aes(x = Sexo, y = log(`Ingreso del hogar`), fill = Sexo)) +
@@ -1466,12 +1482,22 @@ print(boxplot_ingresosex)
 
 ```
 
+Mirando la dispersión, la longitud de las cajas y los “bigotes” sugiere que la variabilidad (en términos de IQR y rango) es importante para los dos sexos. Esto implica que, aunque la mayoría de los hogares se concentra alrededor de una mediana similar entre hombres y mujeres, existen hogares con ingresos excepcionalmente altos que elevan la cola derecha de la distribución. Al mismo tiempo se detectan observaciones bajas (outliers por debajo del bigote) en ambos grupos, con algunos valores extremos más notorios en la categoría femenina. 
+Para entender esta distribución es pertinente recordar la composición de la muestra, en el que la gran mayoría de jefes de hogar registra educación secundaria como máximo nivel alcanzado, siendo este de un 79.3%, mientras que los niveles superiores, siendo este la universidad y el posgrado son minoritarios en la muestra; este perfil educativo concentra la masa central de la distribución de ingresos mostrada en la figura y ayuda a explicar por qué las medianas no muestran diferencias drásticas entre subgrupos educativos dentro del gráfico (la estructura educativa de la muestra está dominada por secundaria).
+
+Además, la jefatura masculina está sobrerrepresentada, ya que tiene 64.6% hombres frente al 35.4% mujeres, lo cual condiciona la cantidad absoluta de observaciones por categoría y, por ende, la visibilidad de colas y outliers en cada caja.
+
+Finalmente, la interpretación de esta figura debe leerse junto a la información sobre niveles de ingreso por departamento: los promedios departamentales muestran diferencias geográficas (por ejemplo, Valle del Cauca con ingreso promedio superior frente a Nariño con el menor promedio), lo que sugiere que la heterogeneidad territorial también contribuye a la variación observada en las colas y los outliers de la gráfica (es decir, algunos hogares con ingreso muy alto o muy bajo pueden deberse a efectos departamentales). En suma, la gráfica evidencia que, aunque las medidas centrales del ingreso familiar entre hogares encabezados por hombres y por mujeres son similares en la muestra, la dispersión y los extremos son relevantes y reflejan una mezcla de situaciones económicas que conviene tener en cuenta en cualquier análisis cuantitativo posterior
+
 
 ### Departamento
 
 La tabla 7 revela la composición de la muestra estudiada en la región Pacífica colombiana. Cauca representa la mayor proporción con 1,392 observaciones (33.4%), seguido por Nariño con 1,292 casos (31.0%). En conjunto, estos dos departamentos concentran el 64.4% del total de la muestra, indicando una sobrerrepresentación relativa en el estudio. Valle del Cauca contribuye con 782 hogares (18.8%), mientras que Chocó presenta la menor representación con 703 casos (16.9%).
 
 Esta distribución muestral refleja variaciones en el tamaño poblacional de cada departamento y posiblemente en la intensidad del trabajo de campo. La predominancia de Cauca y Nariño en la composición muestral sugiere que los resultados del análisis de regresión podrían estar más influenciados por las características de estos territorios. La representación diferenciada entre departamentos deberá considerarse en la interpretación de los resultados, particularmente en lo relacionado con la generalización de hallazgos a toda la región Pacífica.
+
+La composición por departamento muestra una mayor concentración de observaciones en Cauca y Nariño, con Valle del Cauca y Chocó menos representados en la muestra. Esta distribución territorial no es homogénea: algunas jurisdicciones aportan un porcentaje sustancial de la muestra, lo que da como resultado densidades distintas de observaciones por departamento. La presencia relativa de cada departamento condiciona la variedad de contextos económicos y sociales reflejados en la base, generando diferencias en la composición de casos que deben tenerse en cuenta al describir resultados agregados o comparativos entre jurisdicciones.
+.
 
 ```{r tabla de departamento}
 
@@ -1586,6 +1612,72 @@ kbl(tabla_final,
     footnote_as_chunk = TRUE)
 ```
 
+## Prediccion
+
+```{r prediccion}
+names(Base_datos)<-make.names(names(Base_datos))
+
+
+Base_datos$Departamento <- factor(Base_datos$Departamento)
+
+Modelo_predictorio <- lm(
+  Ingreso.del.hogar ~ Sexo + Horas.trabajadas.la.semana.pasada + Estudios +
+    Cantidad.de.personas.en.el.hogar + Edad + Departamento,
+  data = Base_datos
+)
+
+nuevos_datos <- data.frame(
+  Sexo = c("Hombre", "Mujer", "Hombre", "Mujer"),
+  Horas.trabajadas.la.semana.pasada= c(12, 24, 36, 48),
+  Estudios = factor(
+    c("Secundaria", "Universitaria", "Técnica/Tecnológica", "Postgrado"),
+    levels = levels(Base_datos$CATEGORIA_EDUCATIVA)
+  ),
+  Cantidad.de.personas.en.el.hogar = c(3, 4, 2, 5),
+  Edad = c(25, 35, 45, 55),
+  Departamento = factor(
+    c("Valle del Cauca", "Cauca", "Nariño", "Choco"),
+    levels = levels(Base_datos$Departamento)
+  )
+)
+
+nuevos_datos$Prediccion_log <- predict(Modelo_predictorio, newdata = nuevos_datos)
+
+nuevos_datos$Prediccion_ingreso <- exp(nuevos_datos$Prediccion_log)
+
+nuevos_datos$Sexo_label <- factor(nuevos_datos$Sexo, 
+                                  levels = c(1, 2), 
+                                  labels = c("Hombre", "Mujer"))
+
+nuevos_datos %>%
+  select(Departamento, Sexo_label, Estudios, Edad, Horas.trabajadas.la.semana.pasada,
+         Cantidad.de.personas.en.el.hogar, Prediccion_ingreso) %>%
+  rename(
+    Sexo = Sexo_label,
+    `Cantidad de personas` = Cantidad.de.personas.en.el.hogar,
+    `Tiempo trabajado` = Horas.trabajadas.la.semana.pasada,
+    `Ingreso Predicho` = Prediccion_ingreso
+  ) %>%
+  kbl(
+    caption = "Predicción del Ingreso del Hogar según Características Simuladas",
+    align = "c",
+    digits = 0
+  ) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = FALSE,
+    font_size = 13,
+    position = "center"
+  ) %>%
+  row_spec(0, background = "#2b6cb0", color = "white", bold = TRUE) %>%
+  footnote(
+    general = "Las predicciones corresponden al ingreso estimado (en pesos) a partir del modelo ajustado en logaritmo natural.",
+    general_title = "Nota:",
+    footnote_as_chunk = TRUE
+  )
+
+
+```
 
 
 # Resultados del modelo
@@ -2139,10 +2231,26 @@ print(grafico_vif_rmd)
 
 ```
 
+# Conclusiones
 
 
-
-
-# Conclusiones 
 
 # Bibliografia
+
+Auvert Albornoz, D. E. (2014). Desigualdad del ingreso y movilidad social en Colombia durante 2008-2013 [Tesis de maestría]. Universidad de los Andes.
+
+Contreras Navarrete, M. P. (2011). Aplicación del método de regresión lineal en el análisis de los determinantes de la inversión extranjera en Colombia. Universidad Nacional de Colombia.
+
+Departamento Administrativo Nacional de Estadística [DANE]. (2025). Encuesta Nacional de Calidad de Vida (ECV) - Resultados 2024. https://www.dane.gov.co/files/operaciones/ECV/pres-ECV-2024.pdf
+
+Departamento Nacional de Planeación [DNP]. (2016). Sistema de monitoreo del Observatorio de Políticas de las Familias. https://observatoriodefamilia.dnp.gov.co/Documents/Documentos%20de%20trabajo/D2-sistema-monitoreo-opf-sept_2016.pdf
+
+Espinosa-Espinosa, A. (2021). Veinte años de investigación sobre pobreza y desigualdad social en el Caribe colombiano, 1997-2017. Banco de la República.
+
+Galvis-Aponte, L. A., Alba-Fajardo, C. A., & Moyano-Támara, L. M. (2016). La persistencia de la pobreza en el Pacífico colombiano y sus factores asociados. Documentos de Trabajo sobre Economía Regional y Urbana, 238. Banco de la República.
+
+Gaviria Ríos, M. A., Sierra Sierra, H. A., & Buchelli Lozano, G. A. (2007). Características socioeconómicas de los hogares pobres de la ciudad de Pereira. Revista Gestión & Región, (3), 35-98.
+
+Muñoz, C. (2004). Determinantes del ingreso y del gasto corriente de los hogares. Revista de Economía Institucional, 6(10), 183-199.
+
+Sánchez-Torres, R. M. (2024). Pobreza multidimensional en el Pacífico Colombiano: identificación, medición y tendencias recientes. Investigaciones Regionales - Journal of Regional Research, 51, 1-25.
