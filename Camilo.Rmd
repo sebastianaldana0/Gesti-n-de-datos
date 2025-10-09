@@ -307,7 +307,7 @@ G_residuos_hist <- ggplot(res_df, aes(x = .resid)) +
   geom_histogram(bins = 30, fill = "#0078D4", color = "white", alpha = 0.7) +
   geom_vline(xintercept = 0, color = "#E81123", linetype = "dashed", linewidth = 1) +
   labs(
-    title = "📊 Figura 1. Distribución de los residuos del modelo",
+    title = "Distribución de los residuos del modelo",
     subtitle = "Validación del supuesto de media cero de los errores",
     x = "Residuos", y = "Frecuencia",
     caption = "Fuente: Elaboración propia con base en ECV DANE 2024 | Análisis: Equipo de Investigación"
@@ -504,51 +504,59 @@ GV_interactivo
 shapiro <- shapiro.test(Modelo_final$residuals)
 lillie <- lillie.test(Modelo_final$residuals)
 bp <- bptest(Modelo_final)
-dw <- dwtest(Modelo_final)
 vif_val <- vif(Modelo_final)
 
 # 2️ Tabla resumen
 tabla_supuestos <- tibble(
   `Supuesto evaluado` = c(
-    "Normalidad de los residuos",
+    "Normalidad de los residuos (Shapiro–Wilk)",
+    "Normalidad de los residuos (Lilliefors)",
     "Varianza constante (homocedasticidad)",
-    "Independencia de los errores",
-    "Ausencia de multicolinealidad"),
+    "Ausencia de multicolinealidad"
+  ),
   `Prueba aplicada` = c(
-    "Shapiro–Wilk / Lilliefors",
+    "Shapiro–Wilk",
+    "Lilliefors (Kolmogorov–Smirnov)",
     "Breusch–Pagan",
-    "Durbin–Watson",
-    "Factor de inflación de varianza (VIF)"),
+    "Factor de inflación de varianza (VIF)"
+  ),
   `Hipótesis nula (H₀)` = c(
     "Los residuos siguen una distribución normal",
+    "Los residuos siguen una distribución normal",
     "La varianza de los errores es constante",
-    "Los residuos son independientes",
-    "No existe colinealidad entre predictores"),
+    "No existe colinealidad entre predictores"
+  ),
   `Valor p / Estadístico` = c(
-    paste0("p = ", signif(shapiro$p.value, 3), " / ", signif(lillie$p.value, 3)),
+    paste0("p = ", signif(shapiro$p.value, 3)),
+    paste0("p = ", signif(lillie$p.value, 3)),
     paste0("p = ", signif(bp$p.value, 3)),
-    paste0("DW = ", round(dw$statistic, 2)),
-    paste0("Máx VIF = ", round(max(vif_val), 2))),
+    paste0("Máx VIF = ", round(max(vif_val), 2))
+  ),
   `Resultado` = c(
-    ifelse(shapiro$p.value > 0.05 & lillie$p.value > 0.05, "p > 0.05 → No se rechaza H₀", "p < 0.05 → Se rechaza H₀"),
+    ifelse(shapiro$p.value > 0.05, "p > 0.05 → No se rechaza H₀", "p < 0.05 → Se rechaza H₀"),
+    ifelse(lillie$p.value > 0.05, "p > 0.05 → No se rechaza H₀", "p < 0.05 → Se rechaza H₀"),
     ifelse(bp$p.value > 0.05, "p > 0.05 → No se rechaza H₀", "p < 0.05 → Se rechaza H₀"),
-    ifelse(dw$statistic >= 1.5 & dw$statistic <= 2.5, "Entre 1.5–2.5 → Sin autocorrelación", "Fuera de rango → Posible autocorrelación"),
-    ifelse(max(vif_val) < 5, "VIF < 5 → Cumple", "VIF ≥ 5 → No cumple")))
+    ifelse(max(vif_val) < 5, "VIF < 5 → Cumple", "VIF ≥ 5 → No cumple")
+  )
+)
 
 tabla_supuestos %>%
-  kbl(caption = "Pruebas de Hipótesis para la Validación de Supuestos del Modelo",
-    align = c("l", "l", "l", "c", "c")) %>%
+  kbl(
+    caption = "Pruebas de Hipótesis para la Validación de Supuestos del Modelo",
+    align = c("l", "l", "l", "c", "c")
+  ) %>%
   kable_styling(
     bootstrap_options = c("striped", "hover", "condensed"),
     full_width = FALSE,
     font_size = 14,
-    position = "center") %>%
+    position = "center"
+  ) %>%
   row_spec(0, background = "#2b6cb0", color = "white", bold = TRUE) %>%
-  column_spec(1, bold = TRUE, width = "4cm") %>%
+  column_spec(1, bold = TRUE, width = "5cm") %>%
   column_spec(4:5, width = "3cm") %>%
   footnote(
     general = "Fuente: Elaboración propia con base en ECV DANE 2024 y pruebas estadísticas aplicadas a los residuos del modelo.",
     general_title = "Nota:",
-    footnote_as_chunk = TRUE)
-
+    footnote_as_chunk = TRUE
+  )
 ```
