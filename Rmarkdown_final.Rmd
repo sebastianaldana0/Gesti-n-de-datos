@@ -804,7 +804,7 @@ g_mapa=ggplot() +
     colors = azules_puros  
   ) +
   labs(
-    title = "Mapa de Ingresos Promedio - Región Pacífica de Colombia",
+    title = "Figura 1 Mapa de Ingresos Promedio - Región Pacífica de Colombia",
     subtitle = "Distribución del ingreso familiar por departamento",
     caption = "Fuente: ECV DANE 2024"
   ) +theme_void() +
@@ -818,7 +818,7 @@ g_mapa=ggplot() +
 mapa_interactivo <- ggplotly(g_mapa, tooltip = "text", width = 800, height = 600) %>%
   layout(
     title = list(
-      text = "Mapa de Ingresos Promedio - Región Pacífica de Colombia",
+      text = "Figura 1. Mapa de Ingresos Promedio - Región Pacífica de Colombia",
       x = 0.5,
       font = list(size = 18, weight = "bold")
     ),
@@ -891,7 +891,7 @@ La dispersión de esta variable, medida através de la desviación estándar, se
 
 ```{r correlacion edad}
 
-scatter_edad <- ggplot(Base_datos, aes(x = Edad,  # Ajusta el nombre de la variable
+Dispercion_edad <- ggplot(Base_datos, aes(x = Edad,  
                                  y = log(`Ingreso del hogar`))) +
   geom_point(
     aes(color = log(`Ingreso del hogar`)),
@@ -899,18 +899,14 @@ scatter_edad <- ggplot(Base_datos, aes(x = Edad,  # Ajusta el nombre de la varia
     size = 2.8
   ) +
   geom_smooth(
-    method = "loess",  # Usamos loess para mejor ajuste con edad
+    method = "lm",  
     color = "#1a3c5f",
     fill = "#6baed6",
     alpha = 0.3,
     linewidth = 1.1,
     se = TRUE
   ) +
-  
-  # Facetas por departamento
   facet_wrap(~ Departamento, ncol = 2) +
-  
-  # Leyenda corregida para log(ingreso)
   scale_color_gradient(
     name = "Ingreso Familiar",
     low = "#d0e1f9",
@@ -926,23 +922,16 @@ scatter_edad <- ggplot(Base_datos, aes(x = Edad,  # Ajusta el nombre de la varia
       title.position = "top"
     )
   ) +
-  
-  # Eje X para edad
   scale_x_continuous(
     name = "Edad del Jefe de Hogar",
     breaks = seq(20, 80, by = 10),
-    limits = c(18, 85)  # Ajustar según el rango de edades en tus datos
+    limits = c(18, 100)  # 
   ) +
-  
-  # Títulos y etiquetas
   labs(
-    title = "RELACIÓN EDAD DEL JEFE DE HOGAR - INGRESO FAMILIAR POR DEPARTAMENTO",
-    subtitle = "Transformación logarítmica aplicada al ingreso | Curva de tendencia LOESS",
+    title = "Figura 2. RELACIÓN EDAD DEL JEFE DE HOGAR - INGRESO FAMILIAR ",
+    subtitle = "Transformación logarítmica aplicada al ingreso | Curva de tendencia lineal",
     caption = "Fuente: Encuesta Nacional de Hogares | Edad del jefe de hogar vs log(ingreso familiar)"
-  ) +
-  
-  # Tema profesional
-  theme_minimal(base_size = 12) +
+  ) +tema+
   theme(
     text = element_text(family = "sans"),
     plot.title = element_text(
@@ -964,8 +953,6 @@ scatter_edad <- ggplot(Base_datos, aes(x = Edad,  # Ajusta el nombre de la varia
       hjust = 0.5,
       margin = margin(t = 10)
     ),
-    
-    # Facetas
     strip.background = element_rect(
       fill = "#3498db",
       color = "#2980b9",
@@ -976,25 +963,17 @@ scatter_edad <- ggplot(Base_datos, aes(x = Edad,  # Ajusta el nombre de la varia
       face = "bold",
       size = 10
     ),
-    
-    # Ejes
     axis.title = element_text(face = "bold", size = 11, color = "#2c3e50"),
     axis.text = element_text(size = 9, color = "#34495e"),
-    
-    # Leyenda
     legend.position = "bottom",
     legend.title = element_text(face = "bold", size = 10, color = "#2c3e50"),
     legend.text = element_text(size = 8, color = "#34495e"),
-    
-    # Grid
     panel.grid.major = element_line(color = "#ecf0f1", linewidth = 0.4),
     panel.grid.minor = element_line(color = "#f8f9fa", linewidth = 0.2),
-    
     plot.margin = margin(15, 15, 15, 15)
   )
 
-# Mostrar gráfica
-print(scatter_edad)
+print(Dispercion_edad)
 
 ```
 
@@ -1621,11 +1600,7 @@ tabla_resultados %>%
 ```
 
 
-
-
-
-
-# Resultados del modelo
+# Estimacion del modelo de regresion multiple
 
 ```{r tabla supuestos, echo= FALSE}
 Modelo_final=lm(log(`Ingreso del hogar`)~Sexo+Estudios+
@@ -1659,7 +1634,6 @@ resumen_mod <- broom::tidy(Modelo_final) %>%
 
 
 resumen_global <- glance(Modelo_final)
-summary(resumen_global)
 
 
 resumen_global <- glance(Modelo_final)
@@ -1705,6 +1679,142 @@ kbl(tabla_final,
 
 
 
+# Resultados del modelo
+
+La validez y robustez de un modelo de regresión lineal múltiple dependen del cumplimiento de los supuestos clásicos subyacentes a la inferencia estadística. En este estudio, la evaluación de los supuestos se realizó mediante el análisis gráfico proporcionado por la función plot(model) de R y análisis de multicolinealidad a través del Factor de Inflación de la Varianza (VIF) y la matriz de correlaciones, siguiendo las recomendaciones metodológicas de la literatura académica contemporánea.
+
+
+
+## Diagnóstico Gráfico de Supuestos
+
+El procedimiento gráfico ejecutado con plot(model) permite evaluar de manera conjunta la normalidad de los residuos, la homocedasticidad, la linealidad de la relación funcional, y la presencia de valores atípicos e influyentes, todo en una misma rutina diagnóstica
+
+### Lineal
+Se verifica que la relación entre la variable dependiente y los predictores sea aproximadamente lineal a partir del gráfico de residuos frente a valores ajustados. En ausencia de patrones curvos o sistemáticos, se asume que el supuesto de linealidad es razonable.
+
+```{r}
+res_df <- augment(Modelo_final)
+
+# GRÁFICO DE RESIDUOS VS AJUSTADOS MEJORADO
+resid_vs_ajustados <- ggplot(res_df, aes(x = .fitted, y = .resid)) +
+  
+  # Puntos con transparencia y color gradiente
+  geom_point(
+    aes(color = abs(.resid), size = abs(.resid)),
+    alpha = 0.6,
+    show.legend = FALSE
+  ) +
+  
+  # Línea horizontal en cero
+  geom_hline(
+    yintercept = 0,
+    color = "#e74c3c",
+    linetype = "dashed",
+    linewidth = 1.2,
+    alpha = 0.8
+  ) +
+  
+  # Línea de tendencia suavizada
+  geom_smooth(
+    method = "loess",
+    color = "#3498db",
+    fill = "#3498db",
+    alpha = 0.2,
+    linewidth = 1.2,
+    se = TRUE
+  ) +
+  
+  # Bandas de referencia para homocedasticidad
+  geom_ribbon(
+    stat = "smooth",
+    method = "loess",
+    aes(ymin = after_stat(ymax), ymax = after_stat(ymax)),
+    fill = "#e74c3c",
+    alpha = 0.1
+  ) +
+  
+  geom_ribbon(
+    stat = "smooth", 
+    method = "loess",
+    aes(ymin = after_stat(ymin), ymax = after_stat(ymin)),
+    fill = "#e74c3c",
+    alpha = 0.1
+  ) +
+  
+  # Escalas de color y tamaño
+  scale_color_gradient(low = "#3498db", high = "#e74c3c") +
+  scale_size_continuous(range = c(1, 3)) +
+  
+  # Etiquetas y títulos
+  labs(
+    title = "Análisis de Residuos vs Valores Ajustados",
+    subtitle = "Validación de los supuestos de linealidad y homocedasticidad",
+    x = "Valores Ajustados (Predicciones)",
+    y = "Residuos",
+    caption = paste(
+      "Fuente: Elaboración propia |",
+      "Línea azul: tendencia LOESS |",
+      "Línea roja: residuo cero"
+    )
+  ) +
+  
+  # Tema profesional
+  theme_fivethirtyeight() +
+  theme(
+    text = element_text(family = "sans"),
+    plot.title = element_text(
+      face = "bold",
+      size = 16,
+      hjust = 0.5,
+      margin = margin(b = 10)
+    ),
+    plot.subtitle = element_text(
+      size = 12,
+      hjust = 0.5,
+      color = "gray40",
+      margin = margin(b = 20)
+    ),
+    plot.caption = element_text(
+      size = 10,
+      color = "gray50",
+      hjust = 0.5,
+      margin = margin(t = 15)
+    ),
+    axis.title = element_text(face = "bold", size = 12),
+    axis.text = element_text(size = 10),
+    panel.grid.major = element_line(color = "gray90"),
+    panel.grid.minor = element_line(color = "gray95"),
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.background = element_rect(fill = "white", color = NA)
+  )
+
+print(resid_vs_ajustados)
+```
+
+
+
+El mismo gráfico de residuos versus predichos permite inspeccionar si la varianza de los residuos es aproximadamente constante a lo largo del rango de valores ajustados. La ausencia de un patrón en forma de abanico confirma el cumplimiento de homocedasticidad.
+
+### Normalidad
+
+El Q-Q plot generado por plot(model) facilita la evaluación de si los residuos se distribuyen normalmente, indispensable para la validez de la inferencia sobre los coeficientes. Si los puntos del Q-Q plot se alinean en torno a la diagonal, la normalidad puede asumirse
+
+```{r plot 2}
+G_qq <- ggplot(res_df, aes(sample = .resid)) +
+  geom_qq(alpha = 0.6, color = "#2b6cb0") +
+  geom_qq_line(color = "#e74c3c", linewidth = 1) +
+  labs(
+    title = "Gráfico Q-Q de los Residuos",
+    subtitle = "Validación de normalidad - Residuos vs Distribución Normal Teórica",
+    x = "Cuantiles Teóricos",
+    y = "Cuantiles de los Residuos",
+    caption = "Fuente: Elaboración propia con base en ECV DANE 2024"
+  ) +
+  tema
+
+print(G_qq)
+```
+
 ```{r Grafico plot 1}
 library(plotly)
 res_df <- augment(Modelo_final)
@@ -1747,49 +1857,94 @@ print(G_residuos_hist)
 
 ```
 
-```{r plot 2}
-G_qq <- ggplot(res_df, aes(sample = .resid)) +
-  geom_qq(alpha = 0.6, color = "#2b6cb0") +
-  geom_qq_line(color = "#e74c3c", linewidth = 1) +
-  labs(
-    title = "Gráfico Q-Q de los Residuos",
-    subtitle = "Validación de normalidad - Residuos vs Distribución Normal Teórica",
-    x = "Cuantiles Teóricos",
-    y = "Cuantiles de los Residuos",
-    caption = "Fuente: Elaboración propia con base en ECV DANE 2024"
+### Observaciones influyentes
+
+```{r cuadrado}
+es_df <- augment(Modelo_final)
+
+# GRÁFICO SCALE-LOCATION MEJORADO (plot(model, 3))
+scale_location_plot <- ggplot(res_df, aes(x = .fitted, y = sqrt(abs(.std.resid)))) +
+  
+  # Puntos con gradiente de color
+  geom_point(
+    aes(color = sqrt(abs(.std.resid)), size = sqrt(abs(.std.resid))),
+    alpha = 0.6,
+    show.legend = FALSE
   ) +
-  tema
-
-print(G_qq)
-```
-
-
-```{r plot 3}
-G_resid_ajust <- ggplot(res_df, aes(x = .fitted, y = .resid)) +
-  geom_point(alpha = 0.6, color = "#2b6cb0") +
-  geom_hline(
-    yintercept = 0,
-    color = "#e74c3c",
-    linetype = "dashed",
-    linewidth = 1
-  ) +
+  
+  # Línea suavizada
   geom_smooth(
     method = "loess",
-    color = "#2c3e50",
-    fill = "#bdc3c7",
-    alpha = 0.3
+    color = "#3498db",
+    fill = "#3498db",
+    alpha = 0.2,
+    linewidth = 1.2,
+    se = TRUE
   ) +
+  
+  # Línea de referencia horizontal (idealmente debería ser plana)
+  geom_hline(
+    yintercept = mean(sqrt(abs(res_df$.std.resid)), na.rm = TRUE),
+    color = "#e74c3c",
+    linetype = "dashed",
+    linewidth = 1,
+    alpha = 0.8
+  ) +
+  
+  # Escalas de color y tamaño
+  scale_color_gradient(low = "#3498db", high = "#e74c3c") +
+  scale_size_continuous(range = c(1, 3)) +
+  
+  # Etiquetas y títulos
   labs(
-    title = "Residuos vs Valores Ajustados",
-    subtitle = "Validación de homocedasticidad y linealidad",
-    x = "Valores Ajustados",
-    y = "Residuos",
-    caption = "Fuente: Elaboración propia con base en ECV DANE 2024"
+    title = "Gráfico Scale-Location - Verificación de Homocedasticidad",
+    subtitle = "Análisis de la raíz cuadrada de los residuos estandarizados vs valores ajustados",
+    x = "Valores Ajustados (Predicciones)",
+    y = expression(sqrt("|Residuos Estandarizados|")),
+    caption = paste(
+      "Fuente: Elaboración propia |",
+      "Línea roja: media de √|residuos estandarizados| |",
+      "Línea azul: tendencia LOESS"
+    )
   ) +
-  tema
+  
+  # Tema profesional
+  theme_fivethirtyeight() +
+  theme(
+    text = element_text(family = "sans"),
+    plot.title = element_text(
+      face = "bold",
+      size = 16,
+      hjust = 0.5,
+      margin = margin(b = 10)
+    ),
+    plot.subtitle = element_text(
+      size = 12,
+      hjust = 0.5,
+      color = "gray40",
+      margin = margin(b = 20)
+    ),
+    plot.caption = element_text(
+      size = 10,
+      color = "gray50",
+      hjust = 0.5,
+      margin = margin(t = 15)
+    ),
+    axis.title = element_text(face = "bold", size = 12),
+    axis.text = element_text(size = 10),
+    axis.title.y = element_text(margin = margin(r = 10)),
+    panel.grid.major = element_line(color = "gray90"),
+    panel.grid.minor = element_line(color = "gray95"),
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.background = element_rect(fill = "white", color = NA)
+  )
 
-print(G_resid_ajust)
+print(scale_location_plot)
 ```
+
+
+
+
 
 ```{r cook}
 
@@ -1868,6 +2023,129 @@ print(G_cooksd)
 
 ```
 
+```{r Matriz de correlaciones}
+
+library(ggcorrplot)
+
+datos_modelo <- Modelo_final$model
+
+# Seleccionar solo variables numéricas
+variables_numericas <- datos_modelo %>%
+  select(where(is.numeric))
+
+# Calcular matriz de correlación
+matriz_cor <- round(cor(variables_numericas, use = "complete.obs"), 2)
+
+# 2. CONVERTIR A FORMATO LARGO PARA GGPLOT
+matriz_larga <- matriz_cor %>%
+  as.data.frame() %>%
+  mutate(Variable1 = rownames(.)) %>%
+  pivot_longer(
+    cols = -Variable1,
+    names_to = "Variable2",
+    values_to = "Correlacion"
+  ) %>%
+  mutate(
+    Variable1 = factor(Variable1, levels = rownames(matriz_cor)),
+    Variable2 = factor(Variable2, levels = colnames(matriz_cor)),
+    Etiqueta = case_when(
+      Correlacion == 1 ~ "1.00",
+      abs(Correlacion) < 0.01 ~ "0.00",
+      TRUE ~ as.character(Correlacion)
+    ),
+    Significancia = case_when(
+      abs(Correlacion) >= 0.7 ~ "Muy Alta",
+      abs(Correlacion) >= 0.5 ~ "Alta", 
+      abs(Correlacion) >= 0.3 ~ "Moderada",
+      abs(Correlacion) >= 0.1 ~ "Baja",
+      TRUE ~ "Muy Baja"
+    )
+  )
+
+# 3. CREAR MATRIZ DE CORRELACIÓN CON CUADROS ELEGANTE
+matriz_cuadros <- ggplot(matriz_larga, aes(x = Variable1, y = Variable2, fill = Correlacion)) +
+  # Cuadros de la matriz
+  geom_tile(color = "white", linewidth = 1.5, width = 0.9, height = 0.9) +
+  
+  # Texto de las correlaciones
+  geom_text(
+    aes(label = Etiqueta),
+    color = "white",
+    size = 4.5,
+    fontface = "bold"
+  ) +
+  
+  # Escala de colores profesional
+  scale_fill_gradient2(
+    name = "Correlación",
+    low = "#e74c3c",    # Rojo para correlaciones negativas
+    mid = "#f8f9fa",    # Blanco para cero
+    high = "#3498db",   # Azul para correlaciones positivas
+    midpoint = 0,
+    limits = c(-1, 1),
+    breaks = c(-1, -0.5, 0, 0.5, 1),
+    labels = c("-1.0", "-0.5", "0", "0.5", "1.0")
+  ) +
+  
+  # Coordenadas y ejes
+  scale_x_discrete(position = "top") +
+  scale_y_discrete(limits = rev) +
+  coord_fixed() +
+  
+  # Títulos y etiquetas
+  labs(
+    title = "MATRIZ DE CORRELACIÓN ENTRE VARIABLES NUMÉRICAS",
+    subtitle = "Análisis de relaciones lineales entre predictores del modelo",
+    x = NULL,
+    y = NULL,
+    caption = "Fuente: Elaboración propia con base en ECV DANE 2024"
+  ) +
+  
+  # Tema profesional
+  theme_minimal(base_size = 12) +
+  theme(
+    text = element_text(family = "sans"),
+    plot.title = element_text(
+      face = "bold",
+      size = 16,
+      hjust = 0.5,
+      margin = margin(b = 10)
+    ),
+    plot.subtitle = element_text(
+      size = 12,
+      hjust = 0.5,
+      color = "gray40",
+      margin = margin(b = 20)
+    ),
+    plot.caption = element_text(
+      size = 10,
+      color = "gray50",
+      hjust = 0.5,
+      margin = margin(t = 15)
+    ),
+    axis.text.x = element_text(
+      angle = 45,
+      hjust = 0,
+      face = "bold",
+      size = 11
+    ),
+    axis.text.y = element_text(
+      face = "bold",
+      size = 11
+    ),
+    panel.grid = element_blank(),
+    legend.position = "bottom",
+    legend.title = element_text(face = "bold", size = 11),
+    legend.text = element_text(size = 10),
+    legend.key.width = unit(2, "cm"),
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.background = element_rect(fill = "white", color = NA)
+  )
+
+# Mostrar matriz
+print(matriz_cuadros)
+
+```
 
 
 ```{r correlacion}
@@ -1910,8 +2188,107 @@ tabla_corr %>%
     general_title = "Nota:")
 ```
 
+```{r VIF}
 
-# Prediccion
+calcular_vif_seguro <- function(modelo) {
+  tryCatch({
+    vif_resultados <- vif(modelo)
+    
+    if(is.matrix(vif_resultados)) {
+      data.frame(
+        Variable = rownames(vif_resultados),
+        VIF = as.numeric(vif_resultados[, "GVIF"]),
+        stringsAsFactors = FALSE
+      )
+    } else {
+      data.frame(
+        Variable = names(vif_resultados),
+        VIF = as.numeric(vif_resultados),
+        stringsAsFactors = FALSE
+      )
+    }
+  }, error = function(e) {
+    X <- model.matrix(modelo)
+    if("(Intercept)" %in% colnames(X)) {
+      X <- X[, colnames(X) != "(Intercept)", drop = FALSE]
+    }
+    
+    if(ncol(X) > 0) {
+      cor_matrix <- cor(X)
+      vif_manual <- diag(solve(cor_matrix))
+      data.frame(
+        Variable = colnames(X),
+        VIF = vif_manual,
+        stringsAsFactors = FALSE
+      )
+    } else {
+      stop("No se pueden calcular VIF")
+    }
+  })
+}
+
+vif_df <- calcular_vif_seguro(Modelo_final)
+
+vif_procesado <- vif_df %>%
+  mutate(
+    VIF = round(VIF, 3),
+    Tolerancia = round(1/VIF, 4),
+    Diagnóstico = case_when(
+      VIF >= 10 ~ "🚨 GRAVE",
+      VIF >= 5 & VIF < 10 ~ "⚠️ MODERADO", 
+      VIF < 5 ~ "✅ ACEPTABLE"
+    )
+  ) %>%
+  arrange(desc(VIF))
+
+
+tabla_vif_simple <- vif_procesado %>%
+  select(Variable, VIF, Tolerancia, Diagnóstico)
+
+kable(tabla_vif_simple, 
+      caption = "Tabla 1. Análisis de Multicolinealidad mediante VIF",
+      align = c( "c", "c", "c"),
+      format = ifelse(knitr::is_latex_output(), "latex", "pipe")) %>%
+  kable_styling(bootstrap_options = c("striped", "hover"), 
+                full_width = FALSE,
+                position = "center")
+
+
+
+
+# 5. GRÁFICO COMPATIBLE CON R MARKDOWN
+grafico_vif_rmd <- ggplot(vif_procesado, aes(x = reorder(Variable, VIF), y = VIF, fill = Diagnóstico)) +
+  geom_col(width = 0.7, alpha = 0.8) +
+  geom_hline(yintercept = 5, color = "#D69E2E", linetype = "dashed", linewidth = 1) +
+  geom_hline(yintercept = 10, color = "#E53E3E", linetype = "dashed", linewidth = 1) +
+  geom_text(aes(label = sprintf("%.2f", VIF)), hjust = -0.2, size = 3.5, fontface = "bold") +
+  scale_fill_manual(values = c("✅ ACEPTABLE" = "#48BB78", 
+                              "⚠️ MODERADO" = "#ECC94B", 
+                              "🚨 GRAVE" = "#F56565")) +
+  coord_flip() +
+  labs(
+    title = "Análisis de Multicolinealidad - Factor de Inflación de la Varianza (VIF)",
+    subtitle = "Umbrales: VIF < 5 (Aceptable) | VIF ≥ 5 (Moderado) | VIF ≥ 10 (Grave)",
+    x = NULL,
+    y = "VIF",
+    caption = "Fuente: Elaboración propia"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(face = "bold", hjust = 0.5),
+    plot.subtitle = element_text(hjust = 0.5, color = "gray40"),
+    axis.text.y = element_text(face = "bold"),
+    legend.position = "bottom"
+  )
+
+print(grafico_vif_rmd)
+
+
+
+```
+
+
+
 
 
 # Conclusiones 
