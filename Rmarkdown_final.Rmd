@@ -620,7 +620,7 @@ library(plotly)
 
 datos_hogar=read.csv("datos_hogar.csv", sep = ";") %>% 
   select(DIRECTORIO,I_HOGAR,CANT_PERSONAS_HOGAR) %>% 
-  rename("Ingreso del hogar"=2,"Cantidad de personas en el hogar"=3) %>% 
+  rename("Ingreso del hogar"=2,"C. personas en el hogar"=3) %>% 
   distinct(DIRECTORIO, .keep_all = TRUE) %>% filter(`Ingreso del hogar`!=0)
 
 educacion=read.csv("educacion.csv", sep= ";") %>% 
@@ -675,7 +675,7 @@ trabajo=read.csv("Fuerza de trabajo.CSV",sep=";") %>%
 Base_datos=caracteristicas_hogar  %>% inner_join(datos_hogar,by="DIRECTORIO") %>% 
   inner_join(vivienda,by="DIRECTORIO") %>% inner_join(educacion,by="DIRECTORIO") %>% inner_join(trabajo,by="DIRECTORIO") %>% 
   filter(Departamento%in%c(76,19,52,27),Edad!=0,Edad>=18,`Ingreso del hogar`<=50000000) %>% 
-  select(Departamento,`Ingreso del hogar`,`Cantidad de personas en el hogar`,Sexo,
+  select(Departamento,`Ingreso del hogar`,`C. personas en el hogar`,Sexo,
          Edad,CATEGORIA_EDUCATIVA,Tiempo_trabajado,Horas_trabajadas_semana) %>% mutate(
            Departamento= case_when(
              Departamento == 76 ~ "Valle del Cauca",
@@ -986,10 +986,10 @@ La cantidad de personas en el hogar se introduce como una variable independiente
 tabla_promedios_cp <- Base_datos %>%
   group_by(Departamento) %>%  
   summarise(
-    `Edad Promedio` = mean(`Cantidad de personas en el hogar`, na.rm = TRUE),
-    `Desv. Estándar Ingreso` = sd(`Cantidad de personas en el hogar`, na.rm = TRUE),
-    `Ingreso Mínimo` = min(`Cantidad de personas en el hogar`, na.rm = TRUE),
-    `Ingreso Máximo` = max(`Cantidad de personas en el hogar`, na.rm = TRUE),
+    `Edad Promedio` = mean(`C. personas en el hogar`, na.rm = TRUE),
+    `Desv. Estándar Ingreso` = sd(`C. personas en el hogar`, na.rm = TRUE),
+    `Ingreso Mínimo` = min(`C. personas en el hogar`, na.rm = TRUE),
+    `Ingreso Máximo` = max(`C. personas en el hogar`, na.rm = TRUE),
     .groups = 'drop'
   ) %>%
   mutate(
@@ -1027,7 +1027,7 @@ La estructura de los hogares en la región Pacífica colombiana presenta notable
 La dispersión en el tamaño de los hogares, medida a través de la desviación estándar, es relativamente homogénea entre los departamentos, oscilando alrededor de 16 personas. Los valores mínimos y máximos revelan que en toda la región existen hogares que van desde conformaciones unipersonales (1 persona) hasta hogares extensos de más de 90 integrantes, lo que evidencia la diversidad en las estructuras familiares y los arreglos residenciales presentes en la zona.
 
 ```{r correlacion cantidad}
-Dispercion_cantidad <- ggplot(Base_datos, aes(x = `Cantidad de personas en el hogar`, 
+Dispercion_cantidad <- ggplot(Base_datos, aes(x = `C. personas en el hogar`, 
                                        y = log(`Ingreso del hogar`)))+
    geom_point(
     aes(color = log(`Ingreso del hogar`)),
@@ -1062,7 +1062,7 @@ Dispercion_cantidad <- ggplot(Base_datos, aes(x = `Cantidad de personas en el ho
     breaks = function(x) unique(floor(pretty(seq(0, (max(x) + 1) * 1.1))))
   )+
   labs(
-    title = "Figura 2. RELACIÓN EDAD DEL JEFE DE HOGAR - INGRESO FAMILIAR ",
+    title = "Figura 3. RELACIÓN CANTIDAD DE PERSONAS EN EL HOGAR - INGRESO FAMILIAR ",
     subtitle = "Transformación logarítmica aplicada al ingreso | Curva de tendencia lineal",
     caption = "Fuente: Encuesta Nacional de Hogares ECV 2024"
   ) +tema+
@@ -1160,95 +1160,66 @@ La dispersión de los datos, medida através de la desviación estándar (aproxi
 Estas diferencias en la dedicación laboral pueden estar asociadas a múltiples factores estructurales. La mayor jornada en Valle del Cauca podría relacionarse con su mayor diversificación económica y dinamismo industrial, mientras que las menores jornadas en Chocó podrían reflejar las limitadas oportunidades del mercado laboral formal y la predominancia de actividades económicas estacionales. La distribución horaria observada sugiere que la relación entre horas trabajadas e ingresos del hogar podría no ser lineal, aspecto que el modelo de regresión deberá explorar en profundidad, considerando posibles efectos de rendimientos decrecientes o diferencias en la productividad laboral entre territorios.
 
 ```{r correlacion horas}
-scatter_horas <- ggplot(Base_datos, aes(x = `Horas trabajadas la semana pasada`, 
+Dispercion_horas <- ggplot(Base_datos, aes(x = `Horas trabajadas la semana pasada`, 
                                   y = log(`Ingreso del hogar`))) +
-  geom_point(
-    aes(color = `Ingreso del hogar`, fill = `Ingreso del hogar`),
+   geom_point(
+    aes(color = log(`Ingreso del hogar`)),
     alpha = 0.7,
-    size = 2.8,
-    shape = 21,
-    stroke = 0.3
+    size = 2.8
   ) +
-  
-  # Línea de tendencia
   geom_smooth(
-    method = "lm",
+    method = "lm",  
     color = "#1a3c5f",
     fill = "#6baed6",
     alpha = 0.3,
     linewidth = 1.1,
     se = TRUE
   ) +
-  
-  # Facetas por departamento
-  facet_wrap(~ Departamento, 
-             ncol = 2,
-             scales = "fixed") +
-  
-  # Escalas de color en tonos azules
+  facet_wrap(~ Departamento, ncol = 2) +
   scale_color_gradient(
+    name = "Ingreso Familiar",
     low = "#d0e1f9",
     high = "#1a3c5f",
-    labels = dollar_format(prefix = "$", big.mark = ","),
+    labels = function(x) {
+      dollar_format(prefix = "$", big.mark = ",")(exp(x))
+    },
+    breaks = log(c(5, 10, 15, 20)),
     guide = guide_colorbar(
-      title = "Ingreso Familiar",
       barwidth = 12,
       barheight = 0.8,
-      direction = "horizontal"
+      direction = "horizontal",
+      title.position = "top"
     )
   ) +
-  
-  scale_fill_gradient(
-    low = "#d0e1f9",
-    high = "#1a3c5f",
-    guide = "none"
-  ) +
-  
-  # Formato de ejes
-  scale_y_continuous(
-    labels = dollar_format(prefix = "$", big.mark = ","),
-    breaks = breaks_extended(6)
-  ) +
-  
-  scale_x_continuous(
-    breaks = function(x) unique(floor(pretty(seq(0, (max(x) + 1) * 1.1)))),
-    labels = function(x) paste(x, "horas")
-  ) +
-  
-  # Títulos y etiquetas
+   scale_x_continuous(
+    breaks = function(x) unique(floor(pretty(seq(0, (max(x) + 1) * 1.1))))
+  )+
   labs(
-    title = "RELACIÓN HORAS TRABAJADAS - INGRESO FAMILIAR POR DEPARTAMENTO",
-    subtitle = "Análisis de correlación entre jornada laboral e ingresos familiares",
-    x = "Horas Trabajadas Promedio",
-    y = "Ingreso Familiar Mensual",
-    caption = "Fuente: Encuesta Nacional de Hogares | Líneas muestran tendencia lineal"
-  ) +
-  
-  # Tema profesional
-  theme_minimal(base_size = 12) +
+    title = "Figura 4. RELACIÓN HORAS TRABAJADAS LA SEMANA PASADA- INGRESO FAMILIAR ",
+    subtitle = "Transformación logarítmica aplicada al ingreso | Curva de tendencia lineal",
+    caption = "Fuente: Encuesta Nacional de Hogares ECV 2024"
+  ) +tema+
   theme(
     text = element_text(family = "sans"),
     plot.title = element_text(
       face = "bold",
-      size = 16,
+      size = 14,
       hjust = 0.5,
       margin = margin(b = 10),
       color = "#2c3e50"
     ),
     plot.subtitle = element_text(
-      size = 12,
+      size = 11,
       hjust = 0.5,
       color = "#34495e",
-      margin = margin(b = 20)
+      margin = margin(b = 15)
     ),
     plot.caption = element_text(
-      size = 10,
+      size = 9,
       color = "#7f8c8d",
       hjust = 0.5,
-      margin = margin(t = 15)
+      margin = margin(t = 10)
     ),
-    
-    # Facetas
     strip.background = element_rect(
       fill = "#3498db",
       color = "#2980b9",
@@ -1257,29 +1228,20 @@ scatter_horas <- ggplot(Base_datos, aes(x = `Horas trabajadas la semana pasada`,
     strip.text = element_text(
       color = "white",
       face = "bold",
-      size = 11
+      size = 10
     ),
-    
-    # Ejes
-    axis.title = element_text(face = "bold", size = 12, color = "#2c3e50"),
+    axis.title = element_text(face = "bold", size = 11, color = "#2c3e50"),
     axis.text = element_text(size = 9, color = "#34495e"),
-    
-    # Leyenda
     legend.position = "bottom",
     legend.title = element_text(face = "bold", size = 10, color = "#2c3e50"),
-    legend.text = element_text(size = 9, color = "#34495e"),
-    
-    # Grid
+    legend.text = element_text(size = 8, color = "#34495e"),
     panel.grid.major = element_line(color = "#ecf0f1", linewidth = 0.4),
     panel.grid.minor = element_line(color = "#f8f9fa", linewidth = 0.2),
-    panel.background = element_rect(fill = "white", color = NA),
-    plot.background = element_rect(fill = "white", color = NA),
-    
-    plot.margin = margin(20, 20, 20, 20)
+    plot.margin = margin(15, 15, 15, 15)
   )
 
-# Mostrar gráfica
-print(scatter_horas)
+
+print(Dispercion_horas)
 
 ```
 
@@ -1287,7 +1249,7 @@ print(scatter_horas)
 
 ## Variables Categóricas: Distribución de Frecuencias
 
-### Estudios
+### Estudios del jefe del hogar
 
 La tabla 5 revela una estructura formativa predominantemente básica en la región Pacífica colombiana. El nivel de secundaria concentra la mayor proporción con 3,306 casos (79.3%), constituyéndose como la característica educativa más representativa entre los jefes de hogar. Le siguen en importancia la formación técnica o tecnológica con 398 casos (9.5%) y la educación universitaria con 262 observaciones (6.3%).
 
@@ -1298,8 +1260,8 @@ La concentración del 79.3% en el nivel de secundaria implica que la gran mayor�
 
 ```{r tabla de estudios}
 
-tabla_resultadoses <- Base_datos %>%
-  group_by(Estudios) %>%  # Cambia 'Departamento' por tu variable
+tabla_resultadosestudios <- Base_datos %>%
+  group_by(Estudios) %>%  
   summarise(Frecuencia = n()) %>%
   arrange(desc(Frecuencia)) %>%
   mutate(
@@ -1309,12 +1271,12 @@ tabla_resultadoses <- Base_datos %>%
 
 
 
-tabla_resultadoses %>%
+tabla_resultadosestudios %>%
   kable(
     format = "html",
     col.names = c("Estudios", "Frecuencia", "Porcentaje (%)", "Porcentaje Acumulado (%)"),
     align = c("l", "c", "c", "c"),
-    caption = "Tabla 5 Distribución de Frecuencias del nivel de estudios"
+    caption = "Tabla 5 Distribución de Frecuencias del nivel de estudios del jefe del hogar"
   ) %>%
  kable_styling(
     bootstrap_options = c("striped", "hover", "condensed"),
@@ -1333,15 +1295,14 @@ tabla_resultadoses %>%
 
 ```{r Box plot estudios}
 
-datos <- Base_datos %>%
+datos_estudio <- Base_datos %>%
   mutate(
     Estudios = factor(Estudios, 
-                          levels = c("Primaria", "Secundaria", "Técnica/Tecnológica", "Universitaria", "	
-Postgrado"),
+                          levels = c("Primaria", "Secundaria", "Técnica/Tecnológica", "Universitaria", "Postgrado"),
                           ordered = TRUE)
   )
 
-boxplot_ingresos <- ggplot(datos, aes(x = Estudios, y = log(`Ingreso del hogar`), fill = Estudios)) +
+boxplot_ingresos <- ggplot(datos_estudio, aes(x = Estudios, y = log(`Ingreso del hogar`), fill = Estudios)) +
   geom_boxplot(
     alpha = 0.85,
     outlier.shape = 21,
@@ -1362,11 +1323,11 @@ boxplot_ingresos <- ggplot(datos, aes(x = Estudios, y = log(`Ingreso del hogar`)
   ) +
   scale_fill_manual(values = c("#3498db", "#2ecc71", "#9b59b6", "#e67e22", "#1abc9c")) +
   labs(
-    title = "RELACIÓN ENTRE NIVEL EDUCATIVO E INGRESO FAMILIAR",
-    subtitle = "Distribución del ingreso familiar según el nivel de estudios del jefe de hogar\n(escala logarítmica)",
+    title = "Figura 5. RELACIÓN ENTRE NIVEL EDUCATIVO DEL JEFE DEL HOGAR E INGRESO FAMILIAR",
+    subtitle = "Distribución del ingreso familiar según el nivel de estudios del jefe de hogar",
     x = "Nivel de Estudios",
     y = "Ingreso Familiar Mensual (Escala Logarítmica)",
-    caption = "Fuente: Encuesta Nacional de Hogares | Elaboración propia"
+    caption = "Fuente: Encuesta Nacional de Hogares ECV 2024"
   ) +tema +
   theme(
     text = element_text(family = "sans"),
@@ -1402,18 +1363,7 @@ boxplot_ingresos <- ggplot(datos, aes(x = Estudios, y = log(`Ingreso del hogar`)
     panel.grid.major = element_line(color = "gray90", linewidth = 0.3),
     panel.grid.minor = element_blank(),
     plot.margin = margin(30, 30, 30, 30)
-  ) +
-  annotate(
-    "text",
-    x = Inf,
-    y = -Inf,
-    label = "Nota: Escala logarítmica utilizada para mejor visualización de la distribución",
-    hjust = 1,
-    vjust = -1,
-    size = 3,
-    color = "gray50",
-    fontface = "italic"
-  )
+  ) 
 
 print(boxplot_ingresos)
 
@@ -1421,7 +1371,7 @@ print(boxplot_ingresos)
 
 
 
-### Sexo
+### Sexo del jefe del hogar
 
 La tabla 6 revela una marcada disparidad de género. Los datos muestran una predominancia significativa de hombres como jefes de hogar, representando el 64.6% del total (2,694 casos), mientras que las mujeres constituyen el 35.4% (1,475 casos). Esta relación de aproximadamente 2:1 evidencia una estructura patriarcal aún persistente en la conformación de los hogares de la región.
 
@@ -1442,9 +1392,9 @@ tabla_resultadossex <- Base_datos %>%
 tabla_resultadossex %>%
   kable(
     format = "html",
-    col.names = c("Ganero", "Frecuencia", "Porcentaje (%)", "Porcentaje Acumulado (%)"),
+    col.names = c("Genero", "Frecuencia", "Porcentaje (%)", "Porcentaje Acumulado (%)"),
     align = c("l", "c", "c", "c"),
-    caption = "Tabla 6 Distribución de Frecuencias del genero"
+    caption = "Tabla 6 Distribución de Frecuencias del genero del jefe del hogar"
   ) %>%
  kable_styling(
     bootstrap_options = c("striped", "hover", "condensed"),
@@ -1468,11 +1418,11 @@ boxplot_ingresosex <- ggplot(Base_datos, aes(x = Sexo, y = log(`Ingreso del hoga
   scale_fill_brewer(palette = "Set2") +
   scale_y_continuous(labels = dollar_format(prefix = "$", big.mark = ",")) +
   labs(
-    title = "Distribución del Ingreso Familiar por Nivel de Estudio",
-    subtitle = "Análisis de la relación entre educación e ingresos familiares",
-    x = "Nivel de Estudio",
+    title = "Figura 6. DISTRIBUCION DEL INGRESO FAMILIAR POR GENERO DEL JEFE DEL HOGAR",
+    subtitle = "Análisis de la relación entre genero del jefe del hogar e ingresos familiares",
+    x = "Genero",
     y = "Ingreso Familiar Mensual",
-    caption = "Fuente: Datos de la encuesta nacional"
+    caption = "Fuente: Datos de la encuesta nacional ECV 2024"
   )  +tema +
   theme(
     text = element_text(family = "sans"),
@@ -1517,7 +1467,7 @@ print(boxplot_ingresosex)
 ```
 
 
-#### Departamento
+### Departamento
 
 La tabla 7 revela la composición de la muestra estudiada en la región Pacífica colombiana. Cauca representa la mayor proporción con 1,392 observaciones (33.4%), seguido por Nariño con 1,292 casos (31.0%). En conjunto, estos dos departamentos concentran el 64.4% del total de la muestra, indicando una sobrerrepresentación relativa en el estudio. Valle del Cauca contribuye con 782 hogares (18.8%), mientras que Chocó presenta la menor representación con 703 casos (16.9%).
 
@@ -1563,7 +1513,7 @@ tabla_resultados %>%
 
 ```{r tabla supuestos, echo= FALSE}
 Modelo_final=lm(log(`Ingreso del hogar`)~Sexo+Estudios+
-                  `Cantidad de personas en el hogar`+Edad+`Horas trabajadas la semana pasada`+
+                  `C. personas en el hogar`+Edad+`Horas trabajadas la semana pasada`+
                   Departamento
                 ,Base_datos)
 library(broom)
@@ -1618,7 +1568,7 @@ tabla_final <- tabla_final %>%
   select(Variable, Coeficiente, `Error Estándar`, `Estadístico t`, `Valor p`, Sig.)
 
 kbl(tabla_final,
-    caption = "Resultados del modelo de regresión lineal múltiple",
+    caption = "Figura 8. Resultados del modelo de regresión lineal múltiple",
     align = c("l", "r", "r", "r", "r", "c"),
     col.names = names(tabla_final)) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
@@ -1651,20 +1601,15 @@ El procedimiento gráfico ejecutado con plot(model) permite evaluar de manera co
 ### Lineal
 Se verifica que la relación entre la variable dependiente y los predictores sea aproximadamente lineal a partir del gráfico de residuos frente a valores ajustados. En ausencia de patrones curvos o sistemáticos, se asume que el supuesto de linealidad es razonable.
 
-```{r}
+```{r plot 1}
 res_df <- augment(Modelo_final)
 
-# GRÁFICO DE RESIDUOS VS AJUSTADOS MEJORADO
 resid_vs_ajustados <- ggplot(res_df, aes(x = .fitted, y = .resid)) +
-  
-  # Puntos con transparencia y color gradiente
   geom_point(
     aes(color = abs(.resid), size = abs(.resid)),
     alpha = 0.6,
     show.legend = FALSE
   ) +
-  
-  # Línea horizontal en cero
   geom_hline(
     yintercept = 0,
     color = "#e74c3c",
@@ -1672,8 +1617,6 @@ resid_vs_ajustados <- ggplot(res_df, aes(x = .fitted, y = .resid)) +
     linewidth = 1.2,
     alpha = 0.8
   ) +
-  
-  # Línea de tendencia suavizada
   geom_smooth(
     method = "loess",
     color = "#3498db",
@@ -1682,8 +1625,6 @@ resid_vs_ajustados <- ggplot(res_df, aes(x = .fitted, y = .resid)) +
     linewidth = 1.2,
     se = TRUE
   ) +
-  
-  # Bandas de referencia para homocedasticidad
   geom_ribbon(
     stat = "smooth",
     method = "loess",
@@ -1699,26 +1640,19 @@ resid_vs_ajustados <- ggplot(res_df, aes(x = .fitted, y = .resid)) +
     fill = "#e74c3c",
     alpha = 0.1
   ) +
-  
-  # Escalas de color y tamaño
   scale_color_gradient(low = "#3498db", high = "#e74c3c") +
   scale_size_continuous(range = c(1, 3)) +
-  
-  # Etiquetas y títulos
   labs(
-    title = "Análisis de Residuos vs Valores Ajustados",
+    title = "Figura 7. ANÁLISIS DE RESIDUOS VS VALORES AJUSTADOS",
     subtitle = "Validación de los supuestos de linealidad y homocedasticidad",
     x = "Valores Ajustados (Predicciones)",
     y = "Residuos",
     caption = paste(
-      "Fuente: Elaboración propia |",
+      "Fuente: Elaboración propia con base en ECV DANE 2024 |",
       "Línea azul: tendencia LOESS |",
       "Línea roja: residuo cero"
     )
-  ) +
-  
-  # Tema profesional
-  theme_fivethirtyeight() +
+  ) +tema +
   theme(
     text = element_text(family = "sans"),
     plot.title = element_text(
@@ -1763,7 +1697,7 @@ G_qq <- ggplot(res_df, aes(sample = .resid)) +
   geom_qq(alpha = 0.6, color = "#2b6cb0") +
   geom_qq_line(color = "#e74c3c", linewidth = 1) +
   labs(
-    title = "Gráfico Q-Q de los Residuos",
+    title = "Figura 8. GRÁFICO Q-Q DE LOS RESIDUOS",
     subtitle = "Validación de normalidad - Residuos vs Distribución Normal Teórica",
     x = "Cuantiles Teóricos",
     y = "Cuantiles de los Residuos",
@@ -1774,7 +1708,7 @@ G_qq <- ggplot(res_df, aes(sample = .resid)) +
 print(G_qq)
 ```
 
-```{r Grafico plot 1}
+```{r histograma}
 library(plotly)
 res_df <- augment(Modelo_final)
 
@@ -1786,16 +1720,13 @@ G_residuos_hist <- ggplot(res_df, aes(x = .resid)) +
     color = "white",
     alpha = 0.8
   ) +
-  # Línea de densidad
   geom_density(linewidth = 1, color = "#e74c3c") +
-  # Línea vertical en cero
   geom_vline(
     xintercept = 0,
     color = "#2c3e50",
     linetype = "dashed",
     linewidth = 1
   ) +
-  # Línea de distribución normal teórica
   stat_function(
     fun = dnorm,
     args = list(mean = mean(res_df$.resid), sd = sd(res_df$.resid)),
@@ -1804,7 +1735,7 @@ G_residuos_hist <- ggplot(res_df, aes(x = .resid)) +
     linetype = "dashed"
   ) +
   labs(
-    title = "Distribución de los Residuos del Modelo",
+    title = "Figura 9. DISTRIBUCIÓN DE LOS RESIDUOS DEL MODELO",
     subtitle = "Validación del supuesto de normalidad de los errores\nLínea roja: densidad observada | Línea verde: distribución normal teórica",
     x = "Residuos", 
     y = "Densidad",
@@ -1820,18 +1751,12 @@ print(G_residuos_hist)
 
 ```{r cuadrado}
 es_df <- augment(Modelo_final)
-
-# GRÁFICO SCALE-LOCATION MEJORADO (plot(model, 3))
 scale_location_plot <- ggplot(res_df, aes(x = .fitted, y = sqrt(abs(.std.resid)))) +
-  
-  # Puntos con gradiente de color
   geom_point(
     aes(color = sqrt(abs(.std.resid)), size = sqrt(abs(.std.resid))),
     alpha = 0.6,
     show.legend = FALSE
   ) +
-  
-  # Línea suavizada
   geom_smooth(
     method = "loess",
     color = "#3498db",
@@ -1840,8 +1765,6 @@ scale_location_plot <- ggplot(res_df, aes(x = .fitted, y = sqrt(abs(.std.resid))
     linewidth = 1.2,
     se = TRUE
   ) +
-  
-  # Línea de referencia horizontal (idealmente debería ser plana)
   geom_hline(
     yintercept = mean(sqrt(abs(res_df$.std.resid)), na.rm = TRUE),
     color = "#e74c3c",
@@ -1849,26 +1772,19 @@ scale_location_plot <- ggplot(res_df, aes(x = .fitted, y = sqrt(abs(.std.resid))
     linewidth = 1,
     alpha = 0.8
   ) +
-  
-  # Escalas de color y tamaño
   scale_color_gradient(low = "#3498db", high = "#e74c3c") +
   scale_size_continuous(range = c(1, 3)) +
-  
-  # Etiquetas y títulos
   labs(
-    title = "Gráfico Scale-Location - Verificación de Homocedasticidad",
+    title = "Figura 10. Gráfico Scale-Location - Verificación de Homocedasticidad",
     subtitle = "Análisis de la raíz cuadrada de los residuos estandarizados vs valores ajustados",
     x = "Valores Ajustados (Predicciones)",
     y = expression(sqrt("|Residuos Estandarizados|")),
     caption = paste(
-      "Fuente: Elaboración propia |",
+      "Fuente: Encuesta nacional de la calidad de vida ECV 2024 |",
       "Línea roja: media de √|residuos estandarizados| |",
       "Línea azul: tendencia LOESS"
     )
-  ) +
-  
-  # Tema profesional
-  theme_fivethirtyeight() +
+  ) +tema +
   theme(
     text = element_text(family = "sans"),
     plot.title = element_text(
@@ -1924,8 +1840,6 @@ G_cooksd <- ggplot(res_df, aes(x = obs_number, y = cooksd)) +
     linetype = "dashed",
     linewidth = 1.2
   ) +
-  
-  # Destacar observaciones influyentes
   geom_point(
     data = res_df %>% filter(cooksd > 4/nrow(res_df)),
     aes(x = obs_number, y = cooksd),
@@ -1939,7 +1853,7 @@ G_cooksd <- ggplot(res_df, aes(x = obs_number, y = cooksd)) +
     data = res_df %>% 
       filter(cooksd > 4/nrow(res_df)) %>%
       arrange(desc(cooksd)) %>%
-      head(5),  # Etiquetar las 5 más influyentes
+      head(5),  
     aes(label = obs_number),
     vjust = -1,
     hjust = 0.5,
@@ -1957,14 +1871,13 @@ G_cooksd <- ggplot(res_df, aes(x = obs_number, y = cooksd)) +
       direction = "horizontal"
     )
   ) +
-  
   scale_size_continuous(
     name = "Influencia",
     range = c(1, 4),
     guide = "none"
   ) +
   labs(
-    title = "Análisis de Observaciones Influentes - Distancia de Cook",
+    title = "Figura 11. Análisis de Observaciones Influentes - Distancia de Cook",
     subtitle = paste(
       "Línea roja: umbral de influencia (4/n =", 
       round(4/nrow(res_df), 4), 
@@ -1988,14 +1901,11 @@ library(ggcorrplot)
 
 datos_modelo <- Modelo_final$model
 
-# Seleccionar solo variables numéricas
 variables_numericas <- datos_modelo %>%
   select(where(is.numeric))
 
-# Calcular matriz de correlación
 matriz_cor <- round(cor(variables_numericas, use = "complete.obs"), 2)
 
-# 2. CONVERTIR A FORMATO LARGO PARA GGPLOT
 matriz_larga <- matriz_cor %>%
   as.data.frame() %>%
   mutate(Variable1 = rownames(.)) %>%
@@ -2021,47 +1931,34 @@ matriz_larga <- matriz_cor %>%
     )
   )
 
-# 3. CREAR MATRIZ DE CORRELACIÓN CON CUADROS ELEGANTE
 matriz_cuadros <- ggplot(matriz_larga, aes(x = Variable1, y = Variable2, fill = Correlacion)) +
-  # Cuadros de la matriz
   geom_tile(color = "white", linewidth = 1.5, width = 0.9, height = 0.9) +
-  
-  # Texto de las correlaciones
   geom_text(
     aes(label = Etiqueta),
     color = "white",
     size = 4.5,
     fontface = "bold"
   ) +
-  
-  # Escala de colores profesional
   scale_fill_gradient2(
     name = "Correlación",
-    low = "#e74c3c",    # Rojo para correlaciones negativas
-    mid = "#f8f9fa",    # Blanco para cero
-    high = "#3498db",   # Azul para correlaciones positivas
+    low = "#e74c3c",    
+    mid = "#f8f9fa",    
+    high = "#3498db",   
     midpoint = 0,
     limits = c(-1, 1),
     breaks = c(-1, -0.5, 0, 0.5, 1),
     labels = c("-1.0", "-0.5", "0", "0.5", "1.0")
   ) +
-  
-  # Coordenadas y ejes
   scale_x_discrete(position = "top") +
   scale_y_discrete(limits = rev) +
   coord_fixed() +
-  
-  # Títulos y etiquetas
   labs(
-    title = "MATRIZ DE CORRELACIÓN ENTRE VARIABLES NUMÉRICAS",
+    title = "Figura 12. MATRIZ DE CORRELACIÓN ENTRE VARIABLES NUMÉRICAS",
     subtitle = "Análisis de relaciones lineales entre predictores del modelo",
     x = NULL,
     y = NULL,
     caption = "Fuente: Elaboración propia con base en ECV DANE 2024"
-  ) +
-  
-  # Tema profesional
-  theme_minimal(base_size = 12) +
+  ) +tema +
   theme(
     text = element_text(family = "sans"),
     plot.title = element_text(
@@ -2101,13 +1998,13 @@ matriz_cuadros <- ggplot(matriz_larga, aes(x = Variable1, y = Variable2, fill = 
     panel.background = element_rect(fill = "white", color = NA)
   )
 
-# Mostrar matriz
+
 print(matriz_cuadros)
 
 ```
 
 
-```{r correlacion}
+```{r correlacion pearson}
 num_vars <- Base_datos %>% 
   select_if(is.numeric)
 
@@ -2132,7 +2029,7 @@ tabla_corr <- tibble(
     Significativo = ifelse(as.numeric(pval_y[match(Variable, names(pval_y))]) < 0.05, "Sí", "No"))
 
 tabla_corr %>%
-  kbl(caption = "Coeficiente de Correlación de Pearson con la Variable Dependiente",
+  kbl(caption = "Tabla 9. Coeficiente de Correlación de Pearson con la Variable Dependiente",
     align = c("l", "r", "r", "c"),
     col.names = c("Variable", "Coef. de Pearson (r)", "Valor p", "Significativo")) %>%
   kable_styling(
@@ -2205,17 +2102,13 @@ tabla_vif_simple <- vif_procesado %>%
   select(Variable, VIF, Tolerancia, Diagnóstico)
 
 kable(tabla_vif_simple, 
-      caption = "Tabla 1. Análisis de Multicolinealidad mediante VIF",
+      caption = "Tabla 10. Análisis de Multicolinealidad mediante VIF",
       align = c( "c", "c", "c"),
       format = ifelse(knitr::is_latex_output(), "latex", "pipe")) %>%
   kable_styling(bootstrap_options = c("striped", "hover"), 
                 full_width = FALSE,
                 position = "center")
 
-
-
-
-# 5. GRÁFICO COMPATIBLE CON R MARKDOWN
 grafico_vif_rmd <- ggplot(vif_procesado, aes(x = reorder(Variable, VIF), y = VIF, fill = Diagnóstico)) +
   geom_col(width = 0.7, alpha = 0.8) +
   geom_hline(yintercept = 5, color = "#D69E2E", linetype = "dashed", linewidth = 1) +
@@ -2226,11 +2119,11 @@ grafico_vif_rmd <- ggplot(vif_procesado, aes(x = reorder(Variable, VIF), y = VIF
                               "🚨 GRAVE" = "#F56565")) +
   coord_flip() +
   labs(
-    title = "Análisis de Multicolinealidad - Factor de Inflación de la Varianza (VIF)",
+    title = "Figura 13. Análisis de Multicolinealidad - Factor de Inflación de la Varianza (VIF)",
     subtitle = "Umbrales: VIF < 5 (Aceptable) | VIF ≥ 5 (Moderado) | VIF ≥ 10 (Grave)",
     x = NULL,
     y = "VIF",
-    caption = "Fuente: Elaboración propia"
+    caption = "Fuente: Encuesta nacional calidad de vida ECV 2024 Elaboración propia"
   ) +
   theme_minimal() +
   theme(
