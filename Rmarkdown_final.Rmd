@@ -682,8 +682,7 @@ caracteristicas_hogar=read.csv("Características_composición.CSV",sep= ";") %>%
 
 vivienda=read.csv("Datos de la vivienda.csv",sep=";") %>% 
   select(DIRECTORIO,CLASE,P1_DEPARTAMENTO,P8520S1A1) %>% rename(Ubicacion=2,Departamento=3,Estrato=4) %>% 
-  distinct(DIRECTORIO, .keep_all = TRUE) %>% 
-  filter(Estrato%in%c(1))
+  distinct(DIRECTORIO, .keep_all = TRUE)
 
 trabajo=read.csv("Fuerza de trabajo.CSV",sep=";") %>% 
   select(DIRECTORIO,P8624,P415,P8634,P6426,P416,P6440,P6460,P6426,P8636) %>% 
@@ -695,7 +694,7 @@ Base_datos=caracteristicas_hogar  %>% inner_join(datos_hogar,by="DIRECTORIO") %>
   inner_join(vivienda,by="DIRECTORIO") %>% inner_join(educacion,by="DIRECTORIO") %>% inner_join(trabajo,by="DIRECTORIO") %>% 
   filter(Departamento%in%c(76,19,52,27),Edad!=0,Edad>=18,`Ingreso del hogar`<=50000000) %>% 
   select(Departamento,`Ingreso del hogar`,`C. personas en el hogar`,Sexo,
-         Edad,CATEGORIA_EDUCATIVA,Tiempo_trabajado,Horas_trabajadas_semana) %>% mutate(
+         Edad,CATEGORIA_EDUCATIVA,Horas_trabajadas_semana) %>% mutate(
            Departamento= case_when(
              Departamento == 76 ~ "Valle del Cauca",
              Departamento == 19 ~ "Cauca",
@@ -704,7 +703,8 @@ Base_datos=caracteristicas_hogar  %>% inner_join(datos_hogar,by="DIRECTORIO") %>
            Sexo= case_when(Sexo==1~ "Hombre",
                            Sexo==2~ "Mujer")) %>% 
   filter(!is.na(Horas_trabajadas_semana)) %>% 
-  rename(Estudios=6,"Tiempo total trabajado"=7,"Horas trabajadas la semana pasada"=8)
+  rename(Estudios=6,"Horas trabajadas la semana pasada"=7) %>% 
+  filter(!is.na(`Horas trabajadas la semana pasada`))
 
 
 library(reactable)
@@ -1547,19 +1547,19 @@ library(broom)
 resumen_mod <- broom::tidy(Modelo_final) %>%
   mutate(across(where(is.numeric), ~ round(., 5))) %>%
   rename(`Variable` = term,
-    `Coeficiente` = estimate,
-    `Error Estándar` = std.error,
-    `Estadístico t` = statistic,
-    `Valor p` = p.value) %>%
+         `Coeficiente` = estimate,
+         `Error Estándar` = std.error,
+         `Estadístico t` = statistic,
+         `Valor p` = p.value) %>%
   mutate(Significancia = case_when(
-      `Valor p` < 0.001 ~ "***",
-      `Valor p` < 0.01  ~ "**",
-      `Valor p` < 0.05  ~ "*",
-      TRUE ~ "")) %>% 
+    `Valor p` < 0.001 ~ "***",
+    `Valor p` < 0.01  ~ "**",
+    `Valor p` < 0.05  ~ "*",
+    TRUE ~ "")) %>% 
   mutate(`Valor p` = case_when(
-      is.na(`Valor p`) ~ "1",
-      `Valor p` < 2e-16 ~ "2e-16",
-      TRUE ~ formatC(`Valor p`, format = "e", digits = 3)),
+    is.na(`Valor p`) ~ "1",
+    `Valor p` < 2e-16 ~ "2e-16",
+    TRUE ~ formatC(`Valor p`, format = "e", digits = 3)),
     Sig. = case_when(
       as.numeric(`Valor p`) < 0.001 ~ "***",
       as.numeric(`Valor p`) < 0.01  ~ "**",
@@ -1598,9 +1598,9 @@ kbl(tabla_final,
     align = c("l", "r", "r", "r", "r", "c"),
     col.names = names(tabla_final)) %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"),
-    full_width = FALSE,
-    font_size = 14,
-    position = "center") %>%
+                full_width = FALSE,
+                font_size = 14,
+                position = "center") %>%
   row_spec(0, background = "#2b6cb0", color = "white", bold = TRUE) %>%
   column_spec(1, bold = TRUE, width = "4cm") %>%
   column_spec(2:6, width = "2.5cm") %>%
@@ -1612,78 +1612,10 @@ kbl(tabla_final,
     footnote_as_chunk = TRUE)
 ```
 
-## Prediccion
-
-```{r prediccion}
-names(Base_datos)<-make.names(names(Base_datos))
-
-
-Base_datos$Departamento <- factor(Base_datos$Departamento)
-
-Modelo_predictorio <- lm(
-  Ingreso.del.hogar ~ Sexo + Horas.trabajadas.la.semana.pasada + Estudios +
-    Cantidad.de.personas.en.el.hogar + Edad + Departamento,
-  data = Base_datos
-)
-
-nuevos_datos <- data.frame(
-  Sexo = c("Hombre", "Mujer", "Hombre", "Mujer"),
-  Horas.trabajadas.la.semana.pasada= c(12, 24, 36, 48),
-  Estudios = factor(
-    c("Secundaria", "Universitaria", "Técnica/Tecnológica", "Postgrado"),
-    levels = levels(Base_datos$CATEGORIA_EDUCATIVA)
-  ),
-  Cantidad.de.personas.en.el.hogar = c(3, 4, 2, 5),
-  Edad = c(25, 35, 45, 55),
-  Departamento = factor(
-    c("Valle del Cauca", "Cauca", "Nariño", "Choco"),
-    levels = levels(Base_datos$Departamento)
-  )
-)
-
-nuevos_datos$Prediccion_log <- predict(Modelo_predictorio, newdata = nuevos_datos)
-
-nuevos_datos$Prediccion_ingreso <- exp(nuevos_datos$Prediccion_log)
-
-nuevos_datos$Sexo_label <- factor(nuevos_datos$Sexo, 
-                                  levels = c(1, 2), 
-                                  labels = c("Hombre", "Mujer"))
-
-nuevos_datos %>%
-  select(Departamento, Sexo_label, Estudios, Edad, Horas.trabajadas.la.semana.pasada,
-         Cantidad.de.personas.en.el.hogar, Prediccion_ingreso) %>%
-  rename(
-    Sexo = Sexo_label,
-    `Cantidad de personas` = Cantidad.de.personas.en.el.hogar,
-    `Tiempo trabajado` = Horas.trabajadas.la.semana.pasada,
-    `Ingreso Predicho` = Prediccion_ingreso
-  ) %>%
-  kbl(
-    caption = "Predicción del Ingreso del Hogar según Características Simuladas",
-    align = "c",
-    digits = 0
-  ) %>%
-  kable_styling(
-    bootstrap_options = c("striped", "hover", "condensed"),
-    full_width = FALSE,
-    font_size = 13,
-    position = "center"
-  ) %>%
-  row_spec(0, background = "#2b6cb0", color = "white", bold = TRUE) %>%
-  footnote(
-    general = "Las predicciones corresponden al ingreso estimado (en pesos) a partir del modelo ajustado en logaritmo natural.",
-    general_title = "Nota:",
-    footnote_as_chunk = TRUE
-  )
-
-
-```
-
 
 # Resultados del modelo
 
 La validez y robustez de un modelo de regresión lineal múltiple dependen del cumplimiento de los supuestos clásicos subyacentes a la inferencia estadística. En este estudio, la evaluación de los supuestos se realizó mediante el análisis gráfico proporcionado por la función plot(model) de R y análisis de multicolinealidad a través del Factor de Inflación de la Varianza (VIF) y la matriz de correlaciones, siguiendo las recomendaciones metodológicas de la literatura académica contemporánea.
-
 
 
 ## Diagnóstico Gráfico de Supuestos
@@ -1694,6 +1626,13 @@ El procedimiento gráfico ejecutado con plot(model) permite evaluar de manera co
 Se verifica que la relación entre la variable dependiente y los predictores sea aproximadamente lineal a partir del gráfico de residuos frente a valores ajustados. En ausencia de patrones curvos o sistemáticos, se asume que el supuesto de linealidad es razonable.
 
 ```{r plot 1}
+library(broom)
+Modelo_final=lm(log(`Ingreso del hogar`)~Sexo+Estudios+
+                  `C. personas en el hogar`+Edad+`Horas trabajadas la semana pasada`+
+                  Departamento
+                ,Base_datos)
+
+
 res_df <- augment(Modelo_final)
 
 resid_vs_ajustados <- ggplot(res_df, aes(x = .fitted, y = .resid)) +
@@ -2104,8 +2043,6 @@ corr_result <- Hmisc::rcorr(as.matrix(num_vars))
 
 cor_y <- corr_result$r[, "Ingreso del hogar"]
 pval_y <- corr_result$P[, "Ingreso del hogar"]
-
-Modelop=lm(`Ingreso del hogar`~`Tiempo total trabajado`,Base_datos)
 
 
 tabla_corr <- tibble(
