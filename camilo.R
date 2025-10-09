@@ -360,7 +360,7 @@ G2_interactivo
 
 #Varianza constante 
 
-G3 <- ggplot(res_df, aes(x = .fitted, y = sqrt(abs(.std.resid)))) +
+G3=ggplot(res_df, aes(x = .fitted, y = sqrt(abs(.std.resid)))) +
   geom_point(color = "#0078D4", alpha = 0.6, size = 1) +
   geom_smooth(method = "loess", se = FALSE, color = "#FFB900", linewidth = 1) +
   labs(
@@ -394,12 +394,53 @@ G3_interactivo
 
 plot(Modelo_final,3)
 
-# los errores son aleatorios entre si 
+# Supuesto: Independencia de los errores
+
+res_df$orden <- 1:nrow(res_df)
+
+Grafico4=ggplot(res_df, aes(x = orden, y = .resid)) +
+  geom_point(color = "#0078D4", alpha = 0.5, size = 1) +
+  geom_line(color = "#0078D4", alpha = 0.4, linewidth = 0.4) +
+  geom_hline(yintercept = 0, color = "#E81123", linetype = "dashed") +
+  labs(
+    title = "Residuos vs Orden de Observación",
+    subtitle = "Evaluación del supuesto de independencia de los errores",
+    x = "Orden de observación", y = "Residuos",
+    caption = "Fuente: Elaboración propia con base en ECV DANE 2024 | Análisis: Equipo de Investigación"
+  ) +
+  tema_powerbi
+
+G4_interactivo=ggplotly(Grafico4, tooltip = c("x", "y")) %>%
+  layout(
+    font = list(family = "Segoe UI", size = 12, color = "#323130"),
+    title = list(x = 0.05, y = 0.95),
+    plot_bgcolor = "#ffffff",
+    paper_bgcolor = "#ffffff",
+    xaxis = list(title = "<b>Orden de observación</b>", gridcolor = "#f3f2f1"),
+    yaxis = list(title = "<b>Residuos</b>", gridcolor = "#f3f2f1"),
+    margin = list(l = 70, r = 40, t = 90, b = 60),
+    annotations = list(
+      list(
+        x = 0.02, y = -0.15,
+        text = "Fuente: Encuesta ECV DANE 2024 | Análisis: Equipo de Investigación",
+        showarrow = FALSE,
+        xref = "paper", yref = "paper",
+        xanchor = "left", yanchor = "bottom",
+        font = list(size = 10, color = "#605e5c")))) %>%
+  config(displaylogo = FALSE, displayModeBar = TRUE)
+
+G4_interactivo
+
+
+
+
+
+# Validacion adicional 
 
  # Calcular Cook's distance y agregarlo a res_df
 res_df$CooksD <- cooks.distance(Modelo_final)
 
-Grafico4=ggplot(res_df, aes(x = .hat, y = .std.resid, text = paste(
+GraficoValidacion=ggplot(res_df, aes(x = .hat, y = .std.resid, text = paste(
   "Leverage:", round(.hat, 3), "<br>",
   "Residuos estandarizados:", round(.std.resid, 3), "<br>",
   "Cook’s Distance:", round(CooksD, 4)))) +
@@ -409,14 +450,14 @@ Grafico4=ggplot(res_df, aes(x = .hat, y = .std.resid, text = paste(
   geom_smooth(method = "loess", se = FALSE, color = "#FFB900", linewidth = 1) +
   geom_hline(yintercept = 0, linetype = "dashed", color = "#E81123") +
   labs(
-    title = "Figura 4. Residuos estandarizados vs Leverage",
+    title = "Residuos estandarizados vs Leverage",
     subtitle = "Identificación de observaciones influyentes (Cook’s distance)",
     x = "Leverage", y = "Residuos estandarizados",
     caption = "Fuente: Elaboración propia con base en ECV DANE 2024 | Análisis: Equipo de Investigación") +
   tema_powerbi +
   guides(size = "none", color = "none")
 
-G4_interactivo <- ggplotly(Grafico4, tooltip = "text") %>%
+GV_interactivo <- ggplotly(GraficoValidacion, tooltip = "text") %>%
   layout(
     font = list(family = "Segoe UI", size = 12, color = "#323130"),
     title = list(x = 0.05, y = 0.95),
@@ -435,5 +476,66 @@ G4_interactivo <- ggplotly(Grafico4, tooltip = "text") %>%
         font = list(size = 10, color = "#605e5c")))) %>%
   config(displaylogo = FALSE, displayModeBar = TRUE)
 
-G4_interactivo
+GV_interactivo
+
 plot(Modelo_final,4) 
+
+
+## Analisi de los supuestos con pruebas de hipotesis 
+
+library(lmtest)
+library(nortest)
+library(car)
+library(kableExtra)
+library(broom)
+
+# 1️ Pruebas individuales
+shapiro <- shapiro.test(Modelo_final$residuals)
+lillie <- lillie.test(Modelo_final$residuals)
+bp <- bptest(Modelo_final)
+dw <- dwtest(Modelo_final)
+vif_val <- vif(Modelo_final)
+
+# 2️ Tabla resumen
+tabla_supuestos <- tibble(
+  `Supuesto evaluado` = c(
+    "Normalidad de los residuos",
+    "Varianza constante (homocedasticidad)",
+    "Independencia de los errores",
+    "Ausencia de multicolinealidad"),
+  `Prueba aplicada` = c(
+    "Shapiro–Wilk / Lilliefors",
+    "Breusch–Pagan",
+    "Durbin–Watson",
+    "Factor de inflación de varianza (VIF)"),
+  `Hipótesis nula (H₀)` = c(
+    "Los residuos siguen una distribución normal",
+    "La varianza de los errores es constante",
+    "Los residuos son independientes",
+    "No existe colinealidad entre predictores"),
+  `Valor p / Estadístico` = c(
+    paste0("p = ", signif(shapiro$p.value, 3), " / ", signif(lillie$p.value, 3)),
+    paste0("p = ", signif(bp$p.value, 3)),
+    paste0("DW = ", round(dw$statistic, 2)),
+    paste0("Máx VIF = ", round(max(vif_val), 2))),
+  `Resultado` = c(
+    ifelse(shapiro$p.value > 0.05 & lillie$p.value > 0.05, "p > 0.05 → No se rechaza H₀", "p < 0.05 → Se rechaza H₀"),
+    ifelse(bp$p.value > 0.05, "p > 0.05 → No se rechaza H₀", "p < 0.05 → Se rechaza H₀"),
+    ifelse(dw$statistic >= 1.5 & dw$statistic <= 2.5, "Entre 1.5–2.5 → Sin autocorrelación", "Fuera de rango → Posible autocorrelación"),
+    ifelse(max(vif_val) < 5, "VIF < 5 → Cumple", "VIF ≥ 5 → No cumple")))
+
+tabla_supuestos %>%
+  kbl(caption = "Pruebas de Hipótesis para la Validación de Supuestos del Modelo",
+    align = c("l", "l", "l", "c", "c")) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = FALSE,
+    font_size = 14,
+    position = "center") %>%
+  row_spec(0, background = "#2b6cb0", color = "white", bold = TRUE) %>%
+  column_spec(1, bold = TRUE, width = "4cm") %>%
+  column_spec(4:5, width = "3cm") %>%
+  footnote(
+    general = "Fuente: Elaboración propia con base en ECV DANE 2024 y pruebas estadísticas aplicadas a los residuos del modelo.",
+    general_title = "Nota:",
+    footnote_as_chunk = TRUE)
