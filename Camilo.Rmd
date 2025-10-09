@@ -512,50 +512,129 @@ tabla_supuestos <- tibble(
     "Normalidad de los residuos (Shapiro–Wilk)",
     "Normalidad de los residuos (Lilliefors)",
     "Varianza constante (homocedasticidad)",
-    "Ausencia de multicolinealidad"
-  ),
+    "Ausencia de multicolinealidad"),
   `Prueba aplicada` = c(
     "Shapiro–Wilk",
     "Lilliefors (Kolmogorov–Smirnov)",
     "Breusch–Pagan",
-    "Factor de inflación de varianza (VIF)"
-  ),
+    "Factor de inflación de varianza (VIF)"),
   `Hipótesis nula (H₀)` = c(
     "Los residuos siguen una distribución normal",
     "Los residuos siguen una distribución normal",
     "La varianza de los errores es constante",
-    "No existe colinealidad entre predictores"
-  ),
+    "No existe colinealidad entre predictores"),
   `Valor p / Estadístico` = c(
     paste0("p = ", signif(shapiro$p.value, 3)),
     paste0("p = ", signif(lillie$p.value, 3)),
     paste0("p = ", signif(bp$p.value, 3)),
-    paste0("Máx VIF = ", round(max(vif_val), 2))
-  ),
+    paste0("Máx VIF = ", round(max(vif_val), 2))),
   `Resultado` = c(
     ifelse(shapiro$p.value > 0.05, "p > 0.05 → No se rechaza H₀", "p < 0.05 → Se rechaza H₀"),
     ifelse(lillie$p.value > 0.05, "p > 0.05 → No se rechaza H₀", "p < 0.05 → Se rechaza H₀"),
     ifelse(bp$p.value > 0.05, "p > 0.05 → No se rechaza H₀", "p < 0.05 → Se rechaza H₀"),
-    ifelse(max(vif_val) < 5, "VIF < 5 → Cumple", "VIF ≥ 5 → No cumple")
-  )
-)
+    ifelse(max(vif_val) < 5, "VIF < 5 → Cumple", "VIF ≥ 5 → No cumple")))
 
 tabla_supuestos %>%
   kbl(
     caption = "Pruebas de Hipótesis para la Validación de Supuestos del Modelo",
-    align = c("l", "l", "l", "c", "c")
-  ) %>%
+    align = c("l", "l", "l", "c", "c")) %>%
   kable_styling(
     bootstrap_options = c("striped", "hover", "condensed"),
     full_width = FALSE,
     font_size = 14,
-    position = "center"
-  ) %>%
+    position = "center") %>%
   row_spec(0, background = "#2b6cb0", color = "white", bold = TRUE) %>%
   column_spec(1, bold = TRUE, width = "5cm") %>%
   column_spec(4:5, width = "3cm") %>%
   footnote(
     general = "Fuente: Elaboración propia con base en ECV DANE 2024 y pruebas estadísticas aplicadas a los residuos del modelo.",
+    general_title = "Nota:",
+    footnote_as_chunk = TRUE)
+```
+## Algunas predicciones 
+```{r  Prediccion}
+Base_datos <- caracteristicas_hogar %>% 
+  inner_join(datos_hogar, by = "DIRECTORIO") %>% 
+  inner_join(vivienda, by = "DIRECTORIO") %>% 
+  inner_join(educacion, by = "DIRECTORIO") %>% 
+  inner_join(trabajo, by = "DIRECTORIO") %>% 
+  mutate(`Ingreso del hogar` = log(`Ingreso del hogar`), Edad2 = Edad*Edad) %>% 
+  filter(Departamento %in% c(76, 19, 52, 27), Edad != 0, Edad >= 18) %>% 
+  select(Departamento, `Ingreso del hogar`, `Cantidad de personas en el hogar`, Sexo,
+         Edad, CATEGORIA_EDUCATIVA, Tiempo_trabajado, Horas_trabajadas_semana,
+         sastifacion) %>% 
+  mutate(Departamento = case_when(
+    Departamento == 76 ~ "Valle del Cauca",
+    Departamento == 19 ~ "Cauca",
+    Departamento == 52 ~ "Nariño",
+    Departamento == 27 ~ "Choco"
+  ))
+
+names(Base_datos)<-make.names(names(Base_datos))
+
+
+Base_datos$Departamento <- factor(Base_datos$Departamento)
+
+Modelo_final <- lm(
+  Ingreso.del.hogar ~ Sexo + Tiempo_trabajado + CATEGORIA_EDUCATIVA +
+    Cantidad.de.personas.en.el.hogar + Edad + sastifacion +
+    Horas_trabajadas_semana + Departamento,
+  data = Base_datos
+)
+
+nuevos_datos <- data.frame(
+  Sexo = c(1, 2, 1, 2),
+  Tiempo_trabajado = c(12, 24, 36, 48),
+  CATEGORIA_EDUCATIVA = factor(
+    c("Secundaria", "Universitaria", "Técnica/Tecnológica", "Postgrado"),
+    levels = levels(Base_datos$CATEGORIA_EDUCATIVA)
+  ),
+  Cantidad.de.personas.en.el.hogar = c(3, 4, 2, 5),
+  Edad = c(25, 35, 45, 55),
+  sastifacion = c(7, 8, 6, 9),
+  Horas_trabajadas_semana = c(40, 45, 35, 50),
+  Departamento = factor(
+    c("Valle del Cauca", "Cauca", "Nariño", "Choco"),
+    levels = levels(Base_datos$Departamento)
+  )
+)
+
+nuevos_datos$Prediccion_log <- predict(Modelo_final, newdata = nuevos_datos)
+nuevos_datos$Prediccion_ingreso <- exp(nuevos_datos$Prediccion_log)
+
+nuevos_datos$Sexo_label <- factor(nuevos_datos$Sexo, 
+                                  levels = c(1, 2), 
+                                  labels = c("Hombre", "Mujer"))
+
+library(dplyr)
+library(kableExtra)
+
+nuevos_datos %>%
+  select(Departamento, Sexo_label, CATEGORIA_EDUCATIVA, Edad, Tiempo_trabajado,
+         Cantidad.de.personas.en.el.hogar, Horas_trabajadas_semana,
+         sastifacion, Prediccion_ingreso) %>%
+  rename(
+    Sexo = Sexo_label,
+    `Cantidad de personas` = Cantidad.de.personas.en.el.hogar,
+    `Tiempo trabajado` = Tiempo_trabajado,
+    `Horas semanales` = Horas_trabajadas_semana,
+    `Satisfacción` = sastifacion,
+    `Ingreso Predicho` = Prediccion_ingreso
+  ) %>%
+  kbl(
+    caption = "Predicción del Ingreso del Hogar según Características Simuladas",
+    align = "c",
+    digits = 0
+  ) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = FALSE,
+    font_size = 13,
+    position = "center"
+  ) %>%
+  row_spec(0, background = "#2b6cb0", color = "white", bold = TRUE) %>%
+  footnote(
+    general = "Las predicciones corresponden al ingreso estimado (en pesos) a partir del modelo ajustado en logaritmo natural.",
     general_title = "Nota:",
     footnote_as_chunk = TRUE
   )
