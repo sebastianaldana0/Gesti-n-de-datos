@@ -108,6 +108,10 @@ Base_datos=caracteristicas_hogar  %>% inner_join(datos_hogar,by="DIRECTORIO") %>
 
 #Modelos
 
+Modelo_final=lm(log(`Ingreso del hogar`)~Sexo+Estudios+
+                  `C. personas en el hogar`+Edad+`Horas trabajadas la semana pasada`+
+                  Departamento
+                ,Base_datos)
 
 
 #Modelo final

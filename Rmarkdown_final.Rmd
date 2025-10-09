@@ -570,36 +570,6 @@ Tambien, Se calculó el Factor de Inflación de la Varianza (VIF) para cada vari
 La validación de estos supuestos se realizó mediante: visualización de residuos (gráfico de residuos vs valores ajustados) para evaluar homocedasticidad y linealidad, gráfico Q-Q para verificar la normalidad aproximada de residuos, pruebas de heterocedasticidad, y cálculo de medidas de influencia como las distancias de Cook para identificar observaciones atípicas que pudieran estar afectando significativamente los resultados del modelo (Barragán-Moreno et al., 2024). El análisis de los residuos es fundamental en la regresión, ya que informa sobre el grado de exactitud de los pronósticos y permite detectar casos atípicos que pueden ayudar a perfeccionar la ecuación de regresión (Marín, 2018)
 
 
-## Descripcion de la encuesta
-
-La Encuesta Nacional de Calidad de Vida (ECV) 2024 tuvo como objetivo general obtener información que permitiera analizar y realizar comparaciones de las condiciones socioeconómicas de los hogares que habitan en el país, las cuales posibilitaran hacer seguimiento a las variables necesarias para el diseño e implementación de políticas públicas.
-
-### Características Metodológicas
-
-**Tipo de investigación**: Encuesta por muestreo
-
-**Diseño muestral**: Muestreo probabilístico, estratificado, de conglomerados y polietápico
-
-**Período de recolección**: Agosto – noviembre de 2024
-
-**Tamaño de la muestra**: 85.387 hogares con encuestas completas donde habitan 228.688 personas
-
-**Cobertura geográfica**: Nacional con desagregaciones para:
-
-### Total nacional y áreas (cabecera y centros poblados-rural disperso)
-
-Bogotá y los treinta y dos departamentos del país con sus respectivas áreas, a excepción de San Andrés, donde solo se cuenta con información de la cabecera municipal
-
-Las nueve regiones tradicionales de la ECV (Antioquia, Bogotá D.C., Caribe, Central, Oriental, Orinoquía-Amazonía, Pacífica, San Andrés y Valle) con sus áreas correspondientes, salvo en el caso de San Andrés
-
-### Unidades estadísticas:
-
-Unidades de observación y análisis: viviendas, hogares y personas
-
-Unidades de muestreo: segmento o conglomerado, conformado en promedio por 10 hogares
-
-
-
 ## Variables
 
 Las variables utilizadas en el estudio se dividen en dos grupos: dependientes e independientes. La variable dependiente que fue seleccionada es el ingreso del hogar, la cual busca medir el nivel monetario total percibido por los miembros del hogar. Este indicador refleja el grado de bienestar económico, la capacidad de consumo y las oportunidades de inversión en educación, salud y vivienda (Muñoz, 2004).
@@ -616,8 +586,85 @@ La educación es otra variable para tomar en cuenta, las personas con mayor nive
 
 La cantidad de horas trabajadas la semana pasada constituye una variable fundamental que refleja la intensidad laboral y mantiene una relación directa con el nivel de ingresos percibidos por los trabajadores. En Colombia, donde la jornada laboral máxima se ha reducido gradualmente desde 48 a 47 horas semanales en 2023, con proyección a 42 horas en 2026 (Ministerio del Trabajo, 2023), los estudios empíricos demuestran que existe una correlación positiva entre horas trabajadas e ingresos laborales. Guataquí et al. (2009) encontraron que los asalariados, quienes trabajaban en promedio 49.9 horas semanales, tenían ingresos por hora 18% mayores que los trabajadores cuenta propia que laboraban 47.8 horas semanales. En el contexto de la región Pacífica, donde predominan actividades informales, las horas trabajadas adquieren particular relevancia como mecanismo compensatorio, ya que trabajadores en sectores informales requieren jornadas extendidas para obtener ingresos equiparables al salario mínimo (Vargas et al., 2015). 
 
+## Descripcion del modelo 
+
+El modelo fue estimado mediante Mínimos Cuadrados Ordinarios (MCO) utilizando una muestra de 4,169 hogares representativos de la región Pacífica, extraídos de la Encuesta de Calidad de Vida (ECV) 2024 del DANE. La estructura del modelo incorpora seis variables explicativas que vemos en la tabla.
+
+```{r tabla variables}
+variables_modelo <- data.frame(
+  Variable = c("log(ING)", "Bo", "Edad", "Dpto", "Sexo", "C.depersonas", "H.trabajadas", "e"),
+  Descripción = c(
+    "Logaritmo natural del ingreso del hogar",
+    "Término constante (intercepto) del modelo",
+    "Edad del jefe del hogar",
+    "Departamento de residencia",
+    "Género del jefe del hogar",
+    "Cantidad de personas en el hogars",
+    "Horas trabajadas por el jefe del hogar la semana pasada",
+    "Término de error aleatorio"
+  ),
+  Tipo_Variable = c(
+    "Variable dependiente (transformada)",
+    "Parámetro",
+    "Cuantitativa",
+    "Categórica ",
+    "Categórica ",
+    "Cuantitativa",
+    "Continua",
+    "Error"
+  ),
+  Ejemplos_Notas = c(
+    "Transformación logarítmica para linealizar la relación",
+    "Valor base cuando todas las variables son cero",
+    "Años",
+    "",
+    "",
+    "",
+    "horas/semana",
+    "Captura factores no observados en el modelo"
+  )
+)
+
+
+tabla <- kable(variables_modelo, 
+               format = "html",
+               col.names = c("Variable", "Descripción", "Tipo de Variable", "Ejemplos/Notas"),
+               align = c('l', 'l', 'l', 'l'),
+               caption = "Tabla de Variables del Modelo de Regresión") %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = FALSE,
+    font_size = 14,
+    position = "center"
+  ) %>%
+  row_spec(0, background = "#2b6cb0", color = "white", bold = TRUE) %>%
+  column_spec(1, bold = TRUE, width = "3cm") %>%
+  column_spec(2, width = "4cm") %>%  # Cambiado de 2:8 a columnas específicas
+  column_spec(3, width = "3cm") %>%
+  column_spec(4, width = "3.5cm") %>%
+  footnote(
+    general = "Fuente: Elaboración propia con base en ECV DANE 2024",
+    general_title = "Nota:",
+    footnote_as_chunk = TRUE
+  )
+
+tabla
+
+```
+
+
+
 ### Ecuación del modelo:
-$$log(ING) = \beta_0 + \beta_1(Edad) + \beta_2(Dpto) + \beta_3(Sexo) + \beta_4(C.de personas) + \beta_5(H. trabajadas) + \epsilon$$
+
+La ecuación empleada en el modelo de regresión lineal múltiple tiene como objetivo expresar el logaritmo natural del ingreso del hogar como una combinación lineal de distintas variables socioeconómicas, demográficas y laborales. Cada término en la ecuación corresponde al efecto específico de una variable explicativa, permitiendo estimar cómo varía el ingreso familiar ante cambios unitarios en cada una de ellas, manteniendo las demás constantes.
+
+El término independiente (β0) representa el valor esperado del logaritmo del ingreso familiar cuando todas las variables explicativas toman el valor de referencia o cero. Los coeficientes asociados a cada variable (βj) indican el cambio porcentual aproximado en el ingreso familiar ante una variación unitaria en cada factor, gracias a la transformación logarítmica de la variable dependiente. Por ejemplo, si el coeficiente de la edad es 0.02, se interpreta que un año adicional de edad del jefe de hogar se asocia con un aumento aproximado del 2% en el ingreso, controlando por los demás factores.
+
+Las variables categóricas (como sexo, estudios o departamento) se interpretan en relación con la categoría de referencia, por lo que el coeficiente refleja la diferencia porcentual media frente a esa categoría. Finalmente, el término de error (εi) agrupa factores no observados o no incluidos en el modelo, que también inciden en el ingreso familiar. De esta forma, la estructura de la ecuación proporciona una visión detallada y cuantificable del papel de cada determinante sobre el bienestar económico de los hogares analizados.
+
+**Ecuación del modelo**
+
+$$log(ING) = \beta_0 + \beta_1(Edad) + \beta_2(Dpto) + \beta_3(Sexo) + \beta_4(C.de personas) + \beta_5(H. trabajadas) + \epsilon $$
 
 ## Base de datos del estudio
 
@@ -792,7 +839,7 @@ tabla_promedios %>%
   )
 ```
 
-La distribución del ingreso total mensual de los hogares en la región Pacífica de Colombia refleja dinámicas económicas y sociales diferenciadas entre sus departamentos. Se observa que el Valle del Cauca es el departamento con el ingreso promedio más alto ($2,348,430 COP), seguido del Cauca ($2,207,561 COP), Chocó ($1,930,799 COP) y Nariño ($1,767,745 COP). Estas diferencias no solo responden a factores productivos y de acceso a mercados, sino también a condiciones estructurales históricas, como la presencia de economías formales e informales, y niveles desiguales de inversión pública.
+La distribución del ingreso total mensual de los hogares en la región Pacífica de Colombia refleja dinámicas económicas y sociales diferenciadas entre sus departamentos. Se observa que el Valle del Cauca es el departamento con el ingreso promedio más alto ($3,166,932 COP), seguido del Cauca ($2,602,230 COP), Chocó ($2,039,157 COP) y Nariño ($2,432,720 COP). Estas diferencias no solo responden a factores productivos y de acceso a mercados, sino también a condiciones estructurales históricas, como la presencia de economías formales e informales, y niveles desiguales de inversión pública.
 
 La figura 1 permite visualizar con mayor claridad lo presentado en la tabla, pero desde una perspectiva geográfica, otorgando la ubicación de cada región, cada una con su respectivo ingreso promedio. El Valle del Cauca, con su posición geoestratégica y su base económica diversificada, presenta el mayor ingreso promedio, mientras que Nariño, a pesar de su importancia agrícola, registra el menor ingreso promedio. El Chocó y El Cauca se ubican en posiciones intermedias, pero presentan notorias brechas internas debido a sus altas desviaciones estándar, lo que representa una significativa heterogeneidad en la distribución al interior de estos territorios.
 
@@ -1042,7 +1089,7 @@ tabla_promedios_cp %>%
 
 ```
 
-Los tamaños domésticos observados tienden a concentrarse en valores pequeños (la mayoría entre 1 y 4 integrantes), aunque también existen casos aislados de hogares considerablemente mayores que alargan la cola superior. Los promedios por departamento oscilan en una banda estrecha de entre 1.9 a 2.6 personas, pero esa similitud promedio oculta variaciones en la forma de la distribución, ya que mientras muchos hogares son unipersonales o nucleares, la presencia puntual de hogares con 8–9 miembros muestran arreglos residenciales más complejos presentes en la muestra. La desviación estándar cercana a 1 persona sugiere que, en términos generales, la mayoría de las observaciones se agrupan cerca del promedio, aunque los extremos indican heterogeneidad en tamaños familiares que podría relacionarse con diferencias generacionales, formas de convivencia y arreglos intergeneracionales dentro de la región
+Los tamaños domésticos observados tienden a concentrarse en valores pequeños (la mayoría entre 1 y 4 integrantes), aunque también existen casos aislados de hogares considerablemente mayores que alargan la cola superior. Los promedios por departamento oscilan en una banda estrecha de entre 2.1 a 2.5 personas, pero esa similitud promedio oculta variaciones en la forma de la distribución, ya que mientras muchos hogares son unipersonales o nucleares, la presencia puntual de hogares con 6–8 miembros muestran arreglos residenciales más complejos presentes en la muestra. La desviación estándar cercana a 1 persona sugiere que, en términos generales, la mayoría de las observaciones se agrupan cerca del promedio, aunque los extremos indican heterogeneidad en tamaños familiares que podría relacionarse con diferencias generacionales, formas de convivencia y arreglos intergeneracionales dentro de la región
 
 ```{r correlacion cantidad}
 Dispercion_cantidad <- ggplot(Base_datos, aes(x = `C. personas en el hogar`, 
@@ -1265,7 +1312,7 @@ print(Dispercion_horas)
 
 ### Estudios del jefe del hogar
 
-La tabla 5 revela una estructura formativa predominantemente básica en la región Pacífica colombiana. El nivel de secundaria concentra la mayor proporción con 3,306 casos (79.3%), constituyéndose como la característica educativa más representativa entre los jefes de hogar. Le siguen en importancia la formación técnica o tecnológica con 398 casos (9.5%) y la educación universitaria con 262 observaciones (6.3%).
+La tabla 5 revela una estructura formativa predominantemente básica en la región Pacífica colombiana. El nivel de secundaria concentra la mayor proporción con 4,992 casos (69.5%), constituyéndose como la característica educativa más representativa entre los jefes de hogar. Le siguen en importancia la formación técnica o tecnológica con 889 casos (12.4%) y la educación universitaria con 774 observaciones (10.8%).
 
 
 ```{r tabla de estudios}
@@ -1303,7 +1350,7 @@ tabla_resultadosestudios %>%
   )
 ```
 
-La tabla 5 revela una estructura formativa predominantemente básica en la región Pacífica colombiana, teniendo el nivel de secundaria con la mayor proporción con un total de 3,306 casos (79.3%), esta concentración implica que la gran mayoría de la población cuenta con educación básica completa, pero presenta una brecha significativa en formación avanzada. Le siguen en importancia la formación técnica o tecnológica con 398 casos (9.5%) y la educación universitaria con 262 observaciones (6.3%). La educación primaria representa apenas el 3.6% (149 casos), mientras que los estudios de postgrado constituyen el segmento más reducido con solo 54 casos (1.3%). Esta distribución evidencia una pirámide educativa marcadamente amplia en la base y muy estrecha en la cúspide, patrón que sugiere limitaciones en el acceso a educación superior y especializada en la región.
+La estudios de postgrado representa apenas el 4.4% (314 casos), mientras que los estudios de educación primaria constituyen el segmento más reducido con solo 211 casos (2.9%). Esta distribución evidencia una pirámide educativa marcadamente amplia en la base y muy estrecha en la cúspide, patrón que sugiere limitaciones en el acceso a educación superior y especializada en la región.
 
 ```{r Box plot estudios}
 
@@ -1385,7 +1432,7 @@ print(boxplot_ingresos)
 
 ### Sexo del jefe del hogar
 
-La tabla 6 revela una marcada disparidad de género. Los datos muestran una predominancia significativa de hombres como jefes de hogar, representando el 64.6% del total (2,694 casos), mientras que las mujeres constituyen el 35.4% (1,475 casos). Esta relación de aproximadamente 2:1 evidencia una estructura patriarcal aún persistente en la conformación de los hogares de la región.
+La tabla 6 revela una marcada disparidad de género. Los datos muestran una predominancia significativa de hombres como jefes de hogar, representando el 63.8% del total (4,580 casos), mientras que las mujeres constituyen el 36.2% (2,600 casos). Esta relación de aproximadamente 2:1 evidencia una estructura patriarcal aún persistente en la conformación de los hogares de la región.
 
 
 ```{r tabla sexo}
@@ -1421,8 +1468,6 @@ tabla_resultadossex %>%
     footnote_as_chunk = TRUE
   )
 ```
-
-La tabla 6 revela una marcada disparidad de género. Los datos muestran una predominancia significativa de hombres como jefes de hogar, representando el 64.6% del total (2,694 casos), mientras que las mujeres constituyen el 35.4% (1,475 casos). Lo que significa que los hombres superan en casi el doble en proporción a las mujeres como jefe de hogar, que puede asociarse a factores culturales, económicos y sociales característicos de la región Pacífica
 
 La siguiente gráfica muestra cómo se distribuye el ingreso familiar mensual en las muestras. Las cajas de ambas categorías tienen una forma muy parecida y las líneas de la mediana quedan en posiciones similares, lo que indica que los valores centrales del ingreso familiar encabezados por hombres y encabezados por mujeres son comparables en la muestra. Al mismo tiempo, en ambos grupos se observan puntos atípicos por encima y por debajo del rango intercuartílico, hay observaciones con ingresos muy superiores a la mediana y también con ingresos notablemente bajos, lo que genera colas en ambas direcciones. 
 
@@ -1485,14 +1530,14 @@ print(boxplot_ingresosex)
 Mirando la dispersión, la longitud de las cajas y los “bigotes” sugiere que la variabilidad (en términos de IQR y rango) es importante para los dos sexos. Esto implica que, aunque la mayoría de los hogares se concentra alrededor de una mediana similar entre hombres y mujeres, existen hogares con ingresos excepcionalmente altos que elevan la cola derecha de la distribución. Al mismo tiempo se detectan observaciones bajas (outliers por debajo del bigote) en ambos grupos, con algunos valores extremos más notorios en la categoría femenina. 
 Para entender esta distribución es pertinente recordar la composición de la muestra, en el que la gran mayoría de jefes de hogar registra educación secundaria como máximo nivel alcanzado, siendo este de un 79.3%, mientras que los niveles superiores, siendo este la universidad y el posgrado son minoritarios en la muestra; este perfil educativo concentra la masa central de la distribución de ingresos mostrada en la figura y ayuda a explicar por qué las medianas no muestran diferencias drásticas entre subgrupos educativos dentro del gráfico (la estructura educativa de la muestra está dominada por secundaria).
 
-Además, la jefatura masculina está sobrerrepresentada, ya que tiene 64.6% hombres frente al 35.4% mujeres, lo cual condiciona la cantidad absoluta de observaciones por categoría y, por ende, la visibilidad de colas y outliers en cada caja.
+Además, la jefatura masculina está sobrerrepresentada, ya que tiene 63.8% hombres frente al 36.2% mujeres, lo cual condiciona la cantidad absoluta de observaciones por categoría y, por ende, la visibilidad de colas y outliers en cada caja.
 
 Finalmente, la interpretación de esta figura debe leerse junto a la información sobre niveles de ingreso por departamento: los promedios departamentales muestran diferencias geográficas (por ejemplo, Valle del Cauca con ingreso promedio superior frente a Nariño con el menor promedio), lo que sugiere que la heterogeneidad territorial también contribuye a la variación observada en las colas y los outliers de la gráfica (es decir, algunos hogares con ingreso muy alto o muy bajo pueden deberse a efectos departamentales). En suma, la gráfica evidencia que, aunque las medidas centrales del ingreso familiar entre hogares encabezados por hombres y por mujeres son similares en la muestra, la dispersión y los extremos son relevantes y reflejan una mezcla de situaciones económicas que conviene tener en cuenta en cualquier análisis cuantitativo posterior
 
 
 ### Departamento
 
-La tabla 7 revela la composición de la muestra estudiada en la región Pacífica colombiana. Cauca representa la mayor proporción con 1,392 observaciones (33.4%), seguido por Nariño con 1,292 casos (31.0%). En conjunto, estos dos departamentos concentran el 64.4% del total de la muestra, indicando una sobrerrepresentación relativa en el estudio. Valle del Cauca contribuye con 782 hogares (18.8%), mientras que Chocó presenta la menor representación con 703 casos (16.9%).
+La tabla 7 revela la composición de la muestra estudiada en la región Pacífica colombiana.Valle del Cauca representa la mayor proporción con 2,125 observaciones (29.6%), seguido por Nariño con 2,055 casos (28.6%). En conjunto, estos dos departamentos concentran el 58.2% del total de la muestra, indicando una sobrerrepresentación relativa en el estudio. Cauca contribuye con 1912 hogares (26.6%), mientras que Chocó presenta la menor representación con 1088 casos (15.2%).
 
 Esta distribución muestral refleja variaciones en el tamaño poblacional de cada departamento y posiblemente en la intensidad del trabajo de campo. La predominancia de Cauca y Nariño en la composición muestral sugiere que los resultados del análisis de regresión podrían estar más influenciados por las características de estos territorios. La representación diferenciada entre departamentos deberá considerarse en la interpretación de los resultados, particularmente en lo relacionado con la generalización de hallazgos a toda la región Pacífica.
 
