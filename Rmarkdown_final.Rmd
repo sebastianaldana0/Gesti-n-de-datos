@@ -1657,6 +1657,71 @@ kbl(tabla_final,
     footnote_as_chunk = TRUE)
 ```
 
+```{r prediccion}
+B0 <- Modelo_final$coefficients[1]  
+B1 <- Modelo_final$coefficients[2]  
+B2 <- Modelo_final$coefficients[3]  
+B3 <- Modelo_final$coefficients[4]  
+B4 <- Modelo_final$coefficients[5]  
+B5 <- Modelo_final$coefficients[6]  
+B6 <- Modelo_final$coefficients[7]  
+B7 <- Modelo_final$coefficients[8]  
+B8 <- Modelo_final$coefficients[9]  
+B9 <- Modelo_final$coefficients[10] 
+B10 <- Modelo_final$coefficients[11] 
+B11 <- Modelo_final$coefficients[12] 
+
+newdata <- data.frame(
+  Sexo = c("Mujer", "Mujer", "Hombre", "Mujer", "Hombre"),
+  Estudios = c("Secundaria", "Universitaria", "Postgrado", "Secundaria", "Técnica/Tecnológica"),
+  `C. personas en el hogar` = c(2, 4, 2, 3, 4),
+  Edad = c(49, 35, 50, 40, 42),
+  `Horas trabajadas la semana pasada` = c(44, 35, 45, 30, 48),
+  Departamento = c("Valle del Cauca", "Cauca", "Valle del Cauca", "Nariño", "Chocó")
+)
+
+names(newdata) <- c("Sexo", "Estudios", "C. personas en el hogar", "Edad", 
+                    "Horas trabajadas la semana pasada", "Departamento")
+
+predicciones_log <- predict(Modelo_final, newdata)
+predicciones_reales <- exp(predicciones_log)
+
+tabla_predicciones <- cbind(
+  newdata,
+  "Log_Ingreso_Predicho" = round(predicciones_log, 3),
+  "Ingreso_Predicho_COP" = round(predicciones_reales, 0)
+)
+
+tabla_predicciones$Ingreso_Predicho_COP <- format(tabla_predicciones$Ingreso_Predicho_COP, 
+                                                 big.mark = ",", 
+                                                 scientific = FALSE)
+
+kable(tabla_predicciones,
+      caption = "Tabla 12. Predicciones de Ingreso Familiar para Diferentes Escenarios",
+      align = c("l", "l", "c", "c", "c", "l", "r", "r"),
+      col.names = c("Sexo", "Estudios", "Personas", "Edad", "Horas", "Departamento", 
+                   "Log(Ingreso)", "Ingreso Predicho (COP)")) %>%
+  kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = FALSE,
+    font_size = 14,
+    position = "center"
+  ) %>%
+  row_spec(0, background = "#2b6cb0", color = "white", bold = TRUE) %>%
+  column_spec(1, bold = TRUE, width = "1.5cm") %>%
+  column_spec(2, width = "2.5cm") %>%
+  column_spec(3:5, width = "1.5cm") %>%
+  column_spec(6, width = "2cm") %>%
+  column_spec(7:8, width = "2cm") %>%
+  footnote(
+    general = "Elaboración propia con base en ECV DANE 2024. Los ingresos predichos representan el ingreso total mensual del hogar.",
+    general_title = "Nota:",
+    footnote_as_chunk = TRUE
+  )
+
+```
+
+
 
 # Resultados del modelo
 
