@@ -2279,7 +2279,19 @@ print(grafico_vif_rmd)
 ```
 
 # Conclusiones
+El modelo de regresión lineal múltiple ajustado para explicar el logaritmo del ingreso familiar en la región Pacífica de Colombia permitió identificar relaciones estadísticamente significativas entre el ingreso del hogar y un conjunto de factores sociodemográficos y laborales. Sin embargo, los resultados globales y los diagnósticos de supuestos indican que el modelo no cumple plenamente con los criterios necesarios para ser considerado robusto o predictivamente confiable.
 
+El coeficiente de determinación ajustado (R² ajustado ≈ 0.398) muestra que el modelo solo explica alrededor del 39,8% de la variabilidad del ingreso familiar, lo cual es moderado para estudios sociales, pero insuficiente para propósitos predictivos. Esto implica que más del 60% de la variabilidad del ingreso depende de factores no incluidos en el modelo, tales como la informalidad laboral, la calidad del empleo, las condiciones del mercado local o la composición patrimonial de los hogares, variables no observadas en la ECV o excluidas del análisis.
+
+Las variables nivel educativo, horas trabajadas y cantidad de personas en el hogar resultaron altamente significativas, confirmando su relación con el ingreso. En contraste, edad y sexo mostraron efectos débiles o marginales, lo que podría deberse a la alta heterogeneidad ocupacional o a la falta de información sobre condiciones laborales específicas. A nivel territorial, los departamentos de Chocó y Nariño presentan coeficientes negativos respecto al departamento base (Cauca), reflejando brechas económicas regionales estructurales.
+
+En cuanto a la verificación de los supuestos del modelo, el gráfico de residuos versus valores ajustados y el gráfico Scale-Location evidencian una ligera tendencia curvilínea y dispersión desigual de los residuos, lo que sugiere violación parcial de la homocedasticidad. Esto indica que el modelo no mantiene una varianza constante de los errores, afectando la eficiencia de las estimaciones. Por su parte, el gráfico Q-Q muestra desviaciones considerables en las colas, indicando residuos no normalmente distribuidos. Este incumplimiento afecta la validez de las pruebas de significancia y reduce la confiabilidad inferencial del modelo. En cuanto a la multicolinealidad, los valores del VIF se mantienen por debajo del umbral crítico (VIF < 5), y la matriz de correlación confirma baja correlación entre los predictores, por lo que no hay evidencia de colinealidad fuerte.
+
+Las predicciones generadas son coherentes en magnitud y sentido, pero su precisión debe tomarse con cautela. Dado el incumplimiento de los supuestos de normalidad y homocedasticidad, las estimaciones carecen de validez inferencial plena y no pueden extrapolarse a la población general. En particular, el sesgo de subregistro en el ingreso y la alta informalidad laboral de la región limitan la capacidad del modelo para capturar la verdadera estructura del ingreso familiar.
+
+Entre las posibles causas de estas limitaciones se encuentran la distribución altamente asimétrica del ingreso, incluso tras la transformación logarítmica, la heterogeneidad estructural entre departamentos con grandes diferencias en tamaño económico y estructura productiva, y la ausencia de variables clave como tipo de ocupación, informalidad o capital físico del hogar.
+
+En síntesis, el modelo permitió identificar tendencias significativas y relaciones esperadas —como que una mayor educación y más horas trabajadas se asocian con mayores ingresos—, pero no alcanza estándares estadísticos adecuados para predicción o formulación de políticas. El bajo ajuste, la violación parcial de la homocedasticidad y la desviación de la normalidad de los residuos indican que el modelo, en su forma actual, no es plenamente válido para inferencias ni proyecciones confiables sobre el ingreso familiar.
 
 
 # Bibliografia
